@@ -41,15 +41,14 @@ header {
     padding-top: 10px;
 }*/
 
-/* Media Query for Mobile - Stack or Adjust Backgrounds */
+/* Media Query for Mobile - Stack or Adjust Backgrounds
 @media (max-width: 768px) {
     #header {
         background: 
             url('/rti-panel-50.png') no-repeat center top;
         background-size: auto 25%;
     }
-}
-
+} */
 
 .h3 {
     font-size: larger;

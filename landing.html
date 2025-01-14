@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feeny Power & Control | AV Programming Services</title>
-    <link rel="icon" href="/feeny-logo-512-circle-black-back.png" type="image/x-icon">
+    <link rel="icon" href="/images/feeny-logo-512-circle-black-back.png" type="image/x-icon">
     <link rel="stylesheet" href="styles-white.css">
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script> 
+    <!-- Calendly Widget Script -->
+    <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
 </head>
 <body>
     <header>
         <div class="logo">
-            <img src="feeny-logo-white.png" alt="Feeny Power and Control Logo">
+            <img src="/images/feeny-logo-white.png" alt="Feeny Power and Control Logo">
         </div>
         <h1><span class="text-light-grey">Unlock</span> <span class="text-black">Seamless AV Integration</span>
             <span class="text-light-grey">With<br></span> <span class="text-black">Remote Programming</span></h1>
@@ -22,9 +23,9 @@
     </header>
 
     <section class="partners">
-            <img src="lutron-logo.png" alt="Lutron Logo">
-            <img src="rti-logo.png" alt="RTI Logo">
-            <img src="vantage-logo.png" alt="Vantage Logo">
+            <img src="/images/lutron-logo.png" alt="Lutron Logo">
+            <img src="/images/rti-logo-bigger.png" alt="RTI Logo">
+            <img src="/images/vantage-logo.png" alt="Vantage Logo">
     </section>
 
     <section class="benefits">
@@ -53,7 +54,11 @@
         <form action="/submit_form" method="POST">
             <input type="text" name="name" placeholder="Your Name" required>
             <input type="email" name="email" placeholder="Your Email" required>
-            <button type="submit">Book Your Free Consultation</button>
+            <!-- Book a Call Button -->
+            <button onclick="Calendly.initPopupWidget({url: 'https://calendly.com/feeny-jamie/programming-consultation'});return false;">
+                Let'sGo!
+            </button>
+            <!--<button type="submit">Let's Go!</button>*/ -->
         </form>
         <p class="fine-print">*Limited slots available. Book your consultation today!</p>
     </section>
