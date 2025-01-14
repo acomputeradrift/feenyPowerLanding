@@ -1,0 +1,167 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,500;1,300&display=swap');
+
+
+body {
+    font-family: "Rubik";
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    color: #333;
+    background-color: white;
+}
+/* 
+header {
+    height: 400px;
+    background: url('/rti-panel-15.png') no-repeat center center;
+    background-size: auto 80%;  
+    background-color: rgba(0, 0, 0, 0); 
+    color: white;
+    text-align: center;
+    padding-top: 150px;
+    padding: 20px;
+}*/
+header {
+    background: white;
+    padding: 20px;
+    text-align: center;
+    color: white;
+}
+/* 
+header {
+    height: 400px;
+    background: 
+        url('lutron-keypad-25.png') no-repeat 12% center,
+        url('rti-panel-front-15.png') no-repeat center center,
+        url('vantage-keypad-25.png') no-repeat 88% center;
+    background-size: auto 50%;
+    background-color: rgba(0, 0, 0, 0); 
+    color: white;
+    text-align: center;
+    padding-top: 10px;
+}*/
+
+/* Media Query for Mobile - Stack or Adjust Backgrounds */
+@media (max-width: 768px) {
+    #header {
+        background: 
+            url('/rti-panel-50.png') no-repeat center top;
+        background-size: auto 25%;
+    }
+}
+
+
+.h3 {
+    font-size: larger;
+}
+
+.text-white {
+    color: white;
+}
+.text-black {
+    color: #000000;
+    font-size: larger;
+}
+.text-dark-grey {
+    color: #575759;
+}
+.text-light-grey {
+    color: #a7a9ac;
+} 
+.text-orange {
+    color: #fcb040;
+}
+.text-green {
+    color: #39b54a;
+}
+
+.logo img {
+    max-width: 150px;
+    margin-bottom: 10px;
+}
+
+/* Partner Logos Section */
+.partners {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    background-color:white;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+.partners img {
+    width: 25%;
+    height:auto;
+}
+
+/* Call-to-Action Button */
+.cta-button {
+    margin-top: 10px;
+    display: inline-block;
+    padding: 10px 20px;
+    background: #fcb040; 
+    color: #000;
+    text-decoration: none;
+    border-radius: 30px;
+    border: none;
+}
+
+
+.cta-button:hover {
+    background-color: #FF8C00; /* Darker orange on hover */
+}
+
+
+/* Benefits Section */
+.benefits {
+    padding: 40px;
+    background: #575759; /* Dark grey background */
+    color: white;
+    text-align: center;
+}
+
+.benefit {
+    margin-bottom: 20px;
+}
+
+/* Call-to-Action Form Section */
+.cta {
+    text-align: center;
+    padding: 40px;
+    background: #fcb040;
+    color: #000;
+}
+
+form input {
+    padding: 10px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+}
+form button {
+    margin-top: 10px;
+    padding: 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 30px;
+}
+
+form button {
+    background: #222;
+    color: white;
+    cursor: pointer;
+}
+
+form button:hover {
+    background: #444;
+}
+
+/* Footer Section */
+footer {
+    text-align: center;
+    padding: 20px;
+    background: #222;
+    color: white;
+}
+
