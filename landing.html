@@ -6,8 +6,9 @@
     <title>Feeny Power & Control | AV Programming Services</title>
     <link rel="icon" href="/images/feeny-logo-512-circle-black-back.png" type="image/x-icon">
     <link rel="stylesheet" href="styles-white.css">
-    <!-- Calendly Widget Script -->
-    <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+    <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet">
+    <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
+
 </head>
 <body>
     <header>
@@ -51,15 +52,10 @@
     <section class="cta" id="signup">
         <h2>Ready to Transform Your AV Projects?</h2>
         <p>Let us show you how our services can save time, cut costs, and streamline your installations.</p>
-        <form action="/submit_form" method="POST">
-            <input type="text" name="name" placeholder="Your Name" required>
-            <input type="email" name="email" placeholder="Your Email" required>
-            <!-- Book a Call Button -->
-            <button onclick="Calendly.initPopupWidget({url: 'https://calendly.com/feeny-jamie/programming-consultation'});return false;">
-                Let'sGo!
-            </button>
-            <!--<button type="submit">Let's Go!</button>*/ -->
-        </form>
+
+<!-- Calendly badge widget begin -->
+        <script type="text/javascript">window.onload = function() { Calendly.initBadgeWidget({ url: 'https://calendly.com/feeny-jamie/programming-consultation', text: 'Schedule time with me', color: '#0069ff', textColor: '#ffffff' }); }</script>
+<!-- Calendly badge widget end -->
         <p class="fine-print">*Limited slots available. Book your consultation today!</p>
     </section>
 
