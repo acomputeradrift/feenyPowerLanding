@@ -27,28 +27,6 @@ header {
     text-align: center;
     color: white;
 }
-/* 
-header {
-    height: 400px;
-    background: 
-        url('lutron-keypad-25.png') no-repeat 12% center,
-        url('rti-panel-front-15.png') no-repeat center center,
-        url('vantage-keypad-25.png') no-repeat 88% center;
-    background-size: auto 50%;
-    background-color: rgba(0, 0, 0, 0); 
-    color: white;
-    text-align: center;
-    padding-top: 10px;
-}*/
-
-/* Media Query for Mobile - Stack or Adjust Backgrounds
-@media (max-width: 768px) {
-    #header {
-        background: 
-            url('/rti-panel-50.png') no-repeat center top;
-        background-size: auto 25%;
-    }
-} */
 
 .h3 {
     font-size: larger;
@@ -94,8 +72,8 @@ header {
     height:auto;
 }
 
-/* Call-to-Action Button */
-.cta-button {
+/* Top Call-to-Action Button */
+.calendly-button-upper {
     margin-top: 10px;
     display: inline-block;
     padding: 10px 20px;
@@ -104,10 +82,11 @@ header {
     text-decoration: none;
     border-radius: 30px;
     border: none;
+    cursor: pointer;
 }
 
 
-.cta-button:hover {
+.calendly-button-upper:hover {
     background-color: #FF8C00; /* Darker orange on hover */
 }
 
@@ -138,21 +117,23 @@ form input {
     border: none;
     border-radius: 5px;
 }
-form button {
-    margin-top: 10px;
-    padding: 15px;
+.calendly-button-lower {
+   
     margin: 5px;
     border: none;
     border-radius: 30px;
+    margin-top: 10px;
+    display: inline-block;
+    padding: 10px 20px;
 }
 
-form button {
+.calendly-button-lower {
     background: #222;
     color: white;
     cursor: pointer;
 }
 
-form button:hover {
+.calendly-button-lower:hover {
     background: #444;
 }
 
