@@ -10,17 +10,7 @@ body {
     color: #333;
     background-color: white;
 }
-/* 
-header {
-    height: 400px;
-    background: url('/rti-panel-15.png') no-repeat center center;
-    background-size: auto 80%;  
-    background-color: rgba(0, 0, 0, 0); 
-    color: white;
-    text-align: center;
-    padding-top: 150px;
-    padding: 20px;
-}*/
+
 header {
     background: white;
     padding: 20px;
@@ -85,11 +75,9 @@ header {
     cursor: pointer;
 }
 
-
 .calendly-button-upper:hover {
     background-color: #FF8C00; /* Darker orange on hover */
 }
-
 
 /* Benefits Section */
 .benefits {
@@ -103,7 +91,7 @@ header {
     margin-bottom: 20px;
 }
 
-/* Call-to-Action Form Section */
+/* Call-to-Action Section */
 .cta {
     text-align: center;
     padding: 40px;
@@ -111,12 +99,6 @@ header {
     color: #000;
 }
 
-form input {
-    padding: 10px;
-    margin: 5px;
-    border: none;
-    border-radius: 5px;
-}
 .calendly-button-lower {
    
     margin: 5px;
@@ -143,5 +125,18 @@ footer {
     padding: 20px;
     background: #222;
     color: white;
+}
+
+@media only screen and (max-width: 600px) {
+    .calendly-button-lower {
+        font-size: 18px;
+        padding: 15px 25px;
+    }
+
+    .calendly-button-upper {
+        font-size: 18px;
+        padding: 15px 25px;
+    }
+
 }
 
