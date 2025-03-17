@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,500;1,300&display=swap');
+
+/* --------------------------------------------- Diagnostics Section */
+.diagnostics {
+    padding: 40px;
+    background: #575759; /* Dark grey background */
+    color: white;
+    text-align: center;
+}
+
+/* Upload container - center on screen */
+.diagnostics .upload-container {
+    display: flex;
+    justify-content: center; /* Center the entire upload section */
+    align-items: center; /* Align items vertically */
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto; /* Center horizontally */
+    gap: 20px; /* Space between boxes */
+}
+
+/* Upload boxes (Left: JSON, Right: XLSX) */
+.diagnostics .upload-box {
+    flex: 1;
+    background: #3a3a3c; /* Slightly lighter grey for contrast */
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    max-width: 450px; /* Restrict max width */
+    color: white;
+}
+
+/* Upload input */
+.diagnostics .upload-box input {
+    display: block;
+    margin: 10px auto;
+    color: white;
+}
+
+/* Upload buttons */
+.diagnostics .upload-box button.upload-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+
+.diagnostics .upload-box button:hover {
+    background-color: #218838;
+}
+
+/* Error messages */
+.diagnostics .error-message {
+    color: #ff4c4c;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* 🔹 General file-preview container (shared styles) */
+.diagnostics .file-preview {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+    border: 1px solid #777;
+    background: #2b2b2d;
+    height: 200px;
+    text-align: left;
+    font-size: 14px;
+    white-space: pre-wrap;
+    color: #ddd;
+}
+
+/* 🔹 Left Side (JSON Preview) - Entire box should scroll */
+.json-preview {
+    overflow-y: auto; /* ✅ The entire box can scroll */
+    overflow-x: hidden;
+}
+
+/* 🔹 Right Side (XLSX Preview) - No scrolling, only inside */
+.xlsx-preview {
+    display: flex;
+    flex-direction: column;
+    height: 200px; /* ✅ Fixed height */
+    overflow: hidden; /* ✅ Prevents full preview from scrolling */
+}
+
+
+/* --------------------------------------------- Table Section */
+/* Table Section */
+
+.table-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 200px; /* ✅ Must match .file-preview */
+    background: white;
+}
+
+/* Table styles */
+.table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-wrapper th, .table-wrapper td {
+    padding: 0px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+/* Table header styling */
+.table-wrapper th {
+    background: #3a3a3c;
+    color: white;
+}
+
+/* Table container to prevent overflow */
+/* 🔹 Table inside XLSX Preview - Only this should scroll */
+#xlsxTableContainer {
+    flex-grow: 1; /* ✅ Ensures it fills available space */
+    max-height: 160px; /* ✅ Fixes table height */
+    overflow-y: auto; /* ✅ Only table content scrolls */
+}
+
+/* --------------------------------------------- Sheet Tabs */
+
+/* 🔹 Keep Sheet Tabs fixed at the bottom */
+.sheet-tabs {
+    height: 40px; /* ✅ Locks height */
+    display: flex;
+    justify-content: flex-start;
+    background: white; /* ✅ Match table header */
+    color: black;
+}
+
+
+/* Individual tab styling */
+.sheet-tab {
+    background: white;
+    color: black; /* ✅ Black text for all tabs */
+    font-weight: normal; /* ✅ Default weight for unselected tabs */
+    font-size: 12px; /* ✅ Smaller font */
+    flex-grow: 1; /* ✅ Ensures tabs fit evenly */
+    text-align: center;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+/* Active tab styling */
+.sheet-tab.active {
+    font-weight: bold; /* ✅ Bold font for selected tab */
+}
+
+
+/* Tab hover effect */
+.sheet-tab:hover {
+    background: #bbb;
+}
+
+/* --------------------------------------------- Navigation Bar */
+.diagnostics .nav-bar {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.diagnostics .nav-bar button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.diagnostics .nav-bar button:disabled {
+    background-color: #b0b0b0;
+    cursor: not-allowed;
+}
+
+.diagnostics .nav-bar button:hover:enabled {
+    background-color: #0056b3;
+}
+
+/* --------------------------------------------- Responsive Styles */
+@media (max-width: 768px) {
+    .diagnostics .upload-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .diagnostics .upload-box {
+        width: 90%;
+    }
+}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feeny Power & Control Ltd | Smart Home Programming Services</title>
+    <script src="/scripts/xlsx/xlsx.full.min.js"></script>
+    <script src="/scripts/upload_files.js" defer></script>
+    <link rel="icon" href="/images/feeny-logo-512-circle-black-back.png" type="image/x-icon">
+    <link rel="stylesheet" href="/styles/global.css">
+    <link rel="stylesheet" href="/styles/upload_files.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="/images/feeny-logo-white.png" alt="Feeny Power and Control Logo">
+        </div>
+        <h1><span class="text-light-grey">Unlock</span> <span class="text-black">Seamless AV Integration</span>
+            <span class="text-light-grey">With<br></span> <span class="text-black">Remote Programming</span></h1>
+        <div class="book-a-free">
+            <p><span class="text-dark-grey">Upload your RTI logs and mapping spreadsheet.</p>
+        </div>
+    </header>
+
+    <section class="diagnostics">
+        <div class="upload-container">
+            <!-- Left Side - JSON Log Upload -->
+            <div class="upload-box">
+                <h2>Upload JSON Log File</h2>
+                <input type="file" id="jsonUpload" accept=".txt">
+                <button class="upload-btn" id="uploadJsonBtn">Preview</button>
+                <div id="jsonError" class="error-message"></div>
+                <div class="file-preview json-preview" id="jsonPreview"></div>
+            </div>
+            
+            <!-- Right Side - XLSX Mapping Upload -->
+            <div class="upload-box">
+                <h2>Upload XLSX Mapping File</h2>
+                <input type="file" id="xlsxUpload" accept=".xlsx">
+                <button class="upload-btn" id="uploadXlsxBtn">Preview</button>
+                <div id="xlsxError" class="error-message"></div>
+            
+                <!-- ✅ Keep everything inside the preview box -->
+                <div class="file-preview xlsx-preview">
+                    <!-- ✅ Table wrapper now contains both table and tabs -->
+                    <div class="table-wrapper">
+                        <div id="xlsxTableContainer">
+                            <p style="color: blue; font-weight: bold;">Table Preview Area (DEBUG)</p>
+                        </div>
+                        <div id="sheetTabs" class="sheet-tabs">
+                            <p style="color: red; font-weight: bold;">Sheet Tabs Area (DEBUG)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <!-- Navigation Bar with Next Button -->
+        <div class="nav-bar">
+            <button id="nextStepBtn" disabled>Next</button>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 Feeny Power and Control Ltd. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
+
+

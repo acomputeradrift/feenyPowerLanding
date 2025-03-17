@@ -1,0 +1,88 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,500;1,300&display=swap');
+
+/* CONSULTATION Partner Logos Section */
+.partners {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    background-color:white;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+.partners img {
+    width: 25%;
+    height:auto;
+}
+
+/* Top Call-to-Action Button */
+.calendly-button-upper {
+    margin-top: 10px;
+    display: inline-block;
+    padding: 10px 20px;
+    background: #fcb040; 
+    color: #000;
+    text-decoration: none;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+}
+
+.calendly-button-upper:hover {
+    background-color: #FF8C00; /* Darker orange on hover */
+}
+
+/* Benefits Section */
+.benefits {
+    padding: 40px;
+    background: #575759; /* Dark grey background */
+    color: white;
+    text-align: center;
+}
+
+.benefit {
+    margin-bottom: 20px;
+}
+
+/* Call-to-Action Section */
+.cta {
+    text-align: center;
+    padding: 40px;
+    background: #fcb040;
+    color: #000;
+}
+
+.calendly-button-lower {
+   
+    margin: 5px;
+    border: none;
+    border-radius: 30px;
+    margin-top: 10px;
+    display: inline-block;
+    padding: 10px 20px;
+}
+
+.calendly-button-lower {
+    background: #222;
+    color: white;
+    cursor: pointer;
+}
+
+.calendly-button-lower:hover {
+    background: #444;
+}
+
+@media only screen and (max-width: 600px) {
+    .calendly-button-lower {
+        font-size: 18px;
+        padding: 15px 25px;
+    }
+
+    .calendly-button-upper {
+        font-size: 18px;
+        padding: 15px 25px;
+    }
+
+}
+
