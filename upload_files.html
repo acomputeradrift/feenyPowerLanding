@@ -30,7 +30,14 @@
                 <input type="file" id="jsonUpload" accept=".txt">
                 <button class="upload-btn" id="uploadJsonBtn">Preview</button>
                 <div id="jsonError" class="error-message"></div>
-                <div class="file-preview json-preview" id="jsonPreview"></div>
+                <div class="file-preview json-preview">
+                    <!-- ✅ Default message (visible until a file is uploaded) -->
+                    <div id="jsonNoFileMessage" class="no-file-message">No Current File</div>
+                
+                    <!-- ✅ JSON Log Data Preview (Hidden by default) -->
+                    <div id="jsonPreviewContent" style="display: none;"></div>
+                </div>
+                
             </div>
             
             <!-- Right Side - XLSX Mapping Upload -->
@@ -42,16 +49,16 @@
             
                 <!-- ✅ Keep everything inside the preview box -->
                 <div class="file-preview xlsx-preview">
-                    <!-- ✅ Table wrapper now contains both table and tabs -->
-                    <div class="table-wrapper">
-                        <div id="xlsxTableContainer">
-                            <p style="color: blue; font-weight: bold;">Table Preview Area (DEBUG)</p>
-                        </div>
-                        <div id="sheetTabs" class="sheet-tabs">
-                            <p style="color: red; font-weight: bold;">Sheet Tabs Area (DEBUG)</p>
-                        </div>
+                    <!-- ✅ Default message (visible until a file is uploaded) -->
+                    <div id="xlsxNoFileMessage" class="no-file-message">No Current File</div>
+                
+                    <!-- ✅ Table & Tabs (Hidden by default) -->
+                    <div class="table-wrapper" style="display: none;">
+                        <div id="xlsxTableContainer"></div>
+                        <div id="sheetTabs" class="sheet-tabs"></div>
                     </div>
                 </div>
+                
             </div>
             
         </div>

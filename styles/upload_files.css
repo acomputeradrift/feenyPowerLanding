@@ -90,6 +90,15 @@
     height: 200px; /* ✅ Fixed height */
     overflow: hidden; /* ✅ Prevents full preview from scrolling */
 }
+/* ✅ Default message inside file preview box */
+/* ✅ Default message inside BOTH file preview boxes */
+.file-preview .no-file-message {
+    text-align: center;
+    font-size: 16px;
+    color: #bbb;
+    padding-top: 80px; /* ✅ Centers the text vertically */
+}
+
 
 
 /* --------------------------------------------- Table Section */
