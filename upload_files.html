@@ -31,13 +31,9 @@
                 <button class="upload-btn" id="uploadJsonBtn">Preview</button>
                 <div id="jsonError" class="error-message"></div>
                 <div class="file-preview json-preview">
-                    <!-- ✅ Default message (visible until a file is uploaded) -->
                     <div id="jsonNoFileMessage" class="no-file-message">No Current File</div>
-                
-                    <!-- ✅ JSON Log Data Preview (Hidden by default) -->
-                    <div id="jsonPreviewContent" style="display: none;"></div>
+                    <div id="jsonPreview" style="display: none;"></div> 
                 </div>
-                
             </div>
             
             <!-- Right Side - XLSX Mapping Upload -->
@@ -46,13 +42,8 @@
                 <input type="file" id="xlsxUpload" accept=".xlsx">
                 <button class="upload-btn" id="uploadXlsxBtn">Preview</button>
                 <div id="xlsxError" class="error-message"></div>
-            
-                <!-- ✅ Keep everything inside the preview box -->
                 <div class="file-preview xlsx-preview">
-                    <!-- ✅ Default message (visible until a file is uploaded) -->
                     <div id="xlsxNoFileMessage" class="no-file-message">No Current File</div>
-                
-                    <!-- ✅ Table & Tabs (Hidden by default) -->
                     <div class="table-wrapper" style="display: none;">
                         <div id="xlsxTableContainer"></div>
                         <div id="sheetTabs" class="sheet-tabs"></div>

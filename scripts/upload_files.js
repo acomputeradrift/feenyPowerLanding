@@ -2,6 +2,7 @@
 //---------------------------------------------JSON
 
 function validateJsonLogFile(file) {
+    console.log("Validating JSON...")
     const reader = new FileReader();
 
     reader.onload = function(event) {
@@ -25,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // ✅ Function to show JSON preview & hide "No Current File" message
     function showJsonPreview() {
         document.getElementById("jsonNoFileMessage").style.display = "none"; // ✅ Hide message
-        document.getElementById("jsonPreviewContent").style.display = "block"; // ✅ Show JSON preview
+        document.getElementById("jsonPreview").style.display = "block"; // ✅ Show JSON preview
     }
 
     // ✅ Modify JSON Upload Button Event Listener
@@ -37,8 +38,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
-
-
 
 //---------------------------------------------XLSX
 function displaySheet(workbook, sheetName) {
@@ -76,9 +75,6 @@ function displaySheet(workbook, sheetName) {
     document.querySelectorAll(".sheet-tab").forEach(tab => {
         if (tab.textContent === sheetName) tab.classList.add("active");
     });
-
-    // 🔹 Keep tabs inside the preview box, below the table
-    // document.querySelector(".table-wrapper").appendChild(document.getElementById("sheetTabs"));
 }
 
 
