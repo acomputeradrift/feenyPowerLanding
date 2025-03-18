@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feeny Power & Control Ltd | Log Processing</title>
+    <script src="/scripts/process_files.js" defer></script>
+    <link rel="icon" href="/images/feeny-logo-512-circle-black-back.png" type="image/x-icon">
+    <link rel="stylesheet" href="/styles/global.css">
+    <link rel="stylesheet" href="/styles/process_files.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="/images/feeny-logo-white.png" alt="Feeny Power and Control Logo">
+        </div>
+        <h1><span class="text-light-grey">Unlock</span> <span class="text-black">Seamless AV Integration</span>
+            <span class="text-light-grey">With<br></span> <span class="text-black">Remote Programming</span></h1>
+        <div class="book-a-free">
+            <p><span class="text-dark-grey">RTI Log Mapping and Processing</p>
+        </div>
+    </header>
+
+    <!-- Logs Section - Matches Upload Page Structure -->
+    <section class="logs">
+        <div class="logs-interface">
+            <!-- Search Controls Section -->
+             <div class="log controls container">
+                <div class="log-controls-container search-controls">
+                    <label for="startTime">Start Time:</label>
+                    <input type="time" id="startTime">
+                    <label for="endTime">End Time:</label>
+                    <input type="time" id="endTime">
+                    <input type="text" id="searchInput" placeholder="Search logs...">
+                    <button id="searchButton">Search</button>
+                    <button id="clearFiltersButton">Clear</button>
+                </div>
+
+                <!-- File Management Controls Section -->
+                <div class="log-controls-container file-controls">
+                    <button id="downloadButton">Download Logs</button>
+                    <button id="newUploadButton">Upload New Files</button>
+                </div>
+            </div>
+            <!-- Log Results Display Section -->
+            <div class="processed-logs-display">
+                <div id="logNoFileMessage" class="no-file-message">No Current File</div>
+                <div id="logContainer" style="display: none;"></div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2025 Feeny Power and Control Ltd. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

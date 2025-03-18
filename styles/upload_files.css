@@ -1,15 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,500;1,300&display=swap');
 
-/* --------------------------------------------- Diagnostics Section */
-.diagnostics {
-    padding: 40px;
-    background: #575759; /* Dark grey background */
-    color: white;
-    text-align: center;
-}
+/* --------------------------------------------- Upload Files Section */
 
 /* Upload container - center on screen */
-.diagnostics .upload-container {
+.upload-files .upload-container {
     display: flex;
     justify-content: center; /* Center the entire upload section */
     align-items: center; /* Align items vertically */
@@ -20,7 +14,7 @@
 }
 
 /* Upload boxes (Left: JSON, Right: XLSX) */
-.diagnostics .upload-box {
+.upload-files .upload-box {
     flex: 1;
     background: #3a3a3c; /* Slightly lighter grey for contrast */
     border-radius: 10px;
@@ -32,14 +26,14 @@
 }
 
 /* Upload input */
-.diagnostics .upload-box input {
+.upload-files .upload-box input {
     display: block;
     margin: 10px auto;
     color: white;
 }
 
 /* Upload buttons */
-.diagnostics .upload-box button.upload-btn {
+.upload-files .upload-box button.upload-btn {
     background-color: #28a745;
     color: white;
     padding: 10px 15px;
@@ -51,19 +45,19 @@
 }
 
 
-.diagnostics .upload-box button:hover {
+.upload-files .upload-box button:hover {
     background-color: #218838;
 }
 
 /* Error messages */
-.diagnostics .error-message {
+.upload-files .error-message {
     color: #ff4c4c;
     font-size: 14px;
     margin-top: 5px;
 }
 
 /* 🔹 General file-preview container (shared styles) */
-.diagnostics .file-preview {
+.upload-files .file-preview {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -174,13 +168,13 @@
 }
 
 /* --------------------------------------------- Navigation Bar */
-.diagnostics .nav-bar {
+.upload-files .nav-bar {
     width: 100%;
     text-align: center;
     margin-top: 20px;
 }
 
-.diagnostics .nav-bar button {
+.upload-files .nav-bar button {
     background-color: #007bff;
     color: white;
     padding: 10px 20px;
@@ -190,23 +184,23 @@
     cursor: pointer;
 }
 
-.diagnostics .nav-bar button:disabled {
+.upload-files .nav-bar button:disabled {
     background-color: #b0b0b0;
     cursor: not-allowed;
 }
 
-.diagnostics .nav-bar button:hover:enabled {
+.upload-files .nav-bar button:hover:enabled {
     background-color: #0056b3;
 }
 
 /* --------------------------------------------- Responsive Styles */
 @media (max-width: 768px) {
-    .diagnostics .upload-container {
+    .upload-files .upload-container {
         flex-direction: column;
         align-items: center;
     }
 
-    .diagnostics .upload-box {
+    .upload-files .upload-box {
         width: 90%;
     }
 }

@@ -46,6 +46,15 @@ header {
     margin-bottom: 10px;
 }
 
+.benefits, .upload-files, .logs {
+    padding: 40px;
+    background: #575759; /* Dark grey background */
+    color: white;
+    text-align: center;
+}
+
+
+
 /* Footer Section */
 footer {
     text-align: center;
