@@ -14,7 +14,7 @@
 }
 
 /* Upload boxes (Left: JSON, Right: XLSX) */
-.upload-files .upload-box {
+ .upload-box {
     flex: 1;
     background: #3a3a3c; 
     border-radius: 10px;

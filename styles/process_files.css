@@ -1,35 +1,46 @@
-
-/* --------------------------------------------- Process Files Styles */
-
+/* Main flex container: Stacks log controls and log display */
 .logs-interface {
     display: flex;
-    flex-direction: column;
-}
-
-.log-controls-container {
-    display: inline-flex;
-    justify-content: space-between;
-    align-items: center; /* ✅ Forces children to equal height */
+    flex-direction: column; /* Stacks .log.controls.container and .processed-logs-display */
+    gap: 10px; /* Adds space between sections */
+    background: #3a3a3c; 
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Div 2: Container for Search and File Controls (horizontal alignment) */
+  .log.controls.container {
+    display: flex;
+    flex-direction: row; /* Places search-controls and file-controls side by side */
     gap: 10px;
-}
+    align-items: center; /* Aligns elements vertically */
+    justify-content: space-between; /* Ensures they don't squish together */
+  }
 
-.search-controls,
-.file-controls {
-    flex: 1;
-    min-width: 0; /* ✅ Prevents overflow */
-}
+  .log.controls.container * {
+    height: 26px;
+  }
+  
+  /* Div 2a: Search Controls (horizontal layout) */
+  .search-controls {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px;
+    align-items: center; /* Keeps inputs and buttons aligned */
+  }
+  
+  /* Div 2b: File Controls (horizontal layout) */
+  .file-controls {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px;
+    align-items: center;
+  }
 
-
-.search-controls input {
-    width: auto; /* ✅ Let it fit content instead of setting its own width */
-    min-width: 0; /* ✅ Prevents it from growing beyond flex limits */
-    flex: 1; /* ✅ Allows it to grow evenly with other inputs */
-}
-
-
-
-/* Buttons for search, clear, download, and upload */
-.logs-interface .log-controls-container button {
+  .log-controls-container button {
     background-color: #28a745;
     color: white;
     border: none;
@@ -37,15 +48,11 @@
     cursor: pointer;
     font-size: 14px;
 }
+  
 
-.logs-interface .log-controls-container button:hover {
-    background-color: #218838;
-}
-
-/* Processed logs display section */
-.logs-interface .processed-logs-display {
-    width: 100%;
-    height: 200px;
+  .processed-logs-display {
+    margin-top: 20px;
+    height: 800px;
     overflow-y: auto;
     background: #2b2b2d;    
     border-radius: 5px;
@@ -54,14 +61,10 @@
     font-family: monospace;
 }
 
-/* No file message inside logs display */
-.logs-interface .processed-logs-display .no-file-message {
+.processed-logs-display .no-file-message {
     text-align: center;
     font-size: 16px;
     color: #bbb;
     padding-top: 80px; /* Centers the text vertically */
 }
-
-
-
-
+  
