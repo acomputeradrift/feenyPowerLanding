@@ -1,68 +1,37 @@
 
 /* --------------------------------------------- Process Files Styles */
 
-/* Section for logs processing */
-.logs {
-    padding: 40px;
-    background: #575759; /* Dark grey background */
-    color: white;
-    text-align: center;
-}
-
-/* Main container for log processing */
 .logs-interface {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    gap: 20px;
 }
 
-/* ✅ Ensure the log controls container is structured correctly */
 .log-controls-container {
-    display: flex;
-    flex-wrap: nowrap; /* Prevent wrapping */
-    justify-content: space-between; /* Separate sections */
-    align-items: center; /* Align items vertically */
-    width: 100%;
-    padding: 10px;
-    background: #3a3a3c;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    gap: 15px; /* Adds spacing between elements */
-}
-
-/* ✅ Style search controls (Left Side) */
-.search-controls {
-    display: flex;
-    gap: 10px; /* Ensures spacing between inputs */
-    align-items: center;
-}
-
-/* ✅ Style file management controls (Right Side) */
-.file-controls {
-    display: flex;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center; /* ✅ Forces children to equal height */
     gap: 10px;
 }
 
-
-
-/* Input fields for search and filtering */
-.logs-interface .log-controls-container input {
-    padding: 8px;
-    border: 1px solid #aaa;
-    border-radius: 5px;
-    font-size: 14px;
+.search-controls,
+.file-controls {
+    flex: 1;
+    min-width: 0; /* ✅ Prevents overflow */
 }
+
+
+.search-controls input {
+    width: auto; /* ✅ Let it fit content instead of setting its own width */
+    min-width: 0; /* ✅ Prevents it from growing beyond flex limits */
+    flex: 1; /* ✅ Allows it to grow evenly with other inputs */
+}
+
+
 
 /* Buttons for search, clear, download, and upload */
 .logs-interface .log-controls-container button {
     background-color: #28a745;
     color: white;
-    padding: 8px 12px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -78,8 +47,7 @@
     width: 100%;
     height: 200px;
     overflow-y: auto;
-    background: #2b2b2d;
-    padding: 10px;
+    background: #2b2b2d;    
     border-radius: 5px;
     border: 1px solid #777;
     color: white;
@@ -94,17 +62,6 @@
     padding-top: 80px; /* Centers the text vertically */
 }
 
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .logs-interface .log-controls-container {
-        flex-direction: column;
-        gap: 10px;
-    }
 
-    .logs-interface .processed-logs-display {
-        height: auto;
-        max-height: 200px;
-    }
-}
 
 

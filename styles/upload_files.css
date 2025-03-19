@@ -16,12 +16,12 @@
 /* Upload boxes (Left: JSON, Right: XLSX) */
 .upload-files .upload-box {
     flex: 1;
-    background: #3a3a3c; /* Slightly lighter grey for contrast */
+    background: #3a3a3c; 
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     text-align: center;
-    max-width: 450px; /* Restrict max width */
+    max-width: 450px;
     color: white;
 }
 
