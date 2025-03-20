@@ -26,13 +26,18 @@
         <div class="logs-interface">
             <!-- Search Controls Section -->
              <div class="log controls container">
+                <div class="log-controls-container find-controls">
+                    <input type="text" id="findInput" placeholder="Find by Keyword...">
+                    <button id="findButton">Find</button>
+                    <button id="clearFindButton">Clear</button>
+                </div>
                 <div class="log-controls-container search-controls">
                     <label for="startTime">Start Time:</label>
                     <input type="time" id="startTime">
                     <label for="endTime">End Time:</label>
                     <input type="time" id="endTime">
                     <input type="text" id="searchInput" placeholder="Filter by Keyword...">
-                    <button id="searchButton">Search</button>
+                    <button id="searchButton">Filter</button>
                     <button id="clearFiltersButton">Clear</button>
                 </div>
 

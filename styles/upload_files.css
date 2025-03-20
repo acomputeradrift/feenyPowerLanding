@@ -34,7 +34,7 @@
 
 /* Upload buttons */
 .upload-files .upload-box button.upload-btn {
-    background-color: #28a745;
+    background-color: #39b54a;
     color: white;
     padding: 10px 15px;
     border: none;
@@ -46,7 +46,7 @@
 
 
 .upload-files .upload-box button:hover {
-    background-color: #218838;
+    background-color: #39b54a;
 }
 
 /* Error messages */
