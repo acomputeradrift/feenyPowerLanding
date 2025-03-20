@@ -1,0 +1,152 @@
+McGuigan Residence
+Load Schedule
+Vantage Controls Inc.
+26 Feb 2025
+Vancouver BC Canada
+McGuigan Residence v23.dc
+
+VID,Name,Area
+1029,Dining Patio Sconces,Top Floor : Dining Patio
+1034,Wine Room Lighted Shelf,Bottom Floor : Wine Room
+1041,Living Room Fireplace,Top Floor : Living Room
+1042,Dining Room Fireplace,Top Floor : Dining Room
+1043,Main Bed Fireplace,Middle Floor : Main Bedroom
+1044,East Bed Fireplace,Middle Floor : East Bedroom
+1045,Suite Fireplace,Bottom Floor : Suite Kitchen
+1046,Jacuzzi Heater,McGuigan Residence
+1047,Jacuzzi Jets,Bottom Floor : Pool Room
+1048,Sauna Heater,Bottom Floor : Sauna
+1115,West Bed Bath Valance LED,Middle Floor : West Bed Bath
+1116,Wine Room Recessed,Bottom Floor : Wine Room
+1117,Wine Room Wall Backlight (A),Bottom Floor : Wine Room
+1118,Wine Room Wall Backlight (B),Bottom Floor : Wine Room
+1138,East Bed Bath Mirror LED,Middle Floor : East Bed Bath
+1139,Kitchen Patio LED Sconce (BBQ Lights),Top Floor : Kitchen Patio
+1140,Skylight 12v Control,Top Floor : Top Floor Hallway
+1141,Skylight AC Power Cutoff,Top Floor : Top Floor Hallway
+1142,Suite Bath Fan,Bottom Floor : Suite Bathroom
+270,Powder Room Hallway Recessed,Top Floor : Main Entrance
+425,Powder Room Recessed,Top Floor : Powder Room
+428,Powder Room Mirror Sconces ,Top Floor : Powder Room
+433,Dining Room Patio Recessed,Top Floor : Dining Patio
+435,Pantry Recessed,Top Floor : Pantry
+436,West Bed Bath Mirror LED,Middle Floor : West Bed Bath
+447,West Bed Bath Shower Recessed,Middle Floor : West Bed Bath
+448,Main Bed Main Recessed,Middle Floor : Main Bedroom
+449,West Bed Landing Recessed,Middle Floor : Middle Floor Hallway
+451,Middle Floor Hallway South Recessed,Middle Floor : Middle Floor Hallway
+452,Middle Floor Stairwell North Recessed,Middle Floor : Stairs
+453,Main Bed Landing Recessed,Middle Floor : Middle Floor Hallway
+454,Main Bed Bath Shower Recessed,Middle Floor : Main Bed Bathroom
+455,Main Bed Bath/West Bed Patio Recessed,Middle Floor : Main Bed Bath/West Bed Patio
+456,Main Bed Art Projector Recessed,Middle Floor : Main Bedroom
+457,Main Bed/East Bed Patio Recessed,Middle Floor : Main Bed/East Bed Patio
+458,East Bed Closet Recessed,Middle Floor : East Bedroom
+459,East Bed Bath Shower Recessed,Middle Floor : East Bed Bath
+460,East Bed Bath Recessed,Middle Floor : East Bed Bath
+461,Main Laundry Recessed,Middle Floor : Main Laundry
+462,West Bed Closet Recessed,Middle Floor : West Bedroom
+463,Top Floor Hallway Recessed,Top Floor : Top Floor Hallway
+464,Garage Exterior LED Micro Downlights,Exterior : Front Exterior
+465,Garage South Recessed,Top Floor : Garage
+467,Office Patio Sconce LED,Top Floor : Office Patio
+471,Garage North Reccesed,Top Floor : Garage
+472,West Bed Bath Fan,Middle Floor : West Bed Bath
+474,Powder Room Hallway North Closet Recessed,Top Floor : Main Entrance
+475,Main Bed Bath Fan,Middle Floor : Main Bed Bathroom
+476,Powder Room Hallway South Closet Recessed,Top Floor : Main Entrance
+498,Main Laundry Room Fan,Middle Floor : Main Laundry
+499,East Bed Bath Fan,Middle Floor : East Bed Bath
+500,Powder Room Fan,Top Floor : Powder Room
+501,Storage Room Lights,Middle Floor : Main Electrical Room
+503,Main Entrance Recessed,Top Floor : Main Entrance
+504,Office Art Projector Recessed,Top Floor : Office
+505,Office Recessed ,Top Floor : Office
+506,Kitchen Counter LED,Top Floor : Kitchen
+507,Kitchen Island Recessed,Top Floor : Kitchen
+508,Kitchen Perimeter Recessed,Top Floor : Kitchen
+509,Family Room TV Recessed,Top Floor : Family Room
+510,Family Room Main Recessed,Top Floor : Family Room
+511,Dining Room Perimeter Recessed,Top Floor : Dining Room
+512,Suite Bed Closet Recessed,Bottom Floor : Suite Bedroom
+513,Dining Room Art Projector Recessed,Top Floor : Dining Room
+514,Dining Table Recessed,Top Floor : Dining Room
+515,Living Room Art Projector Recessed,Top Floor : Living Room
+516,Powder Room Kick LED,Top Floor : Powder Room
+517,Living Room Corner Recessed,Top Floor : Living Room
+518,West Bed Bath Kick LED,Middle Floor : West Bed Bath
+519,Living Room Perimeter Recessed,Top Floor : Living Room
+520,Living Room Center Recessed,Top Floor : Living Room
+521,West Bed Recessed,Middle Floor : West Bedroom
+522,Main Bed Bath Mirror LED,Middle Floor : Main Bed Bathroom
+523,Main Bed Bath Kick LED,Middle Floor : Main Bed Bathroom
+524,Main Bed Bath Recessed,Middle Floor : Main Bed Bathroom
+525,East Bed Bath Kick Lights,Middle Floor : East Bed Bath
+526,Main Bed TV Area Recessed,Middle Floor : Main Bedroom
+547,East Bed N/W Recessed ,Middle Floor : East Bedroom
+548,Top Floor Hallway Art Projector Recessed,Top Floor : Top Floor Hallway
+549,Main Bed East Closet Recessed,Middle Floor : Main Bedroom
+550,Main Entrance Nook Recessed,Top Floor : Main Entrance
+551,Dining Fireplace Recessed,Top Floor : Main Entrance
+552,Pool Room South Recessed,Bottom Floor : Pool Room
+553,Pool Room West Recessed,Bottom Floor : Pool Room
+554,West Pool Door Landing Recessed,Bottom Floor : Bottom Floor Hallway
+555,Pool Room North & Fireplace Recessed,Bottom Floor : Pool Room
+556,East Pool Door Landing Recessed,Bottom Floor : Bottom Floor Hallway
+557,Billiards Area Bath Recessed,Bottom Floor : Billiards Area Bathroom
+558,Billiards Area Bath Shower Light,Bottom Floor : Billiards Area Bathroom
+560,Billiards Area Bath Vanity Recessed,Bottom Floor : Billiards Area Bathroom
+562,Billiards Area Recessed and Track,Bottom Floor : Billiards Area
+563,Suite Bsmt Bathroom Fan,McGuigan Residence
+564,Suite Bath Shower Recessed,Bottom Floor : Suite Bathroom
+565,Suite Bath Vanity Recessed,Bottom Floor : Suite Bathroom
+566,Suite Living Room/Middle/Entrance Recessed,Bottom Floor : Suite Living Room
+567,Suite Bed Recessed,Bottom Floor : Suite Bedroom
+568,Suite Kitchen Recessed,Bottom Floor : Suite Kitchen
+569,Suite Landing Recessed,Bottom Floor : Bottom Floor Hallway
+570,Suite Living Fireplace Recessed,Bottom Floor : Suite Living Room
+571,Top Floor Hallway North Valence LED,Top Floor : Top Floor Hallway
+572,Top Floor Hallway South Valance LED,Top Floor : Top Floor Hallway
+579,Bottom Floor Laundry Fan,Bottom Floor : Bottom Floor Laundry
+581,Sauna Light,Bottom Floor : Sauna
+582,Bottom Floor Laundry Recessed,Bottom Floor : Bottom Floor Laundry
+583,Billiards Area Bath Fan,Bottom Floor : Billiards Area Bathroom
+584,Exterior Stair and Wall Lights,Exterior : Side and Rear Exterior
+586,Wine Room Closet Sconces,Bottom Floor : Billiards Area
+588,Pool Patio LED Micro Recessed,Bottom Floor : Pool Patio
+589,Gym Patio LED Micro Downlights,Bottom Floor : Gym Patio
+610,Living Room Valence LED,Top Floor : Living Room
+611,East Bed Bath Valance LED,Middle Floor : East Bed Bath
+612,Top Floor Stairwell Small Recessed,Middle Floor : Stairs
+613,Billiard Small Recessed,Bottom Floor : Billiards Area
+614,Valance Dining W Wall,Top Floor : Dining Room
+615,West Bed Bath Recessed,Middle Floor : West Bed Bath
+616,East Bed Valance LED,Middle Floor : East Bedroom
+617,Gym Valence LED,Bottom Floor : Gym
+618,Pool Room Valance LED,Bottom Floor : Pool Room
+619,East Bed Bath Vanity Recessed,Middle Floor : East Bed Bath
+620,Kitchen Valence LED,Top Floor : Kitchen
+621,Main Bed Bath Valence LED,Middle Floor : Main Bed Bathroom
+623,Main Bed Valence LED,Middle Floor : Main Bedroom
+624,Family Room Valence LED,Top Floor : Family Room
+625,Main Bed Walk In Recessed,Middle Floor : Main Bed Walk In
+626,Kitchen Sink Small Recessed,Top Floor : Kitchen
+627,Main Bed Bath Vanity Recessed,Middle Floor : Main Bed Bathroom
+628,West Bed Valance LED,Middle Floor : West Bedroom
+629,Suite Living Room Valance LED,Bottom Floor : Suite Living Room
+630,Suite Bath Mirror LED,Bottom Floor : Suite Bathroom
+631,Gym TV Recessed,Bottom Floor : Gym
+632,Gym Main Recessed,Bottom Floor : Gym
+633,Pool Room East Recessed,Bottom Floor : Pool Room
+634,Suite Bath Kick LED,Bottom Floor : Suite Bathroom
+647,Suite Bath Valance LED,Bottom Floor : Suite Bathroom
+648,Suite Bed Valance LED,Bottom Floor : Suite Bedroom
+649,Suite Kitchen Counter LED,Bottom Floor : Suite Kitchen
+651,Suite Patio Micro LED Recessed,Bottom Floor : Suite Patio
+652,Front Door Exterior LED Micro Downlights,Exterior : Front Exterior
+653,Pool Room Underwater Light,Bottom Floor : Pool Room
+654,Jacuzzi Jets,Bottom Floor : Mechanical Room
+655,Jacuzzi Heater,Bottom Floor : Pool Room
+656,Bottom Floor Mechanical Room Lights,Bottom Floor : Mechanical Room
+657,Pool Fibre Optic,Bottom Floor : Pool Room
+

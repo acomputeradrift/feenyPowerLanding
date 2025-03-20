@@ -1,0 +1,189 @@
+McGuigan Residence,Task List
+Theatres at Home Ltd : 1-604-202-0080,26 Feb 2025
+Total Tasks: 171
+VID,Name
+984,East Bed Bath Fan 5 min - TOGGLE
+986,Test - Family LED On Scene with Raise
+989,Test - Family LED Off with Lower
+1000,Test - Family LED On Full with Raise 
+1001,Test - Family LED On Dim with Raise
+1004,Audio - Zone 1 Power On
+1006,Audio - Zone 1 Power Off
+1008,Audio - Zone 1 Mute On
+1009,Audio - Zone 1 Mute Off
+1010,Audio - Zone 1 Vol + Press vs Hold Logic
+1013,Audio - Zone 1 Vol +
+1014,Audio - Zone 1 Vol -
+1021,Audio - Zone 1 Vol - Press vs Hold Logic
+1024,Construction On with Raise
+1035,Construction Off with Lower
+1054,Bottom Floor Laundry Room /Fan 30 min - DIM TOGGLE
+1062,Bottom Floor Hallway - DIM TOGGLE
+1119,Wine Room Shelf and A - Toggle Dim
+1158,Billiards Area - GAMING SCENE - Toggle
+1198,Billiards Area - ROOM OFF
+1199,Suite Bath - ROOM OFF
+1200,East Bed Bath - ROOM OFF
+1201,Powder Room - ROOM OFF
+1202,Office - ROOM OFF
+1203,Living Room - ROOM OFF
+1204,Dining Room - ROOM OFF
+1205,Family Room - ROOM OFF
+1206,Kitchen - ROOM OFF
+1207,Garage - ROOM OFF
+1208,East Bed - ROOM OFF
+1209,Main Bed - ROOM OFF
+1210,Main Bed Bath - ROOM OFF
+1211,West Bed - ROOM OFF
+1213,Gym - ROOM OFF
+1214,Pool - ROOM OFF
+1215,Wine Room - ROOM OFF
+Vantage Controls, Inc.,Page 1 of 5
+
+
+1217,Suite Kitchen - ROOM OFF
+1219,Suite Living Room - ROOM OFF
+1220,Suite Bed - ROOM OFF
+1222,Powder Room - MOTION (Day/Night)
+1225,East Bed Bath - MOTION (Day/Night)
+1231,West Bed Bath - MOTION (Day/Night)
+1234,Billiards Area Bath - MOTION (Day/Night)
+1235,Suite Bath - MOTION (Day/Night)
+1236,Main Bed Walk-In - MOTION (Day/Night)
+1238,Powder Room Hallway North Closet - DOOR CONTACTS
+1242,Billiards Area - DIM TOGGLE
+1243,Gym - Dim TOGGLE
+1244,Bottom Floor Stairs - DIM TOGGLE
+1247,Pool - DIM TOGGLE
+1248,Billiards Area Bath - ROOM OFF
+1249,Billiards Area Bath - DAILY SCENE
+1250,Billiards Area Bath - BRIGHT SCENE
+1251,Pool Patio - SWITCH TOGGLE
+1252,Gym Patio - SWITCH TOGGLE
+1258,Sauna - DIM TOGGLE
+1259,Storage Room Under Garage - SWITCH TOGGLE
+1260,Front Exterior Micro Recessed - SWITCH TOGGLE
+1261,Bottom Floor Mech Room - SWITCH TOGGLE
+1262,Bottom Floor Laundry Fan 30 min - TOGGLE
+1263,Billiards Area Bath Fan 30 min - TOGGLE
+1265,Suite Bath - DAILY SCENE
+1266,Suite Bath - BRIGHT SCENE
+1267,East Bed Bath - DAILY SCENE
+1268,East Bed Bath - BRIGHT SCENE
+1269,West Bed Bath - ROOM OFF
+1270,West Bed Bath - BRIGHT SCENE
+1271,West Bed Bath - DAILY SCENE
+1273,West Bed - BRIGHT SCENE
+1274,West Bed - DAILY SCENE
+1275,Powder Room - BRIGHT SCENE
+1276,Powder Room - DAILY SCENE
+1277,Powder Room Fan 30 min - TOGGLE
+1278,Main Bed - DAILY SCENE
+1279,Main Bed Sitting Area - DIM 
+Vantage Controls, Inc.,Page 2 of 5
+
+
+TOGGLE
+1280,Main Bed/East Bed Patio - SWITCH TOGGLE
+1281,Main Bed Bath/West Bed Patio - SWITCH TOGGLE
+1282,Office - DAILY SCENE
+1283,Office Patio - SWITCH TOGGLE
+1284,Kitchen Patio - SWITCH TOGGLE
+1285,ALL Lower Patio - SWITCH TOGGLE
+1286,Suite Sitting Area - DIM TOGGLE
+1287,Suite Kitchen Recessed - DIM TOGGLE
+1288,Suite Kitchen Counter - DIM TOGGLE
+1289,Suite Bed - DIM TOGGLE
+1291,Suite Bath Fan 30 min - TOGGLE
+1292,Suite Fireplace 2 hr- TOGGLE
+1293,Entrance/Dining Fireplace 2 hr- TOGGLE
+1295,Main Bed Fireplace 2 hr- TOGGLE
+1297,Pool Fireplace 2 hr- TOGGLE
+1309,East Bed Closet - MOTION (Day/Night)
+1310,West Bed Closet - MOTION (Day/Night)
+1312,Powder Room Hallway South Closet - DOOR CONTACTS
+1313,Suite Bed Closet - DOOR CONTACTS
+1315,Kitchen - DAILY SCENE
+1316,Kitchen/Family - DIM SCENE
+1317,Family Room - DIM TOGGLE
+1318,Dining Patio - SWITCH TOGGLE
+1319,Dining Room - DIM TOGGLE
+1320,Dining Room Table - DIM TOGGLE
+1321,Top Floor Stairs - DIM TOGGLE
+1322,Middle Floor Hallway - DIM TOGGLE
+1323,Top Floor Hallway - DIM TOGGLE
+1324,Middle Floor Laundry Room/Fan 30 min - DIM TOGGLE
+1327,Main Electrical Room - SWITCH TOGGLE
+1328,East Bed - DIM TOGGLE
+1329,East Bed Closet - DIM TOGGLE
+1330,West Bed Closet - DIM TOGGLE
+1331,West Bed Bath Fan 30 min - TOGGLE
+1332,Main Bed Walk-In - DIM TOGGLE
+1333,Main Bed Bath - MOTION (Day/Night)
+1334,Main Bed Bath - DAILY SCENE
+Vantage Controls, Inc.,Page 3 of 5
+
+
+1335,Main Bed Bath - BRIGHT SCENE
+1336,Main Bed Bath - NIGHT SCENE
+1337,Main Bed Bath Shower - DIM TOGGLE
+1338,Main Bed Bath Fan 30 min - TOGGLE
+1340,Wine Room Closet - SWITCH TOGGLE
+1341,Suite Kitchen - DIM TOGGLE
+1343,Living Room - DIM TOGGLE
+1344,Garage Lights - SWITCH TOGGLE
+1345,Main Bed East Closet - MOTION (Day/Night)
+1352,Suite Bed Closet - MOTION (Day/Night)
+1353,East Bed Bath Shower - DIM TOGGLE
+1354,Pantry - DIM TOGGLE
+1357,Wine Room - MOTION
+1360,Lower Hall - MOTION
+1381,Art Scene - UNKNOWN - Toggle
+1386,Bottom Floor Stairs - SWITCH ON
+1416,Pool Colored Lights - SWITCH TOGGLE
+1417,Jacuzzi Heater - TOGGLE LED FOR RTI
+1419,Jacuzzi Heater v2 - TOGGLE TASK LEDS
+1421,Whole House - GUEST SCENE
+1422,Whole House - OUTDOOR SCENE
+1423,Whole House - HOUSE OFF
+1424,Whole House - GOODBYE SCENE
+1425,Whole House - SLEEP SCENE
+1426,Whole House - MORNING SCENE
+1429,Whole House - BACKYARD SCENE TOGGLE
+1432,Jacuzzi Heater ON
+1433,Jacuzzi Heater OFF
+1437,Jacuzzi Heater v2 - TASK LED ON
+1438,Jacuzzi Heater v2 - TASK LED OFF
+1440,Volume + POOL ROOM
+1441,Volume - POOL ROOM
+1442,Gym - Exercise TOGGLE
+1443,Valence Lights ALL - Toggle
+1469,Volume + BILLIARDS AREA
+1471,Volume - BILLIARDS AREA
+1472,Volume + SUITE KITCHEN
+1473,Volume - SUITE KITCHEN
+1474,Volume + MAIN BED BATH
+1475,Volume - MAIN BED BATH
+1476,Volume + DINING ROOM
+Vantage Controls, Inc.,Page 4 of 5
+
+
+1477,Volume - DINING ROOM
+1478,Whole House -BRIGHT SCENE
+1479,Whole House -RELAX SCENE
+1480,Pool Camera Shut Off 3 hrs
+1497,East Bed Bath - OCC (Day/Night)
+1500,West Bed Bath - OCC (Day/Night)
+1502,Suite Bath - OCC (Day/Night)
+1504,Main Bed Bath - OCC (Day/Night)
+1506,Powder Room - OCC (Day/Night)
+1507,Billiards Area Bath - OCC (Day/Night)
+1508,East Bed Closet - OCC (Day/Night)
+1509,Main Bed Walk-In - OCC (Day/Night)
+1510,West Bed Closet - OCC (Day/Night)
+1511,Main Bed East Closet - OCC (Day/Night)
+1512,Suite Bed Closet - OCC (Day/Night)
+1515,Wine Room - OCC
+1516,Lower Hall - OCC
+1518,East and West Patio - SWITCH TOGGLE
+Vantage Controls, Inc.,Page 5 of 5

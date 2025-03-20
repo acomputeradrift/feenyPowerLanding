@@ -1,0 +1,78 @@
+Room,Light Name,Group
+Family/Living Room,Fireplace Recessed,64
+Family/Living Room,East Niche,39
+Family/Living Room,East Recessed,38
+Office,West Recessed,81
+Office,East Recessed,80
+Office,Desk,82
+Kitchen,Sink,51
+Kitchen,Recessed,49
+Kitchen,Island,50
+Kitchen,East Recessed,52
+Kitchen,Desk,53
+Master Bedroom,Recessed,28
+Master Bedroom,Cabinet,20
+Master Bedroom,East Bedside,24
+Master Bedroom,West Bedside,25
+Master Bedroom,Hall,14
+Master Bedroom,Patio,26
+Master Bath,Shower,18
+Master Bath,Tub,17
+Master Bath,Toilet,16
+Master Bath,Towel Warmer,70
+Yard,Sports Court Landscape,104
+Yard,Back Path Lights,85
+Yard,Lower Courtyard Tree Lights,72
+Yard,Lower Courtyard Soffit,71
+Yard,Laundry Door Soffit,76
+Yard,South Walkway Soffit,75
+Yard,Soffit Receptacles,86
+Yard,Front Soffit,84
+Yard,Front / Back Tree Lights,118
+Yard,Driveway Accent Lights,115
+Yard,Car Park Accent Lights,112
+Yard,Car Park Tree Lights,111
+Rec Room,Recessed,66
+Rec Room,Bar,67
+Rec Room,Lower Hall,57
+Rec Room,Wine Room,59
+Garage,Recessed,78
+Gym,Recessed,58
+Dining Room,Chandelier,93
+Dining Room,West Recessed,88
+Dining Room,West Niche,92
+Theater,Front Recessed,55
+Theater,Back Recessed,56
+West Bedroom,South Recessed,0
+West Bedroom,North Recessed,1
+West Bedroom,Bed,2
+West Bedroom,Desk,6
+West Bedroom,Ensuite,3
+West Bedroom,Shower,4
+East Bedroom,West Recessed,9
+East Bedroom,East Recessed,8
+East Bedroom,Desk,7
+East Bedroom,Ensuite,10
+East Bedroom,Shower,11
+Hallway,Recessed,94
+Hallway,Bar,40
+Stairs,Recessed,46
+Stairs,Up,30
+Stairs,Down,54
+Laundry Room,Recessed,48
+Entry,Foyer,31
+Entry,Front Hall,77
+Entry,Windows,74
+Upper Hall,Recessed,29
+Hobby Room,Recessed,63
+Deck,Recessed,23
+Deck,Door,22
+Guest Bedroom,Recessed,60
+Guest Bedroom,Ensuite,61
+Guest Bedroom,Shower,62
+Powder Room,Recessed,42
+Powder Room,Sconce,41
+Utility Bath,Mirror,44
+Utility Bath,Shower,43
+Lower Washroom,Ensuite,89
+Lower Washroom,Shower,65

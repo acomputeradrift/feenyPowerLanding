@@ -1,0 +1,24 @@
+Vantage - Button Info Extraction Algorithm  
+
+1. Load all images in **timestamp order** to ensure sequential processing.
+2. Initialize an empty list to store extracted Button Indexes, Names, and VIDs.
+
+3. **Extract all Button Indexes and Names first:**
+    a. Identify every "Button X Name" label.
+    b. Extract the Button Index (X) from the label.
+    c. Extract the associated Button Name.
+    d. Store Button Index and Button Name in a structured list.
+
+4. **Extract all Button VIDs:**
+    a. Identify every "Button X VID" label.
+    b. Extract the Button Index (X) from the label.
+    c. Extract the associated Button VID.
+    d. Match each VID to the corresponding Button Index in the list from step 3.
+
+5. **Combine data:**
+    a. Ensure every Button Index from step 3 has a row in the final dataset.
+    b. If a Button Name or VID is missing, leave the cell blank.
+    c. If data appears corrupted or inconsistent, insert a note instead of the expected value.
+
+6. **Store extracted rows in a structured format (DataFrame).**
+7. **Display the extracted data for verification before saving.**

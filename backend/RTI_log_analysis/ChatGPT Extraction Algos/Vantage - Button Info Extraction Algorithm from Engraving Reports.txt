@@ -1,0 +1,43 @@
+Final Algorithm for Extracting Keypad Data from Multiple Pages
+
+1. **Identify All Keypad Headers**:
+    a. Loop through each line of the document.
+    b. Search for lines containing **"Engraving Line 1"** and **"VID"** to identify headers.
+    c. Store the **line numbers** of each detected header to mark the start of each keypad's section.
+
+2. **For Each Keypad**:
+    a. Move to the row after the detected header for each keypad.
+    b. Initialize a counter (`processed_rows = 0`) to track the number of valid rows.
+    c. Process **exactly 8 rows per keypad**:
+        i. Read the next row.
+        ii. If the row is **empty** or does **not contain numeric values** (Task Index, VID), **mark it as invalid**.
+        iii. If the row contains **Task ID and VID** (both are numeric values):
+            - **Button Index (VID)** = Last numeric value in the row.
+            - **Task Index** = Second-to-last numeric value in the row.
+            - **Button Name** = Remaining text after removing row number, Task ID, and VID.
+            - Remove the **last three words** to isolate **Button Name** (e.g., "Black Legrand White").
+        iv. Increase the row counter (`processed_rows`) by 1.
+        v. **Stop processing** after exactly **8 rows per keypad**.
+    d. **Move to the next keypad header** once 8 rows have been processed, if any exist. If no new header exists, **stop processing**.
+
+3. **Output**:
+    a. Combine all the valid button data (from all keypads).
+    b. **Display the final table** of all buttons, showing:
+        - **Button Name**
+        - **Button Index (VID)**
+        - **Task Index**
+
+4. **Error Handling**:
+    a. Skip any rows that do not contain a **valid Task ID and VID**.
+    b. Ensure that rows from **only one keypad** are processed at a time.
+    c. **Only process 8 rows per keypad**, regardless of whether all are valid or not.
+
+---
+
+### **Key Details for Implementation**:
+1. **Exactly 8 rows per keypad**.
+2. **Handle invalid rows** by ensuring they contain the necessary numeric values (Task Index and VID).
+3. **Do not continue searching for rows once 8 valid ones are found** for a keypad.
+4. **Move to the next keypad when a new header is found** (can be on the same or next page).
+
+---
