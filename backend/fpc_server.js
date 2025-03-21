@@ -14,9 +14,9 @@ const app = express();
 app.use(express.json());
 
 // Serve static files explicitly
-app.use('/styles', express.static(path.join(__dirname, 'styles')));
-app.use('/scripts', express.static(path.join(__dirname, 'scripts')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/styles', express.static(path.join(__dirname, '../frontend/styles')));
+app.use('/scripts', express.static(path.join(__dirname, '../frontend/scripts')));
+app.use('/images', express.static(path.join(__dirname, '../frontend/images')));
 
 // ✅ If using locally installed xlsx, serve it too
 app.use('/scripts/xlsx', express.static(path.join(__dirname, 'node_modules/xlsx/dist')));
@@ -28,22 +28,29 @@ app.get('/', (req, res) => {
 
 // ✅ Serve Consultation Page
 app.get('/consultation', (req, res) => {
-    res.sendFile(path.join(__dirname, 'consultation.html'));
+    // res.sendFile(path.join(__dirname, 'consultation.html'));
+    res.sendFile(path.join(__dirname, '../frontend/consultation.html'));
+
 });
 
 // ✅ Redirect `/rti_diagnostics/` to `/rti_diagnostics/upload_files/`
 app.get('/rti_diagnostics/', (req, res) => {
     res.redirect('/rti_diagnostics/upload_files/');
+
 });
 
 // ✅ Serve RTI Diagnostics Upload Page
 app.get('/rti_diagnostics/upload_files/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'upload_files.html'));
+    // res.sendFile(path.join(__dirname, 'upload_files.html'));
+    res.sendFile(path.join(__dirname, '../frontend/upload_files.html'));
+
 });
 
 // ✅ Serve RTI Diagnostics Process Files Page
 app.get('/rti_diagnostics/process_files/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'process_files.html'));
+    //res.sendFile(path.join(__dirname, 'process_files.html'));
+    res.sendFile(path.join(__dirname, '../frontend/process_files.html'));
+
 });
 
 // ✅ MongoDB Connection
