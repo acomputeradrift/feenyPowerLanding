@@ -3,6 +3,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import uploadRoutes from './routes/upload.js';
+
 
 // Define __dirname since it's not available in ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -12,6 +14,10 @@ const app = express();
 
 // Middleware to parse JSON
 app.use(express.json());
+
+// Routes
+app.use('/api/upload', uploadRoutes);
+
 
 // Serve static files explicitly
 app.use('/styles', express.static(path.join(__dirname, '../frontend/styles')));

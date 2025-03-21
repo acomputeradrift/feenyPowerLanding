@@ -2,8 +2,8 @@
   "name": "feenypowerlanding",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",  
-  "type": "module",  
+  "main": "server.js",
+  "type": "module",
   "scripts": {
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,7 +14,7 @@
   "dependencies": {
     "express": "^4.21.2",
     "mongoose": "^8.9.4",
+    "multer": "^1.4.5-lts.2",
     "xlsx": "^0.18.5"
   }
 }
-
