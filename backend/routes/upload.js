@@ -18,9 +18,14 @@ const storage = multer.diskStorage({
 
   },
   filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    cb(null, `${timestamp}-${file.originalname}`);
+    const originalName = path.parse(file.originalname).name;
+    const ext = path.extname(file.originalname);
+    const now = new Date();
+    const timestamp = `${now.getFullYear()} ${String(now.getMonth() + 1).padStart(2, '0')} ${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  
+    cb(null, `${originalName} (${timestamp})${ext}`);
   }
+  
 });
 const upload = multer({ storage });
 
@@ -38,7 +43,8 @@ router.post('/', upload.single('file'), async (req, res) => {
       userId: DEFAULT_USER_ID,
       originalFilename: req.file.originalname,
       storedFilename: req.file.filename,
-      uploadedAt: new Date()
+      uploadedAt: new Date(),
+      clientUploadedAt: new Date(req.body.clientUploadedAt), // store browser's local time
     };
 
     let savedFile;

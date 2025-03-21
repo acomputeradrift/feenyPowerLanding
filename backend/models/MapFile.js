@@ -5,7 +5,9 @@ const MapFileSchema = new mongoose.Schema({
   originalFilename: { type: String, required: true },
   storedFilename: { type: String, required: true },
   description: { type: String },
-  uploadedAt: { type: Date, default: Date.now }
+  uploadedAt: { type: Date, default: Date.now },
+  clientUploadedAt: { type: Date }
+
 });
 
 export const MapFile = mongoose.model('MapFile', MapFileSchema);
