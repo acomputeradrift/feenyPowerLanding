@@ -6,9 +6,9 @@ const LogFileSchema = new mongoose.Schema({
   storedFilename: { type: String, required: true },
   mapUsed: { type: mongoose.Schema.Types.ObjectId, ref: 'MapFile' },
   analysisResult: { type: mongoose.Schema.Types.Mixed }, // optional
-  uploadedAt: { type: Date, default: Date.now },
-  clientUploadedAt: { type: Date }
-
+  uploadTimeServer: { type: Date, required: true },
+  userTimeZone: { type: String, required: true }
 });
+
 
 export const LogFile = mongoose.model('LogFile', LogFileSchema);

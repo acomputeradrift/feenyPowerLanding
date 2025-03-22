@@ -1,4 +1,9 @@
+const jsonInput = document.getElementById("jsonUpload");
+const xlsxInput = document.getElementById("xlsxUpload");
+const nextBtn = document.getElementById("nextStepBtn"); // ✅ updated ID
 
+// Disable the "Next" button by default
+nextBtn.disabled = true;
 //---------------------------------------------JSON
 
 function validateJsonLogFile(file) {
@@ -12,6 +17,8 @@ function validateJsonLogFile(file) {
             JSON.parse(textContent); // Attempt to parse as JSON
             document.getElementById("jsonError").textContent = ""; // Clear error if valid
             document.getElementById("jsonPreview").textContent = textContent; // Display content
+            checkFilesReady();
+            console.log('Successful preview of JSON');
         } catch (error) {
             document.getElementById("jsonError").textContent = "Error: File is not valid JSON!";
             console.log("Non json data detected.");
@@ -40,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 //---------------------------------------------XLSX
+
 function displaySheet(workbook, sheetName) {
     const worksheet = workbook.Sheets[sheetName];
     let jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: true }); // ✅ Ensure raw values are preserved
@@ -96,7 +104,7 @@ function validateXlsxFile(file) {
             }
 
             document.getElementById("xlsxError").textContent = "";
-
+            
             const sheetNames = workbook.SheetNames;
             const sheetTabs = document.getElementById("sheetTabs");
             sheetTabs.innerHTML = ""; // Clear previous buttons
@@ -115,6 +123,7 @@ function validateXlsxFile(file) {
                 if (index === 0) button.classList.add("active");
                 sheetTabs.appendChild(button);
             });
+            checkFilesReady();
 
         } catch (error) {
             document.getElementById("xlsxError").textContent = "Error: " + error.message;
@@ -137,6 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function showTablePreview() {
         document.getElementById("xlsxNoFileMessage").style.display = "none"; // ✅ Hide message
         document.querySelector(".table-wrapper").style.display = "flex"; // ✅ Show table
+        console.log('Successful preview of XLXS');
     }
 
     // ✅ Modify XLSX Upload Button Event Listener
@@ -149,7 +159,72 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+//-------------------------------------------------Next Button
 
+// ✅ Check if both files have been previewed
+function checkFilesReady() {
+    const jsonPreviewContent = document.getElementById("jsonPreview").textContent.trim();
+    const tableWrapper = document.querySelector(".table-wrapper");
+    const tableVisible = tableWrapper && tableWrapper.style.display !== "none";
+
+    // console.log("🔍 checkFilesReady:");
+    // console.log(" - JSON preview length:", jsonPreviewContent.length);
+    // console.log(" - Table wrapper exists:", !!tableWrapper);
+    // console.log(" - Table is visible:", tableVisible);
+
+    const ready = jsonPreviewContent.length > 0 && tableVisible;
+    document.getElementById("nextStepBtn").disabled = !ready;
+
+    console.log(" - Next button enabled:", ready);
+}
+
+// --------------------------------------------------Acutal Upload
+function uploadFile(file, fileType) {
+    const formData = new FormData();
+    formData.append('file', file); // ✅ The selected file (either log or map)
+    formData.append('fileType', fileType); // ✅ Either "log" or "map"
+    formData.append('userTimeZone', Intl.DateTimeFormat().resolvedOptions().timeZone); // ✅ User's local timezone
+
+    console.log("📦 Sending form data:");
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+
+    return fetch("/api/upload", {
+        method: "POST",
+        body: formData
+    }).then(res => res.json());
+}
+
+// -----------------------------------------------------Next Button
+nextBtn.addEventListener("click", () => {
+    const jsonFile = jsonInput.files[0];
+    const xlsxFile = xlsxInput.files[0];
+
+    if (!jsonFile || !xlsxFile) {
+        alert("Please upload both a log and a map before continuing.");
+        return;
+    }
+
+    // ✅ Immediately go to the next page
+    window.location.href = "/rti_diagnostics/process_files/";
+
+    // ✅ Begin background uploads (will continue even after navigation)
+    uploadFile(jsonFile, "log").then(res => {
+        if (res.error) console.error("❌ Log upload failed:", res.error);
+        else console.log("✅ Log uploaded.");
+    });
+
+    uploadFile(xlsxFile, "map").then(res => {
+        if (res.error) console.error("❌ Map upload failed:", res.error);
+        else console.log("✅ Map uploaded.");
+    });
+});
+
+
+// ✅ Hook into preview events
+    jsonInput.addEventListener("change", () => setTimeout(checkFilesReady, 200));
+    xlsxInput.addEventListener("change", () => setTimeout(checkFilesReady, 500));
 
 
 
