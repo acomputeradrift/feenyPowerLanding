@@ -197,6 +197,7 @@ function uploadFile(file, fileType) {
 }
 
 // -----------------------------------------------------Next Button
+
 nextBtn.addEventListener("click", () => {
     const jsonFile = jsonInput.files[0];
     const xlsxFile = xlsxInput.files[0];
@@ -209,17 +210,56 @@ nextBtn.addEventListener("click", () => {
     // ✅ Immediately go to the next page
     window.location.href = "/rti_diagnostics/process_files/";
 
-    // ✅ Begin background uploads (will continue even after navigation)
-    uploadFile(jsonFile, "log").then(res => {
-        if (res.error) console.error("❌ Log upload failed:", res.error);
-        else console.log("✅ Log uploaded.");
-    });
+    const uploadStatus = document.getElementById("logNoFileMessage");
+    uploadStatus.innerHTML = "Uploading Log File...";
 
-    uploadFile(xlsxFile, "map").then(res => {
-        if (res.error) console.error("❌ Map upload failed:", res.error);
-        else console.log("✅ Map uploaded.");
+    uploadFile(jsonFile, "log").then(res => {
+        if (res.error) {
+            console.error("❌ Log upload failed:", res.error);
+            uploadStatus.innerHTML += "\nLog upload failed.";
+            return;
+        }
+        console.log("✅ Log uploaded.");
+        uploadStatus.innerHTML += "<br>Uploading Map File...";
+
+        uploadFile(xlsxFile, "map").then(res => {
+            if (res.error) {
+                console.error("❌ Map upload failed:", res.error);
+                uploadStatus.innerHTML += "\nMap upload failed.";
+                return;
+            }
+            console.log("✅ Map uploaded.");
+            innerHTML += "<br>Done.";
+        });
     });
 });
+
+// nextBtn.addEventListener("click", () => {
+//     const jsonFile = jsonInput.files[0];
+//     const xlsxFile = xlsxInput.files[0];
+
+//     if (!jsonFile || !xlsxFile) {
+//         alert("Please upload both a log and a map before continuing.");
+//         return;
+//     }
+
+//     // ✅ Immediately go to the next page
+//     window.location.href = "/rti_diagnostics/process_files/";
+
+//     // ✅ Begin background uploads (will continue even after navigation)
+//     document.getElementById("logNoFileMessage").textContent = "Uploading Log File...";
+//     uploadFile(jsonFile, "log").then(res => {
+//         if (res.error) console.error("❌ Log upload failed:", res.error);
+//         else console.log("✅ Log uploaded.");
+//     });
+
+//     document.getElementById("logNoFileMessage").textContent = "Uploading Map File...";
+//     uploadFile(xlsxFile, "map").then(res => {
+//         if (res.error) console.error("❌ Map upload failed:", res.error);
+//         else console.log("✅ Map uploaded.");
+//     });
+//     document.getElementById("logNoFileMessage").textContent = "Ready.";
+// });
 
 
 // ✅ Hook into preview events
