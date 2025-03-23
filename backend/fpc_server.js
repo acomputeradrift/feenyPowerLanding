@@ -7,6 +7,9 @@ import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import uploadRoutes from './routes/upload.js';
+import processRoute from './routes/process.js';
+
+
 
 
 // Define __dirname since it's not available in ES Modules
@@ -20,6 +23,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/upload', uploadRoutes);
+app.use(processRoute);
 
 
 // Serve static files explicitly

@@ -4,13 +4,6 @@ const nextBtn = document.getElementById("nextStepBtn"); // ✅ updated ID
 const uploadStatusModal = document.getElementById("uploadStatusModal");
 const uploadStatusMessages = document.getElementById("uploadStatusMessages");
 
-function appendModalMessage(message) {
-    const p = document.createElement("p");
-    p.textContent = message;
-    uploadStatusMessages.appendChild(p);
-}
-
-
 // Disable the "Next" button by default
 nextBtn.disabled = true;
 //---------------------------------------------JSON Validate and Display
@@ -182,11 +175,16 @@ function checkFilesReady() {
 }
 
 // --------------------------------------------------Upload Functions
-function uploadFile(file, fileType) {
+function uploadFile(file, fileType, extraData = {}) {
     const formData = new FormData();
     formData.append('file', file); // ✅ The selected file (either log or map)
     formData.append('fileType', fileType); // ✅ Either "log" or "map"
     formData.append('userTimeZone', Intl.DateTimeFormat().resolvedOptions().timeZone); // ✅ User's local timezone
+
+    // ✅ Append any additional data (e.g., mapFileId for logs)
+    for (const key in extraData) {
+        formData.append(key, extraData[key]);
+    }
 
     return fetch("/api/upload", {
         method: "POST",
@@ -194,8 +192,13 @@ function uploadFile(file, fileType) {
     }).then(res => res.json());
 }
 
-// -----------------------------------------------------Next Button
 
+// -----------------------------------------------------Next Button
+function appendModalMessage(message) {
+    const p = document.createElement("p");
+    p.textContent = message;
+    uploadStatusMessages.appendChild(p);
+}
 nextBtn.addEventListener("click", () => {
     const jsonFile = jsonInput.files[0];
     const xlsxFile = xlsxInput.files[0];
@@ -205,43 +208,65 @@ nextBtn.addEventListener("click", () => {
         return;
     }
 
-    // ✅ Show modal and clear old messages
     uploadStatusModal.style.display = "flex";
     uploadStatusMessages.innerHTML = "";
 
-    appendModalMessage("Uploading Log File...");
+    appendModalMessage("Uploading Map File...");
 
-    uploadFile(jsonFile, "log").then(res => {
-        if (res.error) {
-            console.error("❌ Log upload failed:", res.error);
-            appendModalMessage("❌ Log upload failed.");
+    uploadFile(xlsxFile, "map").then(mapRes => {
+        if (mapRes.error) {
+            console.error("❌ Map upload failed:", mapRes.error);
+            appendModalMessage("❌ Map upload failed.");
             return;
         }
 
-        console.log("✅ Log uploaded.");
-        appendModalMessage("✅ Uploading Log File... Done.");
+        const mapFileId = mapRes.mapFileId;
+        const mapFileName = mapRes.storedFilename;
 
-        appendModalMessage("Uploading Map File...");
-        uploadFile(xlsxFile, "map").then(res => {
-            if (res.error) {
-                console.error("❌ Map upload failed:", res.error);
-                appendModalMessage("❌ Map upload failed.");
+        appendModalMessage("✅ Map uploaded.");
+        appendModalMessage("Uploading Log File...");
+
+        uploadFile(jsonFile, "log", { mapFileId }).then(logRes => {
+            if (logRes.error) {
+                console.error("❌ Log upload failed:", logRes.error);
+                appendModalMessage("❌ Log upload failed.");
                 return;
             }
 
-            console.log("✅ Map uploaded.");
-            appendModalMessage("✅ Uploading Map File... Done.");
+            const logFileName = logRes.storedFilename;
 
-            // Simulate processing (you'll replace this soon)
+            appendModalMessage("✅ Log uploaded.");
             appendModalMessage("Processing...");
-            setTimeout(() => {
-                appendModalMessage("✅ Processing... Done.");
-                window.location.href = "/rti_diagnostics/process_files/";
-            }, 1000);
+
+            // ✅ Log what you're about to send
+            console.log("Sending to /api/process:", {
+                logFileName,
+                mapFileName
+            });
+
+            fetch("/api/process", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    logFileName,
+                    mapFileName
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    console.error("❌ Processing error:", data.error);
+                    appendModalMessage("❌ Processing failed.");
+                    return;
+                }
+
+                console.log("✅ Processing complete.");
+                appendModalMessage("✅ Done.");
+                //window.location.href = "/rti_diagnostics/process_files/";
+            });
         });
     });
 });
-
 
 // nextBtn.addEventListener("click", () => {
 //     const jsonFile = jsonInput.files[0];
@@ -252,33 +277,61 @@ nextBtn.addEventListener("click", () => {
 //         return;
 //     }
 
-//     // ✅ Navigate to next page
-//     //window.location.href = "/rti_diagnostics/process_files/";
+//     // ✅ Show modal and clear old messages
+//     uploadStatusModal.style.display = "flex";
+//     uploadStatusMessages.innerHTML = "";
 
-// // ✅ Upload log file
-//     //appendUploadStatus("Uploading Log File...");
+//     appendModalMessage("Uploading Log File...");
+
 //     uploadFile(jsonFile, "log").then(res => {
 //         if (res.error) {
 //             console.error("❌ Log upload failed:", res.error);
-//             appendUploadStatus("Log upload failed.");
-//         } else {
-//             console.log("✅ Log uploaded.");
-//             appendUploadStatus("Log uploaded!.");
+//             appendModalMessage("❌ Log upload failed.");
+//             return;
 //         }
-//     });
 
-//     // ✅ Upload map file
-//     //appendUploadStatus("Uploading Map File...");
-//     uploadFile(xlsxFile, "map").then(res => {
-//         if (res.error) {
-//             console.error("❌ Map upload failed:", res.error);
-//             appendUploadStatus("Map upload failed.");
-//         } else {
+//         console.log("✅ Log uploaded.");
+//         appendModalMessage("✅ Done.");
+
+//         appendModalMessage("Uploading Map File...");
+//         uploadFile(xlsxFile, "map").then(res => {
+//             if (res.error) {
+//                 console.error("❌ Map upload failed:", res.error);
+//                 appendModalMessage("❌ Map upload failed.");
+//                 return;
+//             }
+
 //             console.log("✅ Map uploaded.");
-//             appendUploadStatus("Map uploaded.");
-//         }
-//     });
+//             appendModalMessage("✅ Done.");
+//             appendModalMessage("Processing...");
+//             fetch("/api/process", {
+//                 method: "POST",
+//                 headers: { "Content-Type": "application/json" },
+//                 body: JSON.stringify({
+//                     logFileName: logRes.storedFilename,
+//                     mapFileName: mapRes.storedFilename
+//                 })
+//             })
+//             .then(res => res.json())
+//             .then(data => {
+//                 if (data.error) {
+//                     console.error("❌ Processing error:", data.error);
+//                     appendModalMessage("❌ Processing failed.");
+//                     return;
+//                 }
+//                 console.log("✅ Processing complete.");
+//                 appendModalMessage("✅ Done.");
+//                 //window.location.href = "/rti_diagnostics/process_files/";
+//             });
 
+//             // // Simulate processing (you'll replace this soon)
+//             // appendModalMessage("Processing...");
+//             // setTimeout(() => {
+//             //     appendModalMessage("✅ Done.");
+//             //     //window.location.href = "/rti_diagnostics/process_files/";
+//             // }, 1000);
+//         });
+//     });
 // });
 
 // ✅ Hook into preview events

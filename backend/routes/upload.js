@@ -1,12 +1,16 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { MapFile } from '../models/MapFile.js';
 import { LogFile } from '../models/LogFile.js';
 import mongoose from 'mongoose';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = express.Router();
+
 
 // Temporary default user ID (can be loaded from env if you like)
 const DEFAULT_USER_ID = '000000000000000000000001';
@@ -14,7 +18,7 @@ const DEFAULT_USER_ID = '000000000000000000000001';
 // Set up Multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(path.resolve(), 'uploads'));
+    cb(null, path.join(__dirname, '..', 'uploads'));
   },
   filename: (req, file, cb) => {
     const originalName = path.parse(file.originalname).name;
