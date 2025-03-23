@@ -219,9 +219,8 @@ nextBtn.addEventListener("click", () => {
             appendModalMessage("❌ Map upload failed.");
             return;
         }
-
-        const mapFileId = mapRes.mapFileId;
-        const mapFileName = mapRes.storedFilename;
+        const mapFileName = mapRes.file.storedFilename;
+        const mapFileId = mapRes.file._id;
 
         appendModalMessage("✅ Map uploaded.");
         appendModalMessage("Uploading Log File...");
@@ -233,7 +232,8 @@ nextBtn.addEventListener("click", () => {
                 return;
             }
 
-            const logFileName = logRes.storedFilename;
+            const logFileName = logRes.file.storedFilename;
+
 
             appendModalMessage("✅ Log uploaded.");
             appendModalMessage("Processing...");
