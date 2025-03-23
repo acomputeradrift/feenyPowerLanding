@@ -1,10 +1,19 @@
 const jsonInput = document.getElementById("jsonUpload");
 const xlsxInput = document.getElementById("xlsxUpload");
 const nextBtn = document.getElementById("nextStepBtn"); // ✅ updated ID
+const uploadStatusModal = document.getElementById("uploadStatusModal");
+const uploadStatusMessages = document.getElementById("uploadStatusMessages");
+
+function appendModalMessage(message) {
+    const p = document.createElement("p");
+    p.textContent = message;
+    uploadStatusMessages.appendChild(p);
+}
+
 
 // Disable the "Next" button by default
 nextBtn.disabled = true;
-//---------------------------------------------JSON
+//---------------------------------------------JSON Validate and Display
 
 function validateJsonLogFile(file) {
     console.log("Validating JSON...")
@@ -46,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-//---------------------------------------------XLSX
+//---------------------------------------------XLSX Validate and Display
 
 function displaySheet(workbook, sheetName) {
     const worksheet = workbook.Sheets[sheetName];
@@ -56,8 +65,8 @@ function displaySheet(workbook, sheetName) {
         document.getElementById("xlsxTableContainer").innerHTML = "<p>No data in this sheet.</p>";
         return;
     }
-    console.log(`Raw data from "${sheetName}":`, worksheet);
-    console.log("First 5 rows of data:", jsonData.slice(0, 5));
+    // console.log(`Raw data from "${sheetName}":`, worksheet);
+    // console.log("First 5 rows of data:", jsonData.slice(0, 5));
 
     let tableHtml = "<div class='table-wrapper'><table><thead><tr>";
 
@@ -87,6 +96,7 @@ function displaySheet(workbook, sheetName) {
 
 
 function validateXlsxFile(file) {
+    console.log("Validating XLSX...")
     if (!file.name.endsWith(".xlsx")) {
         document.getElementById("xlsxError").textContent = "Error: Invalid file type.";
         return;
@@ -159,36 +169,24 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-//-------------------------------------------------Next Button
+//-------------------------------------------------Confirm Before Upload
 
 // ✅ Check if both files have been previewed
 function checkFilesReady() {
     const jsonPreviewContent = document.getElementById("jsonPreview").textContent.trim();
     const tableWrapper = document.querySelector(".table-wrapper");
     const tableVisible = tableWrapper && tableWrapper.style.display !== "none";
-
-    // console.log("🔍 checkFilesReady:");
-    // console.log(" - JSON preview length:", jsonPreviewContent.length);
-    // console.log(" - Table wrapper exists:", !!tableWrapper);
-    // console.log(" - Table is visible:", tableVisible);
-
     const ready = jsonPreviewContent.length > 0 && tableVisible;
     document.getElementById("nextStepBtn").disabled = !ready;
-
     console.log(" - Next button enabled:", ready);
 }
 
-// --------------------------------------------------Acutal Upload
+// --------------------------------------------------Upload Functions
 function uploadFile(file, fileType) {
     const formData = new FormData();
     formData.append('file', file); // ✅ The selected file (either log or map)
     formData.append('fileType', fileType); // ✅ Either "log" or "map"
     formData.append('userTimeZone', Intl.DateTimeFormat().resolvedOptions().timeZone); // ✅ User's local timezone
-
-    console.log("📦 Sending form data:");
-    for (let [key, value] of formData.entries()) {
-        console.log(`${key}: ${value}`);
-    }
 
     return fetch("/api/upload", {
         method: "POST",
@@ -207,32 +205,43 @@ nextBtn.addEventListener("click", () => {
         return;
     }
 
-    // ✅ Immediately go to the next page
-    window.location.href = "/rti_diagnostics/process_files/";
+    // ✅ Show modal and clear old messages
+    uploadStatusModal.style.display = "flex";
+    uploadStatusMessages.innerHTML = "";
 
-    const uploadStatus = document.getElementById("logNoFileMessage");
-    uploadStatus.innerHTML = "Uploading Log File...";
+    appendModalMessage("Uploading Log File...");
 
     uploadFile(jsonFile, "log").then(res => {
         if (res.error) {
             console.error("❌ Log upload failed:", res.error);
-            uploadStatus.innerHTML += "\nLog upload failed.";
+            appendModalMessage("❌ Log upload failed.");
             return;
         }
-        console.log("✅ Log uploaded.");
-        uploadStatus.innerHTML += "<br>Uploading Map File...";
 
+        console.log("✅ Log uploaded.");
+        appendModalMessage("✅ Uploading Log File... Done.");
+
+        appendModalMessage("Uploading Map File...");
         uploadFile(xlsxFile, "map").then(res => {
             if (res.error) {
                 console.error("❌ Map upload failed:", res.error);
-                uploadStatus.innerHTML += "\nMap upload failed.";
+                appendModalMessage("❌ Map upload failed.");
                 return;
             }
+
             console.log("✅ Map uploaded.");
-            innerHTML += "<br>Done.";
+            appendModalMessage("✅ Uploading Map File... Done.");
+
+            // Simulate processing (you'll replace this soon)
+            appendModalMessage("Processing...");
+            setTimeout(() => {
+                appendModalMessage("✅ Processing... Done.");
+                window.location.href = "/rti_diagnostics/process_files/";
+            }, 1000);
         });
     });
 });
+
 
 // nextBtn.addEventListener("click", () => {
 //     const jsonFile = jsonInput.files[0];
@@ -243,24 +252,34 @@ nextBtn.addEventListener("click", () => {
 //         return;
 //     }
 
-//     // ✅ Immediately go to the next page
-//     window.location.href = "/rti_diagnostics/process_files/";
+//     // ✅ Navigate to next page
+//     //window.location.href = "/rti_diagnostics/process_files/";
 
-//     // ✅ Begin background uploads (will continue even after navigation)
-//     document.getElementById("logNoFileMessage").textContent = "Uploading Log File...";
+// // ✅ Upload log file
+//     //appendUploadStatus("Uploading Log File...");
 //     uploadFile(jsonFile, "log").then(res => {
-//         if (res.error) console.error("❌ Log upload failed:", res.error);
-//         else console.log("✅ Log uploaded.");
+//         if (res.error) {
+//             console.error("❌ Log upload failed:", res.error);
+//             appendUploadStatus("Log upload failed.");
+//         } else {
+//             console.log("✅ Log uploaded.");
+//             appendUploadStatus("Log uploaded!.");
+//         }
 //     });
 
-//     document.getElementById("logNoFileMessage").textContent = "Uploading Map File...";
+//     // ✅ Upload map file
+//     //appendUploadStatus("Uploading Map File...");
 //     uploadFile(xlsxFile, "map").then(res => {
-//         if (res.error) console.error("❌ Map upload failed:", res.error);
-//         else console.log("✅ Map uploaded.");
+//         if (res.error) {
+//             console.error("❌ Map upload failed:", res.error);
+//             appendUploadStatus("Map upload failed.");
+//         } else {
+//             console.log("✅ Map uploaded.");
+//             appendUploadStatus("Map uploaded.");
+//         }
 //     });
-//     document.getElementById("logNoFileMessage").textContent = "Ready.";
-// });
 
+// });
 
 // ✅ Hook into preview events
     jsonInput.addEventListener("change", () => setTimeout(checkFilesReady, 200));

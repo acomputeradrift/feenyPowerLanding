@@ -32,12 +32,6 @@ router.post('/', upload.single('file'), async (req, res) => {
   const fileType = req.body.fileType;
   const userTimeZone = req.body.userTimeZone;
 
-
-  // ✅ Log what was received from the client
-  console.log("🛰️ Received from client:");
-  console.log("→ fileType:", fileType);
-  console.log("→ userTimeZone:", userTimeZone);
-
   const DEFAULT_USER_ID = new mongoose.Types.ObjectId('000000000000000000000001');
 
   if (!req.file || !['log', 'map'].includes(fileType)) {
@@ -69,7 +63,7 @@ router.post('/', upload.single('file'), async (req, res) => {
 
     console.log(`✅ Stored ${fileType} file:`, savedFile.originalFilename);
     console.log(`🕐 Server Time: ${serverTime}`);
-    console.log(`👤 User Time (${userTimeZone}): ${userTime}`);
+    console.log(`👤 User Time: ${userTime} (${userTimeZone})`);
 
     res.status(200).json({ message: 'File uploaded', file: savedFile });
   } catch (err) {
