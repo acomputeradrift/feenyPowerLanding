@@ -8,6 +8,9 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import uploadRoutes from './routes/upload.js';
 import processRoute from './routes/process.js';
+import retrieveRoute from './routes/retrieve.js';
+
+
 
 
 
@@ -24,6 +27,7 @@ app.use(express.json());
 // Routes
 app.use('/api/upload', uploadRoutes);
 app.use(processRoute);
+app.use(logRoutes);
 
 
 // Serve static files explicitly

@@ -86,3 +86,22 @@
     padding-top: 80px; /* Centers the text vertically */
 }
   
+/* Coloring classes based on log type */
+.macro {
+  color: orange;
+}
+.systemMacro {
+  color: yellow;
+}
+.command {
+  color: pink;
+}
+.event {
+  color: magenta;
+}
+.connected {
+  color: limegreen;
+}
+.alert {
+  color: red;
+}

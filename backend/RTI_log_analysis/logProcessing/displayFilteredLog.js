@@ -1,5 +1,7 @@
 import fs from 'fs';
 import { htmlOutputPath } from '../config/paths.js';
+import path from 'path';
+
 import { processLogEntry } from './processLogEntry.js';
 
 export function displayFilteredLog(logEntries, mappings) {

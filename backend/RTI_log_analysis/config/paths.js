@@ -1,6 +1,11 @@
-// config/paths.js
+import { fileURLToPath } from 'url';
+import path from 'path';
 
-// All file inputs are now passed dynamically.
-// Only output path remains (if used).
-export const htmlOutputPath = './Output/filtered_log_v3.html';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// ⬅️ one level up from /config, then into /Output
+export const htmlOutputPath = path.join(__dirname, '..', 'Output', 'filtered_log_v3.html');
+
+
 
