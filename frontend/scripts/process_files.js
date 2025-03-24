@@ -53,34 +53,32 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function renderLog(logArray) {
-  const logContainer = document.getElementById('logContainer');
-  logContainer.innerHTML = '';
-
-  logArray.forEach(entry => {
-    const div = document.createElement('div');
-    if (entry.class) div.classList.add(entry.class);
-    div.textContent = `[ID: ${entry.id}] [${entry.time}] ${entry.text}`;
-    logContainer.appendChild(div);
-  });
-
-  logContainer.style.display = 'block';
-  document.getElementById('logNoFileMessage').style.display = 'none';
-  document.getElementById('findButton').addEventListener('click', applyFind);
-  document.getElementById('clearFindButton').addEventListener('click', () => {
-    document.getElementById('findInput').value = '';
-    clearFindHighlighting();
-  });
-
-}
+    const logContainer = document.getElementById('logContainer');
+    logContainer.innerHTML = '';
+  
+    logArray.forEach(entry => {
+      const div = document.createElement('div');
+      if (entry.class) div.classList.add(entry.class);
+      div.textContent = `[ID: ${entry.id}] [${entry.time}] ${entry.text}`;
+      logContainer.appendChild(div);
+    });
+  
+    logContainer.style.display = 'block';
+    document.getElementById('logNoFileMessage').style.display = 'none';
+  
+    // Reapply find term and highlight
+    applyFind();
+  }
+  
 
 function filterLogs() {
   const start = document.getElementById('startTime').value;
   const end = document.getElementById('endTime').value;
-  const keyword = document.getElementById('searchInput').value();
+  const keyword = document.getElementById('searchInput').value;
 
   const filtered = fullLogData.filter(entry => {
     const timeOK = (!start || entry.time >= start) && (!end || entry.time <= end);
-    const keywordOK = !keyword || entry.text().includes(keyword);
+    const keywordOK = !keyword || entry.text.includes(keyword);
     return timeOK && keywordOK;
   });
 
@@ -95,9 +93,7 @@ function clearFilters() {
 }
 
 function applyFind() {
-    const input = document.getElementById('findInput').value.trim();
-    lastFindTerm = input; // ✅ store raw input for reuse
-  
+    const findTerm = document.getElementById('findInput').value.trim();
     currentMatches = [];
     currentMatchIndex = 0;
   
@@ -110,7 +106,7 @@ function applyFind() {
     const entries = logContainer.querySelectorAll('div');
   
     entries.forEach((div, index) => {
-      const text = div.textContent();
+      const text = div.textContent;
   
       if (text.includes(findTerm)) {
         const regex = new RegExp(`(${findTerm})`, 'gi');
