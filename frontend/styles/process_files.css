@@ -85,7 +85,19 @@
     color: #bbb;
     padding-top: 80px; /* Centers the text vertically */
 }
-  
+
+#logContainer {
+  text-align: left;
+  padding: 10px;
+  position: relative;
+}
+
+.active-match {
+  outline: 2px solid cyan;
+  border-radius: 4px;
+  padding: 2px;
+}
+
 /* Coloring classes based on log type */
 .macro {
   color: orange;

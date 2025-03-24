@@ -262,7 +262,7 @@ nextBtn.addEventListener("click", () => {
 
                 console.log("✅ Processing complete.");
                 appendModalMessage("✅ Done.");
-                //window.location.href = "/rti_diagnostics/process_files/";
+                window.location.href = "/rti_diagnostics/process_files/";
             });
         });
     });

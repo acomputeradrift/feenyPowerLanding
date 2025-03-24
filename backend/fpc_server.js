@@ -27,7 +27,8 @@ app.use(express.json());
 // Routes
 app.use('/api/upload', uploadRoutes);
 app.use(processRoute);
-app.use(logRoutes);
+app.use(retrieveRoute);
+
 
 
 // Serve static files explicitly

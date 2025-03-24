@@ -9,6 +9,7 @@ import { handleCBUSLogTypes } from "../driverTypes/handleCBUSLogs.js";
 import { handleAD64LogTypes } from "../driverTypes/handleAD64Logs.js";
 import { handleCoolMasterNetLogTypes } from "../driverTypes/handleCoolMasterNetLogs.js";
 
+
 export function processLogEntry(text, mappings) {
     switch (true) {
         case text.includes('System Manager') || text.startsWith('Change to page'):

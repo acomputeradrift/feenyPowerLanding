@@ -1,5 +1,7 @@
 import express from 'express';
-import { LogFile } from '../models/models.js';
+import { LogFile } from '../models/LogFile.js';
+import { MapFile } from '../models/MapFile.js';
+
 
 const router = express.Router();
 

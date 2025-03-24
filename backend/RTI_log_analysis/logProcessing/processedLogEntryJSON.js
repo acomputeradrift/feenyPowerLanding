@@ -1,5 +1,5 @@
 // processedLogEntryJSON.js
-import { processLogEntry } from '../processLogEntry.js';
+import { processLogEntry } from './processLogEntry.js';
 
 export function processedLogEntryJSON(logEntries, mappings) {
   const result = [];
