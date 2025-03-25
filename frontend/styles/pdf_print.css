@@ -1,0 +1,38 @@
+@media print {
+    body {
+      background: white;
+      color: black;
+    }
+  
+    #logContainer {
+      color: black;
+      background: white;
+      font-family: monospace;
+      font-size: 12px;
+      padding: 20px;
+    }
+  
+    .macro { color: orange !important; }
+    .systemMacro { color: goldenrod !important; }
+    .command { color: deeppink !important; }
+    .event { color: magenta !important; }
+    .connected { color: green !important; }
+    .alert { color: red !important; }
+  
+    mark {
+      background-color: yellow;
+      color: black;
+    }
+  
+    header, footer, .log-controls-container {
+      display: none !important;
+    }
+  
+    .processed-logs-display {
+      height: auto !important;
+      overflow: visible !important;
+      border: none;
+      box-shadow: none;
+    }
+  }
+  

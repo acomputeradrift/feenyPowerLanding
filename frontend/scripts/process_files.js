@@ -1,3 +1,5 @@
+import { generatePaginatedPDF } from './utils/downloadLogs.js';
+
 let fullLogData = [];
 let currentMatches = [];
 let currentMatchIndex = 0;
@@ -31,7 +33,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     noFileMessage.style.display = 'block';
     logContainer.style.display = 'none';
   }
-
+  document.getElementById('downloadButton').addEventListener('click', () => {
+    const find = document.getElementById('findInput').value.trim();
+    const keyword = document.getElementById('searchInput').value.trim();
+    const start = document.getElementById('startTime').value;
+    const end = document.getElementById('endTime').value;
+  
+    const logContainer = document.getElementById('logContainer');
+    const entries = Array.from(logContainer.querySelectorAll('div'));
+  
+    const logData = entries.map(div => ({
+      id: div.textContent.match(/\[ID: (.+?)\]/)?.[1] || '',
+      time: div.textContent.match(/\[(\d{2}:\d{2}:\d{2})\]/)?.[1] || '',
+      text: div.textContent.split(']').slice(2).join(']').trim(),
+      class: div.className
+    }));
+  
+    const filters = { findTerm: find, keyword, startTime: start, endTime: end };
+    generatePaginatedPDF(logData, filters);
+  });
+  
   document.getElementById('findButton').addEventListener('click', runFilterAndFind);
   document.getElementById('searchButton').addEventListener('click', runFilterAndFind);
   document.getElementById('clearFiltersButton').addEventListener('click', () => {
