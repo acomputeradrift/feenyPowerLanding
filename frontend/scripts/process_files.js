@@ -1,6 +1,7 @@
 import { generatePaginatedPDF } from './utils/downloadLogs.js';
 
-let fullLogData = [];
+let processedLogs = [];
+let displayedLogs = [];
 let currentMatches = [];
 let currentMatchIndex = 0;
 
@@ -18,15 +19,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!response.ok) throw new Error('Failed to fetch processed log');
 
-    const processedLogs = await response.json();
+    processedLogs = await response.json();
 
     if (!Array.isArray(processedLogs) || processedLogs.length === 0) {
       throw new Error('No log entries available.');
     }
-
-    fullLogData = processedLogs;
-    renderLog(fullLogData);
-
+    console.log('🧠 processedLogs preview:', processedLogs.slice(0, 5));
+    renderLog(processedLogs);
+    
   } catch (err) {
     console.error('❌ Error displaying log:', err);
     noFileMessage.textContent = 'Failed to load processed log.';
@@ -42,12 +42,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     const logContainer = document.getElementById('logContainer');
     const entries = Array.from(logContainer.querySelectorAll('div'));
   
-    const logData = entries.map(div => ({
-      id: div.textContent.match(/\[ID: (.+?)\]/)?.[1] || '',
-      time: div.textContent.match(/\[(\d{2}:\d{2}:\d{2})\]/)?.[1] || '',
-      text: div.textContent.split(']').slice(2).join(']').trim(),
-      class: div.className
-    }));
+    const logData = entries.map(div => {
+      const fullText = div.textContent;
+    
+      const idMatch = fullText.match(/\[ID: (.+?)\]/);
+      const timeMatch = fullText.match(/\[(\d{2}:\d{2}:\d{2})\]/);
+    
+      const id = idMatch?.[1] || '';
+      const time = timeMatch?.[1] || '';
+    
+      // Get everything after the second closing bracket
+      const parts = fullText.split(']');
+      const text = parts.slice(2).join(']').trim();
+    
+      return {
+        id,
+        time,
+        text,
+        class: div.className
+      };
+    });
+    
   
     const filters = { findTerm: find, keyword, startTime: start, endTime: end };
     generatePaginatedPDF(logData, filters);
@@ -80,7 +95,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function renderLog(logArray) {
-    console.log('renderLog called');
+    displayedLogs = logArray; // ✅ Always update the current view
+    console.log(`🔄 renderLog called — displaying ${displayedLogs.length} entries`);
+    console.log('📄 displayedLogs preview:', displayedLogs.slice(0, 5));
     const logContainer = document.getElementById('logContainer');
     logContainer.innerHTML = '';
   
@@ -95,7 +112,6 @@ function renderLog(logArray) {
     document.getElementById('logNoFileMessage').style.display = 'none';
     const scrollContainer = document.querySelector('.processed-logs-display');
     scrollContainer.scrollTo({ top: 0, behavior: 'auto' });
-    console.log('applyFind from inside renderLog called');
     applyFind();
   }
   
@@ -126,9 +142,7 @@ function applyFind() {
       currentMatches.push(div);
     }
   });
-  console.log('updateFindCounter from inside applyFind called');
   updateFindCounter();
-  console.log('focusCurrentMatch from inside applyFind called');
   focusCurrentMatch(); // ✅ will scroll and highlight exactly 1 entry
 }
 
@@ -149,7 +163,6 @@ function focusCurrentMatch() {
 
   const targetScrollTop = Math.max(match.offsetTop - offset, 0);
   scrollContainer.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
-  console.log('updateFindCounter from inside focusCurrentMatch called');
   updateFindCounter();
 
   // ✅ Diagnostic log to confirm offset behavior
@@ -158,7 +171,6 @@ function focusCurrentMatch() {
     const containerTop = scrollContainer.getBoundingClientRect().top;
     const actualOffset = Math.round(matchTop - containerTop);
     const expectedOffset = Math.round(offset);
-
     console.log(`[FocusCheck] Match is ${actualOffset}px from top — expected ~${expectedOffset}px`);
   }, 400); // Give scroll a moment to settle
 }
@@ -190,14 +202,12 @@ function focusCurrentMatch() {
     console.log('nextFindMatch called');
     if (currentMatches.length === 0) return;
     currentMatchIndex = (currentMatchIndex + 1) % currentMatches.length;
-    console.log('focusCurrentMatch from inside nextFindMatch called');
     focusCurrentMatch();
   }
   function prevFindMatch() {
     console.log('prevFindMatch called');
     if (currentMatches.length === 0) return;
     currentMatchIndex = (currentMatchIndex - 1 + currentMatches.length) % currentMatches.length;
-    console.log('focusCurrentMatch from inside prevFindMatch called');
     focusCurrentMatch();
   }
   
@@ -212,13 +222,14 @@ function focusCurrentMatch() {
     currentMatches = [];
     currentMatchIndex = 0;
   
-    const filtered = fullLogData.filter(entry => {
+    const filteredLogs = processedLogs.filter(entry => {
       const timeOK = (!start || entry.time >= start) && (!end || entry.time <= end);
       const keywordOK = !keyword || entry.text.includes(keyword);
       return timeOK && keywordOK;
     });
-    console.log('renderLog from inside runFilterAndFind called');
-    renderLog(filtered); // This calls applyFind() which uses the findInput box
+    console.log(`🔍 Filtered result: ${filteredLogs.length} entries`);
+    console.log('📄 filteredLogs preview:', filteredLogs.slice(0, 5));
+    renderLog(filteredLogs); // This calls applyFind() which uses the findInput box
   }
   
 

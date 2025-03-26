@@ -1,6 +1,7 @@
 // scripts/utils/downloadLogs.j
 
 export function generatePaginatedPDF(logEntries, filters) {
+  console.log('generatePaginatedPDF called');
   const jsPDF = window.jspdf.jsPDF;
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
 
