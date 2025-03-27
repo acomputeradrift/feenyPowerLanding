@@ -19,7 +19,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!response.ok) throw new Error('Failed to fetch processed log');
 
-    processedLogs = await response.json();
+    //processedLogs = await response.json();
+    const { logs, originalFilename } = await response.json();
+    processedLogs = logs;
+
+
 
     if (!Array.isArray(processedLogs) || processedLogs.length === 0) {
       throw new Error('No log entries available.');
@@ -34,40 +38,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     logContainer.style.display = 'none';
   }
   document.getElementById('downloadButton').addEventListener('click', () => {
+    console.log('⬇️ Download triggered');
+    
     const find = document.getElementById('findInput').value.trim();
     const keyword = document.getElementById('searchInput').value.trim();
     const start = document.getElementById('startTime').value;
     const end = document.getElementById('endTime').value;
   
-    const logContainer = document.getElementById('logContainer');
-    const entries = Array.from(logContainer.querySelectorAll('div'));
-  
-    const logData = entries.map(div => {
-      const fullText = div.textContent;
-    
-      const idMatch = fullText.match(/\[ID: (.+?)\]/);
-      const timeMatch = fullText.match(/\[(\d{2}:\d{2}:\d{2})\]/);
-    
-      const id = idMatch?.[1] || '';
-      const time = timeMatch?.[1] || '';
-    
-      // Get everything after the second closing bracket
-      const parts = fullText.split(']');
-      const text = parts.slice(2).join(']').trim();
-    
-      return {
-        id,
-        time,
-        text,
-        class: div.className
-      };
-    });
-    
-  
     const filters = { findTerm: find, keyword, startTime: start, endTime: end };
-    generatePaginatedPDF(logData, filters);
-  });
   
+    // ✅ Use already filtered and find-processed array
+    console.log('📦 Exporting displayedLogs:', displayedLogs.slice(0, 3));
+  
+    generatePaginatedPDF(displayedLogs, filters, originalFilename);
+  });
+    
   document.getElementById('findButton').addEventListener('click', runFilterAndFind);
   document.getElementById('searchButton').addEventListener('click', runFilterAndFind);
   document.getElementById('clearFiltersButton').addEventListener('click', () => {
@@ -115,36 +100,68 @@ function renderLog(logArray) {
     applyFind();
   }
   
-function applyFind() {
-  console.log('applyFind called');
-  const findTerm = document.getElementById('findInput').value.trim();
-  currentMatches = [];
-  currentMatchIndex = 0;
-
-  // Always clear old highlights
-  const logContainer = document.getElementById('logContainer');
-  const entries = logContainer.querySelectorAll('div');
-  entries.forEach(div => {
-    div.innerHTML = div.textContent;
-    div.classList.remove('active-match');
-  });
-
-  if (!findTerm) {
-    document.getElementById('findCounter').textContent = '';
-    return;
-  }
-
-  entries.forEach(div => {
-    const text = div.textContent;
-    if (text.includes(findTerm)) {
-      const regex = new RegExp(`(${findTerm})`, 'g'); // exact match, case-sensitive
-      div.innerHTML = div.textContent.replace(regex, '<mark>$1</mark>');
-      currentMatches.push(div);
+  function applyFind() {
+    console.log('🔎 applyFind called');
+    const findTerm = document.getElementById('findInput').value.trim();
+    currentMatches = [];
+    currentMatchIndex = 0;
+  
+    const logContainer = document.getElementById('logContainer');
+    const entries = logContainer.querySelectorAll('div');
+  
+    entries.forEach(div => {
+      div.innerHTML = div.textContent;
+      div.classList.remove('active-match');
+    });
+  
+    if (!findTerm) {
+      document.getElementById('findCounter').textContent = '';
+      return;
     }
-  });
-  updateFindCounter();
-  focusCurrentMatch(); // ✅ will scroll and highlight exactly 1 entry
-}
+  
+    entries.forEach((div, i) => {
+      const entry = displayedLogs[i]; // sync by index
+      if (entry.text.includes(findTerm)) {
+        const regex = new RegExp(`(${findTerm})`, 'g');
+        div.innerHTML = div.textContent.replace(regex, '<mark>$1</mark>');
+        currentMatches.push(div);
+      }
+    });
+  
+    updateFindCounter();
+    focusCurrentMatch();
+  }
+  
+// function applyFind() {
+//   console.log('applyFind called');
+//   const findTerm = document.getElementById('findInput').value.trim();
+//   currentMatches = [];
+//   currentMatchIndex = 0;
+
+//   // Always clear old highlights
+//   const logContainer = document.getElementById('logContainer');
+//   const entries = logContainer.querySelectorAll('div');
+//   entries.forEach(div => {
+//     div.innerHTML = div.textContent;
+//     div.classList.remove('active-match');
+//   });
+
+//   if (!findTerm) {
+//     document.getElementById('findCounter').textContent = '';
+//     return;
+//   }
+
+//   entries.forEach(div => {
+//     const text = div.textContent;
+//     if (text.includes(findTerm)) {
+//       const regex = new RegExp(`(${findTerm})`, 'g'); // exact match, case-sensitive
+//       div.innerHTML = div.textContent.replace(regex, '<mark>$1</mark>');
+//       currentMatches.push(div);
+//     }
+//   });
+//   updateFindCounter();
+//   focusCurrentMatch(); // ✅ will scroll and highlight exactly 1 entry
+// }
 
   
 function focusCurrentMatch() {
