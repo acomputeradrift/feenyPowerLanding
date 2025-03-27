@@ -1,13 +1,16 @@
-//import RubikNormal from '/fonts/Rubik-Regular-normal.js'; // You’ll create/export this using jsPDF font converter
 
-export function generatePaginatedPDF(logEntries, filters, originalFilename) {
+
+export function generatePaginatedPDF(logEntries, filters, originalFileName) {
+  console.log(`Original FileName in generatePDF: ${originalFileName}`);
   const jsPDF = window.jspdf.jsPDF;
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'pt', format: 'a4' });
 
-  // Embed Rubik font
-  // pdf.addFileToVFS('Rubik-Regular-normal.ttf', RubikNormal);
-  // pdf.addFont('Rubik-Regular-normal.ttf', 'Rubik', 'normal');
-  // pdf.setFont('Rubik');
+  //Embed Rubik font
+
+
+  pdf.setFont('ariel', 'normal'); // Monospace, clean
+
+  
 
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
@@ -26,19 +29,36 @@ export function generatePaginatedPDF(logEntries, filters, originalFilename) {
 
   const drawHeader = () => {
     // Logo centered
-    pdf.addImage(logo, 'PNG', pageWidth / 2 - 40, 40, 80, 80); // Keep aspect ratio manually
+    // pdf.addImage(logo, 'PNG', pageWidth / 2 - 40, 40, 80, 80); // Keep aspect ratio manually
     let y = 130;
+    const logoWidth = 100;
+    const logoAspect = logo.height / logo.width;
+    const logoHeight = logoWidth * logoAspect;
+    const logoX = (pageWidth - logoWidth) / 2;
+
+    pdf.addImage(logo, 'PNG', logoX, 40, logoWidth, logoHeight);
+
 
     pdf.setFontSize(10);
     pdf.setTextColor(0, 0, 0); // black text
 
     pdf.text(`Generated: ${new Date().toLocaleString()}`, marginX, y); y += 14;
-    pdf.text(`Filename: ${originalFilename || 'N/A'}`, marginX, y); y += 14;
+    pdf.text(`Filename: ${originalFileName || 'N/A'}`, marginX, y); y += 14;
 
-    const timeRange = filters.startTime || filters.endTime
-      ? `${filters.startTime || '...'} → ${filters.endTime || '...'}`
-      : 'N/A';
-    pdf.text(`Time Range: ${timeRange}`, marginX, y); y += 14;
+    let timeRange;
+    if (filters.startTime && filters.endTime) {
+      timeRange = `${filters.startTime} to ${filters.endTime}`;
+    } else if (filters.startTime) {
+      timeRange = `${filters.startTime} onward`;
+    } else if (filters.endTime) {
+      timeRange = `until ${filters.endTime}`;
+    } else {
+      timeRange = 'N/A';
+    }
+
+    pdf.text(`Time Range: ${timeRange}`, marginX, y);
+    y += 14;
+
 
     pdf.text(`Filter Keyword: ${filters.keyword || 'N/A'}`, marginX, y);
   };

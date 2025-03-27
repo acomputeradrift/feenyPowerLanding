@@ -1,6 +1,7 @@
 import { generatePaginatedPDF } from './utils/downloadLogs.js';
 
 let processedLogs = [];
+let filename ='';
 let displayedLogs = [];
 let currentMatches = [];
 let currentMatchIndex = 0;
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     //processedLogs = await response.json();
     const { logs, originalFilename } = await response.json();
     processedLogs = logs;
+    filename = originalFilename;
 
 
 
@@ -49,9 +51,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   
     // ✅ Use already filtered and find-processed array
     console.log('📦 Exporting displayedLogs:', displayedLogs.slice(0, 3));
-  
-    generatePaginatedPDF(displayedLogs, filters, originalFilename);
+    console.log(`Original FileName: ${filename}`);
+    generatePaginatedPDF(displayedLogs, filters, filename);
   });
+  
     
   document.getElementById('findButton').addEventListener('click', runFilterAndFind);
   document.getElementById('searchButton').addEventListener('click', runFilterAndFind);
