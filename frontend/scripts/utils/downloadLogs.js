@@ -42,25 +42,43 @@ export function generatePaginatedPDF(logEntries, filters, originalFileName) {
     pdf.setFontSize(10);
     pdf.setTextColor(0, 0, 0); // black text
 
-    pdf.text(`Generated: ${new Date().toLocaleString()}`, marginX, y); y += 14;
+    pdf.text(`Generated: ${formatDateTimeLocal(new Date())}`, marginX, y); y += 14;
     pdf.text(`Filename: ${originalFileName || 'N/A'}`, marginX, y); y += 14;
 
     let timeRange;
     if (filters.startTime && filters.endTime) {
-      timeRange = `${filters.startTime} to ${filters.endTime}`;
+      timeRange = `${formatDateTimeLocal(filters.startTime)} to ${formatDateTimeLocal(filters.endTime)}`;
     } else if (filters.startTime) {
-      timeRange = `${filters.startTime} onward`;
+      timeRange = `${formatDateTimeLocal(filters.startTime)} onward`;
     } else if (filters.endTime) {
-      timeRange = `until ${filters.endTime}`;
+      timeRange = `until ${formatDateTimeLocal(filters.endTime)}`;
     } else {
       timeRange = 'N/A';
     }
 
-    pdf.text(`Time Range: ${timeRange}`, marginX, y);
-    y += 14;
-
+    pdf.text(`Time Range: ${timeRange}`, marginX, y); y += 14;
 
     pdf.text(`Filter Keyword: ${filters.keyword || 'N/A'}`, marginX, y);
+    // pdf.text(`Generated: ${formatDateTimeLocal(new Date())}`, marginX, y); y += 14;
+
+    // pdf.text(`Filename: ${originalFileName || 'N/A'}`, marginX, y); y += 14;
+
+    // let timeRange;
+    // if (filters.startTime && filters.endTime) {
+    //   timeRange = `${filters.startTime} to ${filters.endTime}`;
+    // } else if (filters.startTime) {
+    //   timeRange = `${filters.startTime} onward`;
+    // } else if (filters.endTime) {
+    //   timeRange = `until ${filters.endTime}`;
+    // } else {
+    //   timeRange = 'N/A';
+    // }
+
+    // pdf.text(`Time Range: ${timeRange}`, marginX, y);
+    // y += 14;
+
+
+    // pdf.text(`Filter Keyword: ${filters.keyword || 'N/A'}`, marginX, y);
   };
 
   const drawFooter = (pageNum) => {
@@ -80,7 +98,7 @@ export function generatePaginatedPDF(logEntries, filters, originalFileName) {
 
     for (let i = 0; i < logEntries.length; i++) {
       const entry = logEntries[i];
-      const text = `[ID: ${entry.id}] [${entry.time}] ${entry.text}`;
+      const text = `[${entry.time}] ${entry.text}`;
       const color = getColorForClass(entry.class);
 
       const lines = pdf.splitTextToSize(text, pageWidth - 2 * marginX - 2 * logBoxPadding);
@@ -138,3 +156,23 @@ function addPageNumber(pdf, number, pageWidth, pageHeight, marginSides) {
   pdf.setTextColor(80);
   pdf.text(`Page ${number}`, pageWidth - marginSides - 50, pageHeight - 20);
 }
+
+function formatDateTimeLocal(value) {
+  const date = new Date(value);
+  const pad = (n) => n.toString().padStart(2, '0');
+
+  const year = date.getFullYear();
+  const month = pad(date.getMonth() + 1);
+  const day = pad(date.getDate());
+
+  let hour = date.getHours();
+  const minutes = pad(date.getMinutes());
+  const isAM = hour < 12;
+  const period = isAM ? 'a.m.' : 'p.m.';
+
+  hour = hour % 12;
+  hour = hour === 0 ? 12 : hour;
+
+  return `${year}-${month}-${day}, ${hour}:${minutes} ${period}`;
+}
+

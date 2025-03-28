@@ -25,13 +25,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     processedLogs = logs;
     filename = originalFilename;
 
-
+    if (processedLogs.length > 0) {
+      const firstTime = new Date(processedLogs[0].time);
+      const lastTime = new Date(processedLogs[processedLogs.length - 1].time);
+    
+      const formatForInput = (date) => {
+        const pad = (n) => n.toString().padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+      };
+    
+      const startInput = document.getElementById('startTime');
+      const endInput = document.getElementById('endTime');
+    
+      const minVal = formatForInput(firstTime);
+      const maxVal = formatForInput(lastTime);
+    
+      startInput.min = minVal;
+      startInput.max = maxVal;
+      startInput.value = minVal;
+    
+      endInput.min = minVal;
+      endInput.max = maxVal;
+      endInput.value = maxVal;
+    
+      console.log(`📆 Picker range set from ${minVal} to ${maxVal}`);
+    }
+    
 
     if (!Array.isArray(processedLogs) || processedLogs.length === 0) {
       throw new Error('No log entries available.');
     }
     console.log('🧠 processedLogs preview:', processedLogs.slice(0, 5));
     renderLog(processedLogs);
+    //updateRecordCount(); // <-- Only explicitly requested change here
     
   } catch (err) {
     console.error('❌ Error displaying log:', err);
@@ -92,7 +118,7 @@ function renderLog(logArray) {
     logArray.forEach(entry => {
       const div = document.createElement('div');
       if (entry.class) div.classList.add(entry.class);
-      div.textContent = `[ID: ${entry.id}] [${entry.time}] ${entry.text}`;
+      div.textContent = `[${entry.time}] ${entry.text}`;
       logContainer.appendChild(div);
     });
   
@@ -105,6 +131,7 @@ function renderLog(logArray) {
   
   function applyFind() {
     console.log('🔎 applyFind called');
+    updateRecordCount();
     const findTerm = document.getElementById('findInput').value.trim();
     currentMatches = [];
     currentMatchIndex = 0;
@@ -130,43 +157,11 @@ function renderLog(logArray) {
         currentMatches.push(div);
       }
     });
-  
+    console.log('About to call updateRecordCount, displayedLogs length:', displayedLogs.length);
     updateFindCounter();
     focusCurrentMatch();
   }
-  
-// function applyFind() {
-//   console.log('applyFind called');
-//   const findTerm = document.getElementById('findInput').value.trim();
-//   currentMatches = [];
-//   currentMatchIndex = 0;
-
-//   // Always clear old highlights
-//   const logContainer = document.getElementById('logContainer');
-//   const entries = logContainer.querySelectorAll('div');
-//   entries.forEach(div => {
-//     div.innerHTML = div.textContent;
-//     div.classList.remove('active-match');
-//   });
-
-//   if (!findTerm) {
-//     document.getElementById('findCounter').textContent = '';
-//     return;
-//   }
-
-//   entries.forEach(div => {
-//     const text = div.textContent;
-//     if (text.includes(findTerm)) {
-//       const regex = new RegExp(`(${findTerm})`, 'g'); // exact match, case-sensitive
-//       div.innerHTML = div.textContent.replace(regex, '<mark>$1</mark>');
-//       currentMatches.push(div);
-//     }
-//   });
-//   updateFindCounter();
-//   focusCurrentMatch(); // ✅ will scroll and highlight exactly 1 entry
-// }
-
-  
+    
 function focusCurrentMatch() {
   console.log('focusCurrentMatch called');
   if (currentMatches.length === 0) return;
@@ -231,26 +226,40 @@ function focusCurrentMatch() {
     focusCurrentMatch();
   }
   
-    
   function runFilterAndFind() {
     console.log('runFilterAndFind called');
-    const start = document.getElementById('startTime').value;
-    const end = document.getElementById('endTime').value;
+  
+    const startInput = document.getElementById('startTime').value;
+    const endInput = document.getElementById('endTime').value;
     const keyword = document.getElementById('searchInput').value.trim();
     const findTerm = document.getElementById('findInput').value.trim();
   
     currentMatches = [];
     currentMatchIndex = 0;
   
+    const startDate = startInput ? new Date(startInput) : null;
+    const endDate = endInput ? new Date(endInput) : null;
+  
     const filteredLogs = processedLogs.filter(entry => {
-      const timeOK = (!start || entry.time >= start) && (!end || entry.time <= end);
+      const logDate = new Date(entry.time); // entry.time is now full formatted timestamp
+      const timeOK = (!startDate || logDate >= startDate) && (!endDate || logDate <= endDate);
       const keywordOK = !keyword || entry.text.includes(keyword);
       return timeOK && keywordOK;
     });
+  
     console.log(`🔍 Filtered result: ${filteredLogs.length} entries`);
     console.log('📄 filteredLogs preview:', filteredLogs.slice(0, 5));
     renderLog(filteredLogs); // This calls applyFind() which uses the findInput box
   }
+
+  function updateRecordCount() {
+    console.log('🔎 updateRecordCount called');
+    const countElement = document.getElementById('recordCountDisplay');
+    countElement.textContent = `Total Records: ${displayedLogs.length}`;
+  }
+  
+  
+  
   
 
 

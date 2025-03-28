@@ -38,12 +38,13 @@
                   
                 <div class="log-controls-container search-controls">
                     <label for="startTime">Start Time:</label>
-                    <input type="time" id="startTime">
+                    <input type="datetime-local" id="startTime">
                     <label for="endTime">End Time:</label>
-                    <input type="time" id="endTime">
+                    <input type="datetime-local" id="endTime">
                     <input type="text" id="searchInput" placeholder="Filter by Keyword...">
                     <button id="searchButton">Filter</button>
                     <button id="clearFiltersButton">Clear</button>
+                    <div id="recordCountDisplay" class="record-count">Total Records: 0</div>
                 </div>
 
                 <!-- File Management Controls Section -->

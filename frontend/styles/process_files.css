@@ -98,6 +98,15 @@
   padding: 2px;
 }
 
+.record-count {
+  color: white;
+  font-size: 14px;
+  margin-top: 10px;
+  padding: 5px;
+  display: block;
+}
+
+
 /* Coloring classes based on log type */
 .macro {
   color: orange;
