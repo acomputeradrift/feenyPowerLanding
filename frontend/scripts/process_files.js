@@ -1,11 +1,8 @@
 import { generatePaginatedPDF } from './utils/downloadLogs.js';
+import { setDateTimeInputsToLogRange } from './utils/setDateTimeInputs.js';
+import { findFilterState, updateFindCounter, clearFindHighlighting } from './filtersAndFind.js';
 
-let processedLogs = [];
 let filename ='';
-let displayedLogs = [];
-let currentMatches = [];
-let currentMatchIndex = 0;
-
 
 document.addEventListener('DOMContentLoaded', async () => {
   const logContainer = document.getElementById('logContainer');
@@ -20,44 +17,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!response.ok) throw new Error('Failed to fetch processed log');
 
-    //processedLogs = await response.json();
     const { logs, originalFilename } = await response.json();
-    processedLogs = logs;
+    findFilterState.processedLogs = logs;
     filename = originalFilename;
-
-    if (processedLogs.length > 0) {
-      const firstTime = new Date(processedLogs[0].time);
-      const lastTime = new Date(processedLogs[processedLogs.length - 1].time);
-    
-      const formatForInput = (date) => {
-        const pad = (n) => n.toString().padStart(2, '0');
-        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-      };
-    
-      const startInput = document.getElementById('startTime');
-      const endInput = document.getElementById('endTime');
-    
-      const minVal = formatForInput(firstTime);
-      const maxVal = formatForInput(lastTime);
-    
-      startInput.min = minVal;
-      startInput.max = maxVal;
-      startInput.value = minVal;
-    
-      endInput.min = minVal;
-      endInput.max = maxVal;
-      endInput.value = maxVal;
-    
-      console.log(`📆 Picker range set from ${minVal} to ${maxVal}`);
-    }
-    
-
-    if (!Array.isArray(processedLogs) || processedLogs.length === 0) {
+    setDateTimeInputsToLogRange(findFilterState.processedLogs);
+  
+    if (!Array.isArray(findFilterState.processedLogs) || findFilterState.processedLogs.length === 0) {
       throw new Error('No log entries available.');
     }
-    console.log('🧠 processedLogs preview:', processedLogs.slice(0, 5));
-    renderLog(processedLogs);
-    //updateRecordCount(); // <-- Only explicitly requested change here
+    console.log('🧠 findFilterState.processedLogs preview:', findFilterState.processedLogs.slice(0, 5));
+    renderLog(findFilterState.processedLogs);
     
   } catch (err) {
     console.error('❌ Error displaying log:', err);
@@ -66,7 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     logContainer.style.display = 'none';
   }
   document.getElementById('downloadButton').addEventListener('click', () => {
-    console.log('⬇️ Download triggered');
+    // console.log('⬇️ Download triggered');
     
     const find = document.getElementById('findInput').value.trim();
     const keyword = document.getElementById('searchInput').value.trim();
@@ -76,42 +45,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     const filters = { findTerm: find, keyword, startTime: start, endTime: end };
   
     // ✅ Use already filtered and find-processed array
-    console.log('📦 Exporting displayedLogs:', displayedLogs.slice(0, 3));
-    console.log(`Original FileName: ${filename}`);
-    generatePaginatedPDF(displayedLogs, filters, filename);
+    // console.log('📦 Exporting findFilterState.displayedLogs:', findFilterState.displayedLogs.slice(0, 3));
+    // console.log(`Original FileName: ${filename}`);
+    generatePaginatedPDF(findFilterState.displayedLogs, filters, filename);
   });
   
     
   document.getElementById('findButton').addEventListener('click', runFilterAndFind);
   document.getElementById('searchButton').addEventListener('click', runFilterAndFind);
   document.getElementById('clearFiltersButton').addEventListener('click', () => {
-    document.getElementById('startTime').value = '';
-    document.getElementById('endTime').value = '';
+    setDateTimeInputsToLogRange(findFilterState.processedLogs); // ✅ explicitly reset datetime inputs
     document.getElementById('searchInput').value = '';
     runFilterAndFind(); // ✅ same logic
   });
+  
   document.getElementById('clearFindButton').addEventListener('click', () => {
     document.getElementById('findInput').value = '';
     runFilterAndFind(); // ✅ unified logic
   });
   
   document.getElementById('findNextButton').addEventListener('click', () => {
-    if (currentMatches.length === 0) return;
-    currentMatchIndex = (currentMatchIndex + 1) % currentMatches.length;
+    if (findFilterState.currentMatches.length === 0) return;
+    findFilterState.currentMatchIndex = (findFilterState.currentMatchIndex + 1) % findFilterState.currentMatches.length;
     focusCurrentMatch();
   });
   document.getElementById('findPrevButton').addEventListener('click', () => {
-    if (currentMatches.length === 0) return;
-    currentMatchIndex = (currentMatchIndex - 1 + currentMatches.length) % currentMatches.length;
+    if (findFilterState.currentMatches.length === 0) return;
+    findFilterState.currentMatchIndex = (findFilterState.currentMatchIndex - 1 + findFilterState.currentMatches.length) % findFilterState.currentMatches.length;
     focusCurrentMatch();
   });
   
 });
 
 function renderLog(logArray) {
-    displayedLogs = logArray; // ✅ Always update the current view
-    console.log(`🔄 renderLog called — displaying ${displayedLogs.length} entries`);
-    console.log('📄 displayedLogs preview:', displayedLogs.slice(0, 5));
+    findFilterState.displayedLogs = logArray; // ✅ Always update the current view
+    console.log(`🔄 renderLog called — displaying ${findFilterState.displayedLogs.length} entries`);
+    console.log('📄 findFilterState.displayedLogs preview:', findFilterState.displayedLogs.slice(0, 5));
     const logContainer = document.getElementById('logContainer');
     logContainer.innerHTML = '';
   
@@ -133,8 +102,8 @@ function renderLog(logArray) {
     console.log('🔎 applyFind called');
     updateRecordCount();
     const findTerm = document.getElementById('findInput').value.trim();
-    currentMatches = [];
-    currentMatchIndex = 0;
+    findFilterState.currentMatches = [];
+    findFilterState.currentMatchIndex = 0;
   
     const logContainer = document.getElementById('logContainer');
     const entries = logContainer.querySelectorAll('div');
@@ -150,26 +119,26 @@ function renderLog(logArray) {
     }
   
     entries.forEach((div, i) => {
-      const entry = displayedLogs[i]; // sync by index
+      const entry = findFilterState.displayedLogs[i]; // sync by index
       if (entry.text.includes(findTerm)) {
         const regex = new RegExp(`(${findTerm})`, 'g');
         div.innerHTML = div.textContent.replace(regex, '<mark>$1</mark>');
-        currentMatches.push(div);
+        findFilterState.currentMatches.push(div);
       }
     });
-    console.log('About to call updateRecordCount, displayedLogs length:', displayedLogs.length);
+    console.log('About to call updateRecordCount, findFilterState.displayedLogs length:', findFilterState.displayedLogs.length);
     updateFindCounter();
     focusCurrentMatch();
   }
     
 function focusCurrentMatch() {
   console.log('focusCurrentMatch called');
-  if (currentMatches.length === 0) return;
+  if (findFilterState.currentMatches.length === 0) return;
 
   // Remove previous highlights
-  currentMatches.forEach(div => div.classList.remove('active-match'));
+  findFilterState.currentMatches.forEach(div => div.classList.remove('active-match'));
 
-  const match = currentMatches[currentMatchIndex];
+  const match = findFilterState.currentMatches[findFilterState.currentMatchIndex];
   match.classList.add('active-match');
 
   const scrollContainer = document.querySelector('.processed-logs-display');
@@ -190,39 +159,39 @@ function focusCurrentMatch() {
   }, 400); // Give scroll a moment to settle
 }
   
-  function updateFindCounter() {
-    console.log('updateFindCounter called');
-    const counter = document.getElementById('findCounter');
-    if (currentMatches.length === 0) {
-      counter.textContent = '';
-    } else {
-      counter.textContent = `${currentMatchIndex + 1} of ${currentMatches.length}`;
-    }
-  }
+  // function updateFindCounter() {
+  //   console.log('updateFindCounter called');
+  //   const counter = document.getElementById('findCounter');
+  //   if (findFilterState.currentMatches.length === 0) {
+  //     counter.textContent = '';
+  //   } else {
+  //     counter.textContent = `${findFilterState.currentMatchIndex + 1} of ${findFilterState.currentMatches.length}`;
+  //   }
+  // }
   
-  function clearFindHighlighting() {
-    console.log('clearFindHighlighting called');
-    const entries = document.getElementById('logContainer').querySelectorAll('div');
-    entries.forEach(div => {
-      div.innerHTML = div.textContent; // remove <mark>
-      div.classList.remove('active-match'); // remove outline
-    });
+  // function clearFindHighlighting() {
+  //   console.log('clearFindHighlighting called');
+  //   const entries = document.getElementById('logContainer').querySelectorAll('div');
+  //   entries.forEach(div => {
+  //     div.innerHTML = div.textContent; // remove <mark>
+  //     div.classList.remove('active-match'); // remove outline
+  //   });
   
-    document.getElementById('findCounter').textContent = '';
-    currentMatches = [];
-    currentMatchIndex = 0;
-  }
+  //   document.getElementById('findCounter').textContent = '';
+  //   findFilterState.currentMatches = [];
+  //   findFilterState.currentMatchIndex = 0;
+  // }
   
   function nextFindMatch() {
     console.log('nextFindMatch called');
-    if (currentMatches.length === 0) return;
-    currentMatchIndex = (currentMatchIndex + 1) % currentMatches.length;
+    if (findFilterState.currentMatches.length === 0) return;
+    findFilterState.currentMatchIndex = (findFilterState.currentMatchIndex + 1) % findFilterState.currentMatches.length;
     focusCurrentMatch();
   }
   function prevFindMatch() {
     console.log('prevFindMatch called');
-    if (currentMatches.length === 0) return;
-    currentMatchIndex = (currentMatchIndex - 1 + currentMatches.length) % currentMatches.length;
+    if (findFilterState.currentMatches.length === 0) return;
+    findFilterState.currentMatchIndex = (findFilterState.currentMatchIndex - 1 + findFilterState.currentMatches.length) % findFilterState.currentMatches.length;
     focusCurrentMatch();
   }
   
@@ -234,13 +203,13 @@ function focusCurrentMatch() {
     const keyword = document.getElementById('searchInput').value.trim();
     const findTerm = document.getElementById('findInput').value.trim();
   
-    currentMatches = [];
-    currentMatchIndex = 0;
+    findFilterState.currentMatches = [];
+    findFilterState.currentMatchIndex = 0;
   
     const startDate = startInput ? new Date(startInput) : null;
     const endDate = endInput ? new Date(endInput) : null;
   
-    const filteredLogs = processedLogs.filter(entry => {
+    const filteredLogs = findFilterState.processedLogs.filter(entry => {
       const logDate = new Date(entry.time); // entry.time is now full formatted timestamp
       const timeOK = (!startDate || logDate >= startDate) && (!endDate || logDate <= endDate);
       const keywordOK = !keyword || entry.text.includes(keyword);
@@ -255,12 +224,5 @@ function focusCurrentMatch() {
   function updateRecordCount() {
     console.log('🔎 updateRecordCount called');
     const countElement = document.getElementById('recordCountDisplay');
-    countElement.textContent = `Total Records: ${displayedLogs.length}`;
+    countElement.textContent = `Total Records: ${findFilterState.displayedLogs.length}`;
   }
-  
-  
-  
-  
-
-
-  
