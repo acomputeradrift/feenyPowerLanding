@@ -1,6 +1,16 @@
 import { generatePaginatedPDF } from './utils/downloadLogs.js';
 import { setDateTimeInputsToLogRange } from './utils/setDateTimeInputs.js';
-import { findFilterState, updateFindCounter, clearFindHighlighting } from './filtersAndFind.js';
+import {
+  findFilterState,
+  updateFindCounter,
+  clearFindHighlighting,
+  focusCurrentMatch,
+  nextFindMatch,
+  prevFindMatch, 
+  applyFind,
+  runFilterAndFind
+} from './filtersAndFind.js';
+
 
 let filename ='';
 
@@ -50,19 +60,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     generatePaginatedPDF(findFilterState.displayedLogs, filters, filename);
   });
   
-    
-  document.getElementById('findButton').addEventListener('click', runFilterAndFind);
-  document.getElementById('searchButton').addEventListener('click', runFilterAndFind);
+  document.getElementById('searchButton').addEventListener('click', () => runFilterAndFind(renderLog));
+
   document.getElementById('clearFiltersButton').addEventListener('click', () => {
-    setDateTimeInputsToLogRange(findFilterState.processedLogs); // ✅ explicitly reset datetime inputs
+    setDateTimeInputsToLogRange(findFilterState.processedLogs);
     document.getElementById('searchInput').value = '';
-    runFilterAndFind(); // ✅ same logic
+    runFilterAndFind(renderLog);
   });
   
   document.getElementById('clearFindButton').addEventListener('click', () => {
     document.getElementById('findInput').value = '';
-    runFilterAndFind(); // ✅ unified logic
+    runFilterAndFind(renderLog);
   });
+  
+  // document.getElementById('findButton').addEventListener('click', runFilterAndFind(renderLog));
+  // document.getElementById('searchButton').addEventListener('click', runFilterAndFind(renderLog));
+  // document.getElementById('clearFiltersButton').addEventListener('click', () => {
+  //   setDateTimeInputsToLogRange(findFilterState.processedLogs); // ✅ explicitly reset datetime inputs
+  //   document.getElementById('searchInput').value = '';
+  //   runFilterAndFind(renderLog); // ✅ same logic
+  // });
+  
+  // document.getElementById('clearFindButton').addEventListener('click', () => {
+  //   document.getElementById('findInput').value = '';
+  //   runFilterAndFind(renderLog); // ✅ unified logic
+  // });
   
   document.getElementById('findNextButton').addEventListener('click', () => {
     if (findFilterState.currentMatches.length === 0) return;
@@ -98,66 +120,66 @@ function renderLog(logArray) {
     applyFind();
   }
   
-  function applyFind() {
-    console.log('🔎 applyFind called');
-    updateRecordCount();
-    const findTerm = document.getElementById('findInput').value.trim();
-    findFilterState.currentMatches = [];
-    findFilterState.currentMatchIndex = 0;
+  // function applyFind() {
+  //   console.log('🔎 applyFind called');
+  //   updateRecordCount();
+  //   const findTerm = document.getElementById('findInput').value.trim();
+  //   findFilterState.currentMatches = [];
+  //   findFilterState.currentMatchIndex = 0;
   
-    const logContainer = document.getElementById('logContainer');
-    const entries = logContainer.querySelectorAll('div');
+  //   const logContainer = document.getElementById('logContainer');
+  //   const entries = logContainer.querySelectorAll('div');
   
-    entries.forEach(div => {
-      div.innerHTML = div.textContent;
-      div.classList.remove('active-match');
-    });
+  //   entries.forEach(div => {
+  //     div.innerHTML = div.textContent;
+  //     div.classList.remove('active-match');
+  //   });
   
-    if (!findTerm) {
-      document.getElementById('findCounter').textContent = '';
-      return;
-    }
+  //   if (!findTerm) {
+  //     document.getElementById('findCounter').textContent = '';
+  //     return;
+  //   }
   
-    entries.forEach((div, i) => {
-      const entry = findFilterState.displayedLogs[i]; // sync by index
-      if (entry.text.includes(findTerm)) {
-        const regex = new RegExp(`(${findTerm})`, 'g');
-        div.innerHTML = div.textContent.replace(regex, '<mark>$1</mark>');
-        findFilterState.currentMatches.push(div);
-      }
-    });
-    console.log('About to call updateRecordCount, findFilterState.displayedLogs length:', findFilterState.displayedLogs.length);
-    updateFindCounter();
-    focusCurrentMatch();
-  }
+  //   entries.forEach((div, i) => {
+  //     const entry = findFilterState.displayedLogs[i]; // sync by index
+  //     if (entry.text.includes(findTerm)) {
+  //       const regex = new RegExp(`(${findTerm})`, 'g');
+  //       div.innerHTML = div.textContent.replace(regex, '<mark>$1</mark>');
+  //       findFilterState.currentMatches.push(div);
+  //     }
+  //   });
+  //   console.log('About to call updateRecordCount, findFilterState.displayedLogs length:', findFilterState.displayedLogs.length);
+  //   updateFindCounter();
+  //   focusCurrentMatch();
+  // }
     
-function focusCurrentMatch() {
-  console.log('focusCurrentMatch called');
-  if (findFilterState.currentMatches.length === 0) return;
+// function focusCurrentMatch() {
+//   console.log('focusCurrentMatch called');
+//   if (findFilterState.currentMatches.length === 0) return;
 
-  // Remove previous highlights
-  findFilterState.currentMatches.forEach(div => div.classList.remove('active-match'));
+//   // Remove previous highlights
+//   findFilterState.currentMatches.forEach(div => div.classList.remove('active-match'));
 
-  const match = findFilterState.currentMatches[findFilterState.currentMatchIndex];
-  match.classList.add('active-match');
+//   const match = findFilterState.currentMatches[findFilterState.currentMatchIndex];
+//   match.classList.add('active-match');
 
-  const scrollContainer = document.querySelector('.processed-logs-display');
-  const lineHeight = match.offsetHeight || 20; // Fallback if height unknown
-  const offset = lineHeight * 5;
+//   const scrollContainer = document.querySelector('.processed-logs-display');
+//   const lineHeight = match.offsetHeight || 20; // Fallback if height unknown
+//   const offset = lineHeight * 5;
 
-  const targetScrollTop = Math.max(match.offsetTop - offset, 0);
-  scrollContainer.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
-  updateFindCounter();
+//   const targetScrollTop = Math.max(match.offsetTop - offset, 0);
+//   scrollContainer.scrollTo({ top: targetScrollTop, behavior: 'smooth' });
+//   updateFindCounter();
 
-  // ✅ Diagnostic log to confirm offset behavior
-  setTimeout(() => {
-    const matchTop = match.getBoundingClientRect().top;
-    const containerTop = scrollContainer.getBoundingClientRect().top;
-    const actualOffset = Math.round(matchTop - containerTop);
-    const expectedOffset = Math.round(offset);
-    console.log(`[FocusCheck] Match is ${actualOffset}px from top — expected ~${expectedOffset}px`);
-  }, 400); // Give scroll a moment to settle
-}
+//   // ✅ Diagnostic log to confirm offset behavior
+//   setTimeout(() => {
+//     const matchTop = match.getBoundingClientRect().top;
+//     const containerTop = scrollContainer.getBoundingClientRect().top;
+//     const actualOffset = Math.round(matchTop - containerTop);
+//     const expectedOffset = Math.round(offset);
+//     console.log(`[FocusCheck] Match is ${actualOffset}px from top — expected ~${expectedOffset}px`);
+//   }, 400); // Give scroll a moment to settle
+// }
   
   // function updateFindCounter() {
   //   console.log('updateFindCounter called');
@@ -182,47 +204,47 @@ function focusCurrentMatch() {
   //   findFilterState.currentMatchIndex = 0;
   // }
   
-  function nextFindMatch() {
-    console.log('nextFindMatch called');
-    if (findFilterState.currentMatches.length === 0) return;
-    findFilterState.currentMatchIndex = (findFilterState.currentMatchIndex + 1) % findFilterState.currentMatches.length;
-    focusCurrentMatch();
-  }
-  function prevFindMatch() {
-    console.log('prevFindMatch called');
-    if (findFilterState.currentMatches.length === 0) return;
-    findFilterState.currentMatchIndex = (findFilterState.currentMatchIndex - 1 + findFilterState.currentMatches.length) % findFilterState.currentMatches.length;
-    focusCurrentMatch();
-  }
+  // function nextFindMatch() {
+  //   console.log('nextFindMatch called');
+  //   if (findFilterState.currentMatches.length === 0) return;
+  //   findFilterState.currentMatchIndex = (findFilterState.currentMatchIndex + 1) % findFilterState.currentMatches.length;
+  //   focusCurrentMatch();
+  // }
+  // function prevFindMatch() {
+  //   console.log('prevFindMatch called');
+  //   if (findFilterState.currentMatches.length === 0) return;
+  //   findFilterState.currentMatchIndex = (findFilterState.currentMatchIndex - 1 + findFilterState.currentMatches.length) % findFilterState.currentMatches.length;
+  //   focusCurrentMatch();
+  // }
   
-  function runFilterAndFind() {
-    console.log('runFilterAndFind called');
+  // function runFilterAndFind() {
+  //   console.log('runFilterAndFind called');
   
-    const startInput = document.getElementById('startTime').value;
-    const endInput = document.getElementById('endTime').value;
-    const keyword = document.getElementById('searchInput').value.trim();
-    const findTerm = document.getElementById('findInput').value.trim();
+  //   const startInput = document.getElementById('startTime').value;
+  //   const endInput = document.getElementById('endTime').value;
+  //   const keyword = document.getElementById('searchInput').value.trim();
+  //   const findTerm = document.getElementById('findInput').value.trim();
   
-    findFilterState.currentMatches = [];
-    findFilterState.currentMatchIndex = 0;
+  //   findFilterState.currentMatches = [];
+  //   findFilterState.currentMatchIndex = 0;
   
-    const startDate = startInput ? new Date(startInput) : null;
-    const endDate = endInput ? new Date(endInput) : null;
+  //   const startDate = startInput ? new Date(startInput) : null;
+  //   const endDate = endInput ? new Date(endInput) : null;
   
-    const filteredLogs = findFilterState.processedLogs.filter(entry => {
-      const logDate = new Date(entry.time); // entry.time is now full formatted timestamp
-      const timeOK = (!startDate || logDate >= startDate) && (!endDate || logDate <= endDate);
-      const keywordOK = !keyword || entry.text.includes(keyword);
-      return timeOK && keywordOK;
-    });
+  //   const filteredLogs = findFilterState.processedLogs.filter(entry => {
+  //     const logDate = new Date(entry.time); // entry.time is now full formatted timestamp
+  //     const timeOK = (!startDate || logDate >= startDate) && (!endDate || logDate <= endDate);
+  //     const keywordOK = !keyword || entry.text.includes(keyword);
+  //     return timeOK && keywordOK;
+  //   });
   
-    console.log(`🔍 Filtered result: ${filteredLogs.length} entries`);
-    console.log('📄 filteredLogs preview:', filteredLogs.slice(0, 5));
-    renderLog(filteredLogs); // This calls applyFind() which uses the findInput box
-  }
+  //   console.log(`🔍 Filtered result: ${filteredLogs.length} entries`);
+  //   console.log('📄 filteredLogs preview:', filteredLogs.slice(0, 5));
+  //   renderLog(filteredLogs); // This calls applyFind() which uses the findInput box
+  // }
 
-  function updateRecordCount() {
-    console.log('🔎 updateRecordCount called');
-    const countElement = document.getElementById('recordCountDisplay');
-    countElement.textContent = `Total Records: ${findFilterState.displayedLogs.length}`;
-  }
+  // function updateRecordCount() {
+  //   console.log('🔎 updateRecordCount called');
+  //   const countElement = document.getElementById('recordCountDisplay');
+  //   countElement.textContent = `Total Records: ${findFilterState.displayedLogs.length}`;
+  // }
