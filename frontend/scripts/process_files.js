@@ -2,7 +2,8 @@ import { generatePaginatedPDF } from './utils/downloadLogs.js';
 import { setDateTimeInputsToLogRange } from './utils/setDateTimeInputs.js';
 import {
   filterState, 
-  runFilterLogs
+  runFilterLogs, 
+  updateRecordCount
 } from './filterLogs.js';
 
 
@@ -31,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     console.log('🧠 filterState.processedLogs preview:', filterState.processedLogs.slice(0, 5));
     renderLog(filterState.processedLogs);
+
     
   } catch (err) {
     console.error('❌ Error displaying log:', err);
@@ -40,18 +42,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   document.getElementById('downloadButton').addEventListener('click', () => {
     // console.log('⬇️ Download triggered');
-    
-    //const find = document.getElementById('findInput').value.trim();
     const keyword = document.getElementById('searchInput').value.trim();
     const start = document.getElementById('startTime').value;
     const end = document.getElementById('endTime').value;
   
-    const filters = { filterTerms: keyword, startTime: start, endTime: end };
-  
-    // ✅ Use already filtered and find-processed array
-    // console.log('📦 Exporting filterState.displayedLogs:', filterState.displayedLogs.slice(0, 3));
-    // console.log(`Original FileName: ${filename}`);
+    const filters = { filterTerms: keyword, startTime: start, endTime: end };   
     generatePaginatedPDF(filterState.displayedLogs, filters, filename);
+  });
+
+  document.getElementById('newUploadButton').addEventListener('click', () => {
+    window.location.href = 'https://www.feenypowerandcontrol.com/rti_diagnostics/upload_files/';
   });
   
   document.getElementById('searchButton').addEventListener('click', () => runFilterLogs(renderLog));
@@ -59,45 +59,41 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('clearFiltersButton').addEventListener('click', () => {
     setDateTimeInputsToLogRange(filterState.processedLogs);
     document.getElementById('searchInput').value = '';
-    runFilterAndFind(renderLog);
+    runFilterLogs(renderLog);
   });
-  
-  // document.getElementById('clearFindButton').addEventListener('click', () => {
-  //   document.getElementById('findInput').value = '';
-  //   runFilterAndFind(renderLog);
-  // });
-  
-  // document.getElementById('findNextButton').addEventListener('click', () => {
-  //   if (filterState.currentMatches.length === 0) return;
-  //   filterState.currentMatchIndex = (filterState.currentMatchIndex + 1) % filterState.currentMatches.length;
-  //   focusCurrentMatch();
-  // });
-  // document.getElementById('findPrevButton').addEventListener('click', () => {
-  //   if (filterState.currentMatches.length === 0) return;
-  //   filterState.currentMatchIndex = (filterState.currentMatchIndex - 1 + filterState.currentMatches.length) % filterState.currentMatches.length;
-  //   focusCurrentMatch();
-  // });
-  
+
 });
 
 function renderLog(logArray) {
-    filterState.displayedLogs = logArray; // ✅ Always update the current view
-    console.log(`🔄 renderLog called — displaying ${filterState.displayedLogs.length} entries`);
-    console.log('📄 filterState.displayedLogs preview:', filterState.displayedLogs.slice(0, 5));
-    const logContainer = document.getElementById('logContainer');
-    logContainer.innerHTML = '';
-  
-    logArray.forEach(entry => {
-      const div = document.createElement('div');
-      if (entry.class) div.classList.add(entry.class);
-      div.textContent = `[${entry.time}] ${entry.text}`;
-      logContainer.appendChild(div);
-    });
-  
-    logContainer.style.display = 'block';
-    document.getElementById('logNoFileMessage').style.display = 'none';
-    // const scrollContainer = document.querySelector('.processed-logs-display');
-    // scrollContainer.scrollTo({ top: 0, behavior: 'auto' });
-    // applyFind();
+  filterState.displayedLogs = logArray; // ✅ Always update the current view
+  console.log(`🔄 renderLog called — displaying ${filterState.displayedLogs.length} entries`);
+  console.log('📄 filterState.displayedLogs preview:', filterState.displayedLogs.slice(0, 5));
+
+  const logContainer = document.getElementById('logContainer');
+  const noFileMsg = document.getElementById('logNoFileMessage');
+  const noMatchesMsg = document.getElementById('noMatchesMessage');
+
+  // ✅ Handle empty result case
+  if (logArray.length === 0) {
+    logContainer.style.display = 'none';
+    noFileMsg.style.display = 'none';
+    noMatchesMsg.style.display = 'block';
+    updateRecordCount();
+    return;
   }
-  
+
+  // ✅ Render logs normally
+  logContainer.innerHTML = '';
+  logArray.forEach(entry => {
+    const div = document.createElement('div');
+    if (entry.class) div.classList.add(entry.class);
+    div.textContent = `[${entry.time}] ${entry.text}`;
+    logContainer.appendChild(div);
+  });
+
+  logContainer.style.display = 'block';
+  noFileMsg.style.display = 'none';
+  noMatchesMsg.style.display = 'none';
+  updateRecordCount();
+}
+

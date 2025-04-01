@@ -28,8 +28,6 @@ export function generatePaginatedPDF(logEntries, filters, originalFileName) {
   logo.src = '/images/feeny-logo-white.png';
 
   const drawHeader = () => {
-    // Logo centered
-    // pdf.addImage(logo, 'PNG', pageWidth / 2 - 40, 40, 80, 80); // Keep aspect ratio manually
     let y = 130;
     const logoWidth = 100;
     const logoAspect = logo.height / logo.width;
@@ -37,7 +35,6 @@ export function generatePaginatedPDF(logEntries, filters, originalFileName) {
     const logoX = (pageWidth - logoWidth) / 2;
 
     pdf.addImage(logo, 'PNG', logoX, 40, logoWidth, logoHeight);
-
 
     pdf.setFontSize(10);
     pdf.setTextColor(0, 0, 0); // black text
@@ -59,26 +56,6 @@ export function generatePaginatedPDF(logEntries, filters, originalFileName) {
     pdf.text(`Time Range: ${timeRange}`, marginX, y); y += 14;
 
     pdf.text(`Filter Keyword: ${filters.keyword || 'N/A'}`, marginX, y);
-    // pdf.text(`Generated: ${formatDateTimeLocal(new Date())}`, marginX, y); y += 14;
-
-    // pdf.text(`Filename: ${originalFileName || 'N/A'}`, marginX, y); y += 14;
-
-    // let timeRange;
-    // if (filters.startTime && filters.endTime) {
-    //   timeRange = `${filters.startTime} to ${filters.endTime}`;
-    // } else if (filters.startTime) {
-    //   timeRange = `${filters.startTime} onward`;
-    // } else if (filters.endTime) {
-    //   timeRange = `until ${filters.endTime}`;
-    // } else {
-    //   timeRange = 'N/A';
-    // }
-
-    // pdf.text(`Time Range: ${timeRange}`, marginX, y);
-    // y += 14;
-
-
-    // pdf.text(`Filter Keyword: ${filters.keyword || 'N/A'}`, marginX, y);
   };
 
   const drawFooter = (pageNum) => {

@@ -1,21 +1,6 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,500;1,300&display=swap');
 
-/* CONSULTATION Partner Logos Section 
-.partners {
-    display: flex;
-    justify-content: space-around;
-    gap: 20px;
-    background-color:white;
-    margin-top: 40px;
-    margin-bottom: 20px;
-}
-
-.partners img {
-    width: 25%;
-    height:auto;
-}*/
-
 .partners {
     display: flex;
     justify-content: space-around;
