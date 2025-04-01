@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script type="module" src="/scripts/process_files.js"defer></script>
     <script type ="module" src="/scripts/utils/setDateTimeInputs.js"></script>
-    <script type="module" src="/scripts/filtersAndFind.js"></script>
+    <script type="module" src="/scripts/filterLogs.js"></script>
     <link rel="icon" href="/images/feeny-logo-512-circle-black-back.png" type="image/x-icon">
     <link rel="stylesheet" href="/styles/global.css">
     <link rel="stylesheet" href="/styles/process_files.css">
@@ -29,19 +29,12 @@
         <div class="logs-interface">
             <!-- Search Controls Section -->
              <div class="log controls container">
-                <div class="log-controls-container find-controls">
-                    <input type="text" id="findInput" placeholder="Find by Keyword...">
-                    <button id="findButton">Find</button>
-                    <button id="clearFindButton">Clear</button>
-                    <span id="findCounter" style="color: white; font-size: 14px; margin-left: 10px;"></span>
-                    <button id="findPrevButton">↑</button>
-                    <button id="findNextButton">↓</button>                    
-                </div>
+
                   
                 <div class="log-controls-container search-controls">
-                    <label for="startTime">Start Time:</label>
+                    <label for="startTime">Start:</label>
                     <input type="datetime-local" id="startTime">
-                    <label for="endTime">End Time:</label>
+                    <label for="endTime">End:</label>
                     <input type="datetime-local" id="endTime">
                     <input type="text" id="searchInput" placeholder="Filter by Keyword...">
                     <button id="searchButton">Filter</button>

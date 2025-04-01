@@ -18,17 +18,50 @@
     justify-content: space-between; /* Ensures they don't squish together */
   }
 
-.log.controls.container * {
+  .log.controls.container * {
     height: 30px;
+    box-sizing: border-box;
   }
   
-.find-controls {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    padding: 10px;
-    align-items: center;
-  }
+  .log-controls-container label,
+.log-controls-container .record-count {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  height: 30px;
+}
+
+
+/* Normalize fonts for all controls */
+.log-controls-container input,
+.log-controls-container button,
+.log-controls-container label,
+.log-controls-container span,
+.log-controls-container select {
+  font-family: 'Rubik';
+  font-size: 13px;
+}
+
+.log-controls-container label,
+.log-controls-container .record-count,
+#recordCountDisplay {
+  font-size: 15px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  font-family: 'Rubik';
+}
+
+
+  
+  .log-controls-container input[type="text"],
+.log-controls-container input[type="datetime-local"] {
+  border-radius: 5px;
+  border: none;
+}
+
+
   /* Div 2a: Search Controls (horizontal layout) */
 .search-controls {
     display: flex;
@@ -47,16 +80,24 @@
     align-items: center;
   }
 
-.log-controls-container button {
+  .log-controls-container button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 12px !important;
+    font-size: 14px;
+    font-family: 'Rubik';
   }
+  
 
-.find-controls button {
-    background-color: #39b54a;
-    color: white;
+  #recordCountDisplay {
+    height: 30px; /* match everything else */
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 14px !important;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    font-family: 'Rubik';
   }
   
 .search-controls button {
@@ -92,22 +133,7 @@
   position: relative;
 }
 
-.active-match {
-  outline: 2px solid cyan;
-  border-radius: 4px;
-  padding: 2px;
-}
-
-.record-count {
-  color: white;
-  font-size: 14px;
-  margin-top: 10px;
-  padding: 5px;
-  display: block;
-}
-
-
-/* Coloring classes based on log type */
+ Coloring classes based on log type */
 .macro {
   color: orange;
 }
