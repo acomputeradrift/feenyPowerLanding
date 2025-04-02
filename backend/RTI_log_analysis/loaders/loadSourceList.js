@@ -6,11 +6,11 @@ export function loadSourceList(sheets) {
     }
     const sourceMap = {};
     sheets["Source List"].forEach(row => {
-        const index = row['Source Index']?.trim();
+        const sourceIndex = row['Source Index']?.trim();
         let sourceName = row['Source Name']?.trim();
         if (!sourceName) sourceName = `(Empty Source Name [${sourceIndex}])`;
-        if (index) {
-            sourceMap[index] = sourceName;
+        if (sourceIndex) {
+            sourceMap[sourceIndex] = sourceName;
         }
     });
     console.log("✅ Source List loaded.");
