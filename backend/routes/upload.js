@@ -76,4 +76,24 @@ router.post('/', upload.single('file'), async (req, res) => {
   }
 });
 
+// GET /api/saved-maps - return list of saved mapping files
+router.get('/saved-maps', async (req, res) => {
+  try {
+    const files = await MapFile.find({})
+      .sort({ uploadTimeServer: -1 }) // newest first
+      .select('originalFilename storedFilename uploadTimeServer');
+
+    const formatted = files.map(file => ({
+      originalFilename: file.originalFilename,
+      storedFilename: file.storedFilename,
+      uploadTime: new Date(file.uploadTimeServer).toLocaleString()
+    }));
+
+    res.json(formatted);
+  } catch (err) {
+    console.error('Error retrieving saved map files:', err);
+    res.status(500).json({ error: 'Failed to load saved mapping files' });
+  }
+});
+
 export default router;

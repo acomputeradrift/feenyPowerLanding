@@ -32,7 +32,7 @@
 }
 
 
-/* Normalize fonts for all controls */
+/* Normalize fonts for all controls 
 .log-controls-container input,
 .log-controls-container button,
 .log-controls-container label,
@@ -51,7 +51,37 @@
   align-items: center;
   height: 30px;
   font-family: 'Rubik';
+}*/
+
+/* General font reset for all controls */
+.log-controls-container input,
+.log-controls-container select,
+.log-controls-container button,
+.log-controls-container label,
+.log-controls-container span {
+  font-family: 'Rubik';
+  font-size: 12px;
 }
+
+/* Start/End labels and Record Count = 13px bold */
+.log-controls-container label,
+.log-controls-container .record-count,
+#recordCountDisplay {
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  height: 30px;
+}
+
+/* Buttons specifically (still 12px) */
+.log-controls-container button {
+  font-size: 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 
 
   
@@ -79,26 +109,26 @@
     padding: 10px;
     align-items: center;
   }
-
+/*
   .log-controls-container button {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 12px;
     font-family: 'Rubik';
   }
   
 
   #recordCountDisplay {
-    height: 30px; /* match everything else */
+    height: 30px;  match everything else 
     margin: 0 !important;
     padding: 0 !important;
-    font-size: 14px !important;
+    font-size: 12px !important;
     font-weight: bold;
     display: flex;
     align-items: center;
     font-family: 'Rubik';
-  }
+  }*/
   
 .search-controls button {
   background-color: #39b54a;

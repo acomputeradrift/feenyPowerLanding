@@ -3,9 +3,28 @@ const xlsxInput = document.getElementById("xlsxUpload");
 const nextBtn = document.getElementById("nextStepBtn"); // ✅ updated ID
 const uploadStatusModal = document.getElementById("uploadStatusModal");
 const uploadStatusMessages = document.getElementById("uploadStatusMessages");
+// Get modal and button references
+const savedMapsModal = document.getElementById('savedMapsModal');
+const openSavedMapsBtn = document.getElementById('openSavedMapsBtn');
 
 // Disable the "Next" button by default
 nextBtn.disabled = true;
+
+
+// Show modal when button is clicked
+openSavedMapsBtn.addEventListener('click', () => {
+    savedMapsModal.style.display = 'flex';
+    fetchSavedMappingFiles(); // Load list when modal opens
+  });
+  
+
+// Close modal when clicking outside the modal content
+window.addEventListener('click', (event) => {
+    if (event.target === savedMapsModal) {
+      savedMapsModal.style.display = 'none';
+    }
+  });
+  
 //---------------------------------------------JSON Validate and Display
 
 function validateJsonLogFile(file) {
@@ -267,6 +286,35 @@ nextBtn.addEventListener("click", () => {
         });
     });
 });
+
+// -----------------------------------------------------Populate the saved list 
+async function fetchSavedMappingFiles() {
+    try {
+    const response = await fetch('/api/upload/saved-maps');
+
+      const files = await response.json();
+  
+      const savedMapsList = document.getElementById('savedMapsList');
+      savedMapsList.innerHTML = ''; // Clear previous entries
+  
+      if (files.length === 0) {
+        savedMapsList.innerHTML = '<li>No saved mapping files found.</li>';
+        return;
+      }
+  
+      files.forEach(file => {
+        const li = document.createElement('li');
+        li.textContent = `${file.originalFilename} (Uploaded: ${file.uploadTime})`;
+        li.dataset.storedFilename = file.storedFilename;
+        savedMapsList.appendChild(li);
+      });
+  
+    } catch (error) {
+      console.error('Error fetching saved mapping files:', error);
+    }
+  }
+  
+
 
 // ✅ Hook into preview events
     jsonInput.addEventListener("change", () => setTimeout(checkFilesReady, 200));

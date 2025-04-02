@@ -242,7 +242,19 @@
     padding: 0;
   }
   
-
+  #savedMapsModal .modal-content {
+    width: 400px !important;
+    height: auto !important;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+  
   
   .select-saved-btn:hover {
     background-color: #e0e0e0;
@@ -275,7 +287,45 @@
     margin-bottom: 16px;
   }
   
+  .saved-maps-list {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 20px 0;
+    width: 100%;
+    max-height: 120px;
+    overflow-y: auto;
+    text-align: left;
+  }
   
+  .saved-maps-list li {
+    background-color: #f5f5f5;
+    color: #333;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    margin-bottom: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .saved-maps-list li:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .template-btn {
+    background-color: #39b54a;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .template-btn:hover {
+    background-color: #2fa640;
+  }
+    
 
 /* --------------------------------------------- Responsive Styles */
 @media (max-width: 768px) {
