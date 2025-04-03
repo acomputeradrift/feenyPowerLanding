@@ -33,5 +33,3 @@ router.post('/api/retrieve', async (req, res) => {
 });
 
 export default router;
-
-

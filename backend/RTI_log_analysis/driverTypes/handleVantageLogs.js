@@ -53,7 +53,7 @@ function handleVantageLoadCommands(text, loadNames) {
     return result;
 }
 
-function handleVantageButtonCommands(text) {
+function handleVantageButtonCommands(text, buttonNames) {
     if (debug1On) { console.log(`📢 handleVantageButtonCommands called: ${text}`); }
     let match = text.match(/(\d+)\s+(PRESS|RELEASE)/i);
     if (!match) {
