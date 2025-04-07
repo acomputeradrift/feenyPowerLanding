@@ -6,14 +6,18 @@ export function loadButtonList(sheets) {
     }
     const buttonMap = {};
     sheets["Button List"].forEach(row => {
-        let buttonIndex = row['Button Index']?.trim();
+        let vantageIndex = row['Button Index']?.trim();
         let buttonName = row['Button Name']?.trim();
+        let rtiIndex = row['RTI Index']?.trim();
 
         // Ensure required fields have default values if missing
-        if (!buttonName) buttonName = `(Empty Button Name ${buttonIndex})`;
+        if (!buttonName) buttonName = `(Empty Button Name ${vantageIndex})`;
 
-        if (buttonIndex) {
-            buttonMap[buttonIndex] = buttonName;
+        if (vantageIndex) {
+            buttonMap[vantageIndex] = buttonName;
+        }
+        if (rtiIndex) {
+            buttonMap[rtiIndex] = buttonName;
         }
     });
     console.log("✅ Button List loaded.");
