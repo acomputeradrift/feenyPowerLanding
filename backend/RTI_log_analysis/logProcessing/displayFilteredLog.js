@@ -11,6 +11,10 @@ export function displayFilteredLog(logEntries, mappings) {
         .systemMacro { color: yellow; }
         .command { color: pink; }
         .event { color: magenta; }
+        .info {
+            color: #555;
+            opacity: 0.7;
+        }
         .connected { color: limegreen; }
         .alert { color: red; }
     </style></head><body><h2>Filtered Log Entries</h2><pre>`;
@@ -34,6 +38,9 @@ export function displayFilteredLog(logEntries, mappings) {
                 break;
             case processedText.includes('Driver Event'):
                 htmlClass = "event";
+                break;
+            case processedText.includes('Driver Info'):
+                htmlClass = "info";
                 break;
             case processedText.includes('disconnected') || processedText.includes('Failed') || processedText.includes('Offline'):
                 htmlClass = "alert";
