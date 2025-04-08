@@ -12,7 +12,7 @@ export function processedLogEntryJSON(logEntries, mappings) {
     let htmlClass = '';
 
     switch (true) {
-      case processedText.includes('Macro - Start') || entry.text.includes('Macro - End'):
+      case processedText.includes('Macro - Start') || entry.text.includes('Macro - End') || entry.text.includes('Stop macro'):
         htmlClass = 'macro';
         break;
       case processedText.includes('System macro'):

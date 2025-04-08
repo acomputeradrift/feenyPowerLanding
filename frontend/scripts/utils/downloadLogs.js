@@ -78,7 +78,10 @@ export function generatePaginatedPDF(logEntries, filters, originalFileName) {
       const text = `[${entry.time}] ${entry.text}`;
       const color = getColorForClass(entry.class);
 
-      const lines = pdf.splitTextToSize(text, pageWidth - 2 * marginX - 2 * logBoxPadding);
+      // const lines = pdf.splitTextToSize(text, pageWidth - 2 * marginX - 2 * logBoxPadding);
+      const cleanText = text.replace(/[\u{1F300}-\u{1F6FF}\u{2600}-\u{26FF}]/gu, '');
+      const lines = pdf.splitTextToSize(cleanText, pageWidth - 2 * marginX - 2 * logBoxPadding);
+
 
       for (const line of lines) {
         if (y + lineHeight > maxY) {
@@ -120,6 +123,7 @@ function getColorForClass(className) {
     case 'systemMacro':  return [255, 255, 0];     // yellow
     case 'command':      return [255, 192, 203];   // pink
     case 'event':        return [255, 0, 255];     // magenta
+    case 'info':         return [120, 120, 120];   // darkgray
     case 'connected':    return [50, 205, 50];     // limegreen
     case 'alert':        return [255, 0, 0];       // red
     default:             return [255, 255, 255];   // white

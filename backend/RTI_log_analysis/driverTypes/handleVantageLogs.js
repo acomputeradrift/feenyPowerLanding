@@ -1,5 +1,5 @@
-const debug1On = true;
-const debug2On = true;
+const debug1On = false;
+const debug2On = false;
 
 export function handleVantageLogTypes(text, loadNames, buttonNames, taskNames) {
     switch (true) {
@@ -45,36 +45,26 @@ export function handleVantageLogTypes(text, loadNames, buttonNames, taskNames) {
             return text; // Unhandled log type
     }
 }
+
 function handleVantageLoadInfo(text, loadNames) {
-    //Example: Vantage InFusion - RX: S:LOAD 368 100.000
     if (debug1On) { console.log(`📢 handleVantageLoadInfo called: ${text}`); }
 
-    // Extract Load Index and State Value
     let match = text.match(/S:LOAD\s+(\d+)\s+([\d.]+)/);
     if (!match) {
         console.log(`❌ No match found for regex: ${text}`);
-        return text; // If no match, return unchanged
+        return text;
     }
 
-    let loadIndex = match[1].trim(); // Extract Load Index (e.g., "464")
-    let stateValue = parseFloat(match[2]); // Convert state to a number (e.g., "100.000" → 100)
+    let loadIndex = match[1].trim();
+    let stateValue = parseFloat(match[2]);
 
-    // Ensure `loadIndex` is a string for correct lookup
-    loadIndex = String(loadIndex);
-
-    // Lookup Load Data using loadMap
-    let loadName = loadNames[loadIndex];
-
-    // If the load index does not exist in the mapping, format output to indicate missing name
+    let loadName = loadNames[`v_${loadIndex}`];
     if (!loadName) {
         loadName = `(⚠️  No Mapping Info Found)`;
         console.log(`⚠️  No Mapping Info Found For Load ${loadIndex}`);
     }
 
-    // Convert state value to whole number percentage
     let statePercentage = Math.round(stateValue) + "%";
-
-    // Format final output
     let result = `Driver Info: 'Load ${loadIndex} - ${loadName} set to ${statePercentage} (Vantage InFusion)'`;
 
     if (debug2On) { console.log(`✅ ${result}`); }
@@ -83,36 +73,100 @@ function handleVantageLoadInfo(text, loadNames) {
 }
 
 function handleVantageLoadCommands(text, loadNames) {
- //This is the log when RTI sees the Vantage event
-    if (debug1On) { console.log(`📢 handleVantageLoadOnOffLogs called: ${text}`); }
+    // This is the log when RTI sees the Vantage event
+    if (debug1On) { console.log(`📢 handleVantageLoadCommands called: ${text}`); }
 
-    // Match LOAD followed by index and ON/OFF
     let match = text.match(/LOAD(\d+)(ON|OFF)/);
     if (!match) {
         console.log(`❌ No match found for regex: ${text}`);
-        return text; // Return original if no match
+        return text;
     }
 
     let rtiIndex = match[1].trim(); // e.g., "31"
     let state = (match[2] === "ON") ? "On" : "Off";
 
-    // Ensure loadIndex is a string for lookup
-    rtiIndex = String(rtiIndex);
-
-    // Lookup Load Name
-    let loadName = loadNames[rtiIndex];
+    let loadName = loadNames[`r_${rtiIndex}`];
     if (!loadName) {
         loadName = `(⚠️  No Mapping Info Found)`;
         console.log(`⚠️  No Mapping Info Found For Load ${rtiIndex}`);
     }
 
-    // Format final output
     let result = `Driver Command: 'Load ${rtiIndex} - ${loadName} set to ${state} (Vantage InFusion)'`;
 
     if (debug2On) { console.log(`✅ ${result}`); }
 
     return result;
 }
+
+
+// function handleVantageLoadInfo(text, loadNames) {
+//     //Example: Vantage InFusion - RX: S:LOAD 368 100.000
+//     if (debug1On) { console.log(`📢 handleVantageLoadInfo called: ${text}`); }
+
+//     // Extract Load Index and State Value
+//     let match = text.match(/S:LOAD\s+(\d+)\s+([\d.]+)/);
+//     if (!match) {
+//         console.log(`❌ No match found for regex: ${text}`);
+//         return text; // If no match, return unchanged
+//     }
+
+//     let loadIndex = match[1].trim(); // Extract Load Index (e.g., "464")
+//     let stateValue = parseFloat(match[2]); // Convert state to a number (e.g., "100.000" → 100)
+
+//     // Ensure `loadIndex` is a string for correct lookup
+//     loadIndex = String(loadIndex);
+
+//     // Lookup Load Data using loadMap
+//     let loadName = loadNames[loadIndex];
+
+//     // If the load index does not exist in the mapping, format output to indicate missing name
+//     if (!loadName) {
+//         loadName = `(⚠️  No Mapping Info Found)`;
+//         console.log(`⚠️  No Mapping Info Found For Load ${loadIndex}`);
+//     }
+
+//     // Convert state value to whole number percentage
+//     let statePercentage = Math.round(stateValue) + "%";
+
+//     // Format final output
+//     let result = `Driver Info: 'Load ${loadIndex} - ${loadName} set to ${statePercentage} (Vantage InFusion)'`;
+
+//     if (debug2On) { console.log(`✅ ${result}`); }
+
+//     return result;
+// }
+
+// function handleVantageLoadCommands(text, loadNames) {
+//  //This is the log when RTI sees the Vantage event
+//     if (debug1On) { console.log(`📢 handleVantageLoadOnOffLogs called: ${text}`); }
+
+//     // Match LOAD followed by index and ON/OFF
+//     let match = text.match(/LOAD(\d+)(ON|OFF)/);
+//     if (!match) {
+//         console.log(`❌ No match found for regex: ${text}`);
+//         return text; // Return original if no match
+//     }
+
+//     let rtiIndex = match[1].trim(); // e.g., "31"
+//     let state = (match[2] === "ON") ? "On" : "Off";
+
+//     // Ensure loadIndex is a string for lookup
+//     rtiIndex = String(rtiIndex);
+
+//     // Lookup Load Name
+//     let loadName = loadNames[rtiIndex];
+//     if (!loadName) {
+//         loadName = `(⚠️  No Mapping Info Found)`;
+//         console.log(`⚠️  No Mapping Info Found For Load ${rtiIndex}`);
+//     }
+
+//     // Format final output
+//     let result = `Driver Command: 'Load ${rtiIndex} - ${loadName} set to ${state} (Vantage InFusion)'`;
+
+//     if (debug2On) { console.log(`✅ ${result}`); }
+
+//     return result;
+// }
 
 function handleVantageButtonInfo(text, buttonNames) {
     if (debug1On) { console.log(`📢 handleVantageButtonInfo called: ${text}`); }
