@@ -176,6 +176,10 @@
 .event {
   color: magenta;
 }
+.info {
+  color: darkgray;
+  opacity: 0.5;
+}
 .connected {
   color: limegreen;
 }

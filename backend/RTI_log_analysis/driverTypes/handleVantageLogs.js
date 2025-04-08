@@ -35,11 +35,11 @@ export function handleVantageLogTypes(text, loadNames, buttonNames, taskNames) {
         case text.includes("TASK"):
             if (text.includes("RX: S:")) {
                 //Example: Vantage InFusion - RX: S:TASK 1030 
-                return handleVantageTaskInfo(text, buttonNames);
+                return handleVantageTaskInfo(text, taskNames);
                 //return null;
             } else {
                 //Example: Vantage InFusion - TASK43
-                return handleVantageTaskCommands(text, buttonNames);
+                return handleVantageTaskCommands(text, taskNames);
             }
         default:
             return text; // Unhandled log type
@@ -114,21 +114,23 @@ function handleVantageLoadCommands(text, loadNames) {
     return result;
 }
 
-
 function handleVantageButtonInfo(text, buttonNames) {
     if (debug1On) { console.log(`📢 handleVantageButtonInfo called: ${text}`); }
+
     let match = text.match(/(\d+)\s+(PRESS|RELEASE)/i);
     if (!match) {
         console.log(`❌ No match found for regex: ${text}`);
         return text; // If no match, return unchanged
     }
 
-    let buttonIndex = match[1].trim(); // Extract Button Index
-    let action = match[2].trim().toLowerCase(); // Extract Action, ensure lowercase
+    let buttonIndex = match[1].trim(); // Extract Button Index (Vantage)
+    let action = match[2].trim().toLowerCase(); // "press" or "release"
+
     // Convert action for proper grammar
     let formattedAction = action === "press" ? "Pressed" : "Released";
-    // Lookup Button Name using buttonNames
-    let buttonName = buttonNames[buttonIndex];
+
+    // Use 'v_' prefix for Vantage-based lookup
+    let buttonName = buttonNames[`v_${buttonIndex}`];
     if (!buttonName) {
         buttonName = `(⚠️  No Mapping Info Found)`;
         console.log(`⚠️  No Mapping Info Found For Button ${buttonIndex}`);
@@ -136,12 +138,38 @@ function handleVantageButtonInfo(text, buttonNames) {
 
     // Format final output
     let result = `Driver Info: 'Button ${buttonIndex} - ${buttonName} ${formattedAction} (Vantage InFusion)'`;
+
     if (debug2On) { console.log(`✅ ${result}`); }
     return result;
 }
 
+// function handleVantageButtonInfo(text, buttonNames) {
+//     if (debug1On) { console.log(`📢 handleVantageButtonInfo called: ${text}`); }
+//     let match = text.match(/(\d+)\s+(PRESS|RELEASE)/i);
+//     if (!match) {
+//         console.log(`❌ No match found for regex: ${text}`);
+//         return text; // If no match, return unchanged
+//     }
+
+//     let buttonIndex = match[1].trim(); // Extract Button Index
+//     let action = match[2].trim().toLowerCase(); // Extract Action, ensure lowercase
+//     // Convert action for proper grammar
+//     let formattedAction = action === "press" ? "Pressed" : "Released";
+//     // Lookup Button Name using buttonNames
+//     let buttonName = buttonNames[buttonIndex];
+//     if (!buttonName) {
+//         buttonName = `(⚠️  No Mapping Info Found)`;
+//         console.log(`⚠️  No Mapping Info Found For Button ${buttonIndex}`);
+//     }
+
+//     // Format final output
+//     let result = `Driver Info: 'Button ${buttonIndex} - ${buttonName} ${formattedAction} (Vantage InFusion)'`;
+//     if (debug2On) { console.log(`✅ ${result}`); }
+//     return result;
+// }
+
 function handleVantageButtonCommands(text, buttonNames) {
-    //This is the log when RTI sees the Vantage event
+    // This is the log when RTI sees the Vantage event
     if (debug1On) { console.log(`📢 handleVantageButtonCommands called: ${text}`); }
 
     // Match BTN followed by index and ON/OFF/PRESS/RELEASE
@@ -166,11 +194,8 @@ function handleVantageButtonCommands(text, buttonNames) {
         formattedAction = "Released";
     }
 
-    // Ensure buttonIndex is a string for lookup
-    rtiIndex = String(rtiIndex);
-
-    // Lookup Button Name
-    let buttonName = buttonNames[rtiIndex];
+    // Lookup Button Name using r_ prefix for RTI
+    let buttonName = buttonNames[`r_${rtiIndex}`];
     if (!buttonName) {
         buttonName = `(⚠️  No Mapping Info Found)`;
         console.log(`⚠️  No Mapping Info Found For Button ${rtiIndex}`);
@@ -183,6 +208,50 @@ function handleVantageButtonCommands(text, buttonNames) {
 
     return result;
 }
+
+// function handleVantageButtonCommands(text, buttonNames) {
+//     //This is the log when RTI sees the Vantage event
+//     if (debug1On) { console.log(`📢 handleVantageButtonCommands called: ${text}`); }
+
+//     // Match BTN followed by index and ON/OFF/PRESS/RELEASE
+//     let match = text.match(/BTN(\d+)(ON|OFF|PRESS|RELEASE)/);
+//     if (!match) {
+//         console.log(`❌ No match found for regex: ${text}`);
+//         return text; // If no match, return unchanged
+//     }
+
+//     let rtiIndex = match[1].trim(); // e.g., "31"
+//     let rawState = match[2]; // "ON", "OFF", "PRESS", or "RELEASE"
+
+//     // Convert action/state to final label
+//     let formattedAction;
+//     if (rawState === "ON") {
+//         formattedAction = "LED On";
+//     } else if (rawState === "OFF") {
+//         formattedAction = "LED Off";
+//     } else if (rawState === "PRESS") {
+//         formattedAction = "Pressed";
+//     } else if (rawState === "RELEASE") {
+//         formattedAction = "Released";
+//     }
+
+//     // Ensure buttonIndex is a string for lookup
+//     rtiIndex = String(rtiIndex);
+
+//     // Lookup Button Name
+//     let buttonName = buttonNames[rtiIndex];
+//     if (!buttonName) {
+//         buttonName = `(⚠️  No Mapping Info Found)`;
+//         console.log(`⚠️  No Mapping Info Found For Button ${rtiIndex}`);
+//     }
+
+//     // Format final output (with index)
+//     let result = `Driver Command: 'Button ${rtiIndex} - ${buttonName} ${formattedAction} (Vantage InFusion)'`;
+
+//     if (debug2On) { console.log(`✅ ${result}`); }
+
+//     return result;
+// }
 
 function handleVantageDriverEvents(text) {
     if (debug1On) { console.log(`📢 handleVantageDriverEvent called: ${text}`); }
@@ -229,53 +298,46 @@ function handleVantageDriverEvents(text) {
 }
 
 
-function handleVantageButtonEvents(text) {
-    if (debug1On) { console.log(`📢 handleVantageWhenButtonEvent called: ${text}`); }
+// function handleVantageButtonEvents(text) {
+//     if (debug1On) { console.log(`📢 handleVantageWhenButtonEvent called: ${text}`); }
 
-    // Match content inside: When '...STATE' happens
-    let match = text.match(/When '(.*?) (On|Off)' happens/);
+//     // Match content inside: When '...STATE' happens
+//     let match = text.match(/When '(.*?) (On|Off)' happens/);
+//     if (!match) {
+//         console.log(`❌ No match found for regex: ${text}`);
+//         return text;
+//     }
+
+//     let fullText = match[1].trim(); // e.g., "Button 44 - SE (Right) Lamp (VID 178)"
+//     let state = match[2]; // "On" or "Off"
+
+//     // Format final output
+//     let result = `Driver Event: 'When ${fullText} LED ${state} happens (Vantage InFusion)'`;
+
+//     if (debug2On) { console.log(`✅ ${result}`); }
+
+//     return result;
+// }
+
+function handleVantageTaskInfo(text, taskNames) {
+    if (debug1On) { console.log(`📢 handleVantageTaskInfo called: ${text}`); }
+
+    let match = text.match(/TASK\s+(\d+)\s+(\d+)/);
     if (!match) {
         console.log(`❌ No match found for regex: ${text}`);
         return text;
     }
 
-    let fullText = match[1].trim(); // e.g., "Button 44 - SE (Right) Lamp (VID 178)"
-    let state = match[2]; // "On" or "Off"
-
-    // Format final output
-    let result = `Driver Event: 'When ${fullText} LED ${state} happens (Vantage InFusion)'`;
-
-    if (debug2On) { console.log(`✅ ${result}`); }
-
-    return result;
-}
-
-function handleVantageTaskInfo(text, taskNames) {
-    // Example: Vantage InFusion -  RX: S:TASK 1382 1
-    if (debug1On) { console.log(`📢 handleVantageTaskInfo called: ${text}`); }
-    
-    // Extract Task Index and State
-    let match = text.match(/TASK\s+(\d+)\s+(\d+)/);
-    if (!match) {
-        console.log(`❌ No match found for regex: ${text}`);
-        return text; // If no match, return unchanged
-    }
-
-    let taskIndex = match[1].trim(); // Extract Task Index
-    let state = match[2].trim(); // Extract State (0 or 1)
-
-    // Map state to "On" or "Off"
+    let taskIndex = match[1].trim(); // Vantage index
+    let state = match[2].trim(); // 0 or 1
     let stateText = state === "1" ? "On" : "Off";
 
-    // Lookup Task Name using taskNames
-    let taskName = taskNames[taskIndex];
-        // If the load index does not exist in the mapping, format output to indicate missing name
-        if (!taskName) {
-            taskName = `(⚠️  No Mapping Info Found)`;
-            console.log(`⚠️  No Mapping Info Found For Task ${taskIndex}`);
-        }
+    let taskName = taskNames[`v_${taskIndex}`];
+    if (!taskName) {
+        taskName = `(⚠️  No Mapping Info Found)`;
+        console.log(`⚠️  No Mapping Info Found For Task ${taskIndex}`);
+    }
 
-    // Format final output
     let result = `Driver Info: 'Task ${taskIndex} - ${taskName} set to ${stateText} (Vantage InFusion)'`;
 
     if (debug2On) { console.log(`✅ ${result}`); }
@@ -283,26 +345,25 @@ function handleVantageTaskInfo(text, taskNames) {
     return result;
 }
 
+
+
 function handleVantageTaskCommands(text, taskNames) {
     if (debug1On) { console.log(`📢 handleVantageTaskCommands called: ${text}`); }
 
-    // Match TASK followed by index (no state value)
     let match = text.match(/TASK(\d+)/);
     if (!match) {
         console.log(`❌ No match found for regex: ${text}`);
         return text;
     }
 
-    let rtiIndex = match[1].trim();
+    let rtiIndex = match[1].trim(); // RTI index
 
-    // Lookup Task Name using taskNames
-    let taskName = taskNames[rtiIndex];
+    let taskName = taskNames[`r_${rtiIndex}`];
     if (!taskName) {
         taskName = `(⚠️  No Mapping Info Found)`;
         console.log(`⚠️  No Mapping Info Found For Task ${rtiIndex}`);
     }
 
-    // Format final output
     let result = `Driver Command: 'Task ${rtiIndex} - ${taskName} executed (Vantage InFusion)'`;
 
     if (debug2On) { console.log(`✅ ${result}`); }
@@ -310,3 +371,62 @@ function handleVantageTaskCommands(text, taskNames) {
     return result;
 }
 
+// function handleVantageTaskCommands(text, taskNames) {
+//     if (debug1On) { console.log(`📢 handleVantageTaskCommands called: ${text}`); }
+
+//     // Match TASK followed by index (no state value)
+//     let match = text.match(/TASK(\d+)/);
+//     if (!match) {
+//         console.log(`❌ No match found for regex: ${text}`);
+//         return text;
+//     }
+
+//     let rtiIndex = match[1].trim();
+
+//     // Lookup Task Name using taskNames
+//     let taskName = taskNames[rtiIndex];
+//     if (!taskName) {
+//         taskName = `(⚠️  No Mapping Info Found)`;
+//         console.log(`⚠️  No Mapping Info Found For Task ${rtiIndex}`);
+//     }
+
+//     // Format final output
+//     let result = `Driver Command: 'Task ${rtiIndex} - ${taskName} executed (Vantage InFusion)'`;
+
+//     if (debug2On) { console.log(`✅ ${result}`); }
+
+//     return result;
+// }
+
+// function handleVantageTaskInfo(text, taskNames) {
+//     // Example: Vantage InFusion -  RX: S:TASK 1382 1
+//     if (debug1On) { console.log(`📢 handleVantageTaskInfo called: ${text}`); }
+    
+//     // Extract Task Index and State
+//     let match = text.match(/TASK\s+(\d+)\s+(\d+)/);
+//     if (!match) {
+//         console.log(`❌ No match found for regex: ${text}`);
+//         return text; // If no match, return unchanged
+//     }
+
+//     let taskIndex = match[1].trim(); // Extract Task Index
+//     let state = match[2].trim(); // Extract State (0 or 1)
+
+//     // Map state to "On" or "Off"
+//     let stateText = state === "1" ? "On" : "Off";
+
+//     // Lookup Task Name using taskNames
+//     let taskName = taskNames[taskIndex];
+//         // If the load index does not exist in the mapping, format output to indicate missing name
+//         if (!taskName) {
+//             taskName = `(⚠️  No Mapping Info Found)`;
+//             console.log(`⚠️  No Mapping Info Found For Task ${taskIndex}`);
+//         }
+
+//     // Format final output
+//     let result = `Driver Info: 'Task ${taskIndex} - ${taskName} set to ${stateText} (Vantage InFusion)'`;
+
+//     if (debug2On) { console.log(`✅ ${result}`); }
+
+//     return result;
+// }
