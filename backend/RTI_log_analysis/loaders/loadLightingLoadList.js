@@ -24,7 +24,7 @@ export function loadLightingLoadList(sheets) {
     });
 
     console.log("✅ Lighting Loads loaded.");
-    //console.log(loadMap);
+    console.log(loadMap);
     return loadMap;
 }
 

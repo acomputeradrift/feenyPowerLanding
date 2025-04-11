@@ -1,14 +1,14 @@
 import { parse, addDays, subDays } from 'date-fns';
 
 export function reconstructFullTimestamps(logs) {
-  console.log('📅 Reconstructing timestamps — total logs:', logs.length);
+  //console.log('📅 Reconstructing timestamps — total logs:', logs.length);
   if (!Array.isArray(logs)) return logs;
 
   const anchorIndex = logs.findIndex(entry =>
     entry.text?.includes('Clock: UpdateTimeSysVars at')
   );
 
-  console.log('📍 Anchor index found at:', anchorIndex);
+  //console.log('📍 Anchor index found at:', anchorIndex);
 
   if (anchorIndex === -1) {
     console.log('❌ No date anchor found.');
@@ -29,7 +29,7 @@ export function reconstructFullTimestamps(logs) {
   const baseDate = parse(`${dateStr} ${timeStr}`, 'MMM dd yyyy HH:mm:ss', new Date());
 
   logs[anchorIndex].fullTimestamp = toISO(anchorEntry.time, baseDate);
-  console.log('✅ Anchor fullTimestamp:', logs[anchorIndex].fullTimestamp);
+  //console.log('✅ Anchor fullTimestamp:', logs[anchorIndex].fullTimestamp);
 
   // FORWARD
   let currentDate = baseDate;
@@ -41,7 +41,7 @@ export function reconstructFullTimestamps(logs) {
     const prevHour = parse(prevTime, 'HH:mm:ss.SSS', new Date()).getHours();
 
     if (prevHour > 22 && thisHour < 2) {
-      console.log(`⏭️  [${i}] Time crossed midnight forward — incrementing day`);
+      //console.log(`⏭️  [${i}] Time crossed midnight forward — incrementing day`);
       currentDate = addDays(currentDate, 1);
     }
 
@@ -63,7 +63,7 @@ export function reconstructFullTimestamps(logs) {
     const nextHour = parse(nextTime, 'HH:mm:ss.SSS', new Date()).getHours();
 
     if (thisHour > 22 && nextHour < 2) {
-      console.log(`⏮️  [${i}] Time crossed midnight backward — decrementing day`);
+      //console.log(`⏮️  [${i}] Time crossed midnight backward — decrementing day`);
       currentDate = subDays(currentDate, 1);
     }
 
