@@ -1,3 +1,5 @@
+import { emptyMappingOutputFormat } from '../../utils/logOutputFormats.js';
+
 export function loadTaskList(sheets) {
     console.log(`Loading data from sheet: Task List`);
     if (!sheets["Task List"]) {
@@ -8,24 +10,44 @@ export function loadTaskList(sheets) {
     const taskMap = {};
 
     sheets["Task List"].forEach(row => {
-        let taskIndex = row['Task Index'];
-        let rtiIndex = row['RTI Index'];
+        const taskIndex = row['Task Index']?.trim();            // universal
+        const vantageIndex = row['Vantage Index']?.trim();      // optional, Vantage-specific
         let taskName = row['Task Name']?.trim();
 
         if (!taskName) {
-            taskName = `(Empty Task Name [${taskIndex || rtiIndex}])`;
+            taskName = emptyMappingOutputFormat("Task", taskIndex);
         }
 
+        // Always map plain task index
         if (taskIndex) {
-            taskIndex = `v_${taskIndex.trim()}`;
             taskMap[taskIndex] = taskName;
         }
 
-        if (rtiIndex) {
-            rtiIndex = `r_${rtiIndex.trim()}`;
-            taskMap[rtiIndex] = taskName;
+        // Optionally map Vantage-prefixed key
+        if (vantageIndex) {
+            taskMap[`v_${vantageIndex}`] = taskName;
         }
     });
+
+    // sheets["Task List"].forEach(row => {
+    //     let taskIndex = row['Task Index'];
+    //     let rtiIndex = row['RTI Index'];
+    //     let taskName = row['Task Name']?.trim();
+
+    //     if (!taskName) {
+    //         taskName = `(Empty Task Name [${taskIndex || rtiIndex}])`;
+    //     }
+
+    //     if (taskIndex) {
+    //         taskIndex = `v_${taskIndex.trim()}`;
+    //         taskMap[taskIndex] = taskName;
+    //     }
+
+    //     if (rtiIndex) {
+    //         rtiIndex = `r_${rtiIndex.trim()}`;
+    //         taskMap[rtiIndex] = taskName;
+    //     }
+    // });
 
     console.log("✅ Task List loaded.");
     //console.log(taskMap);

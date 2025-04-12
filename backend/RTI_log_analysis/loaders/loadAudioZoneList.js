@@ -1,3 +1,5 @@
+import { emptyMappingOutputFormat } from '../../utils/logOutputFormats.js';
+
 export function loadAudioZoneList(sheets) {
     console.log(`Loading data from sheet: Audio Zones`);
     if (!sheets["Audio Zones"]) {
@@ -10,9 +12,11 @@ export function loadAudioZoneList(sheets) {
 
     sheets["Audio Zones"].forEach(row => {
         const inputIndex = row['Audio Zone Input Index']?.trim();
-        const inputName = row['Audio Zone Input Name']?.trim()  || `(Empty Audio Input Name [${inputIndex}])`;
+        //const inputName = row['Audio Zone Input Name']?.trim()  || `(Empty Audio Input Name [${inputIndex}])`;
         const outputIndex = row['Audio Zone Output Index']?.trim();
-        const outputName = row['Audio Zone Output Name']?.trim() || `(Emprty Audio Output Name [${outputIndex}])`;
+        //const outputName = row['Audio Zone Output Name']?.trim() || `(Emprty Audio Output Name [${outputIndex}])`;
+        const inputName = row['Audio Zone Input Name']?.trim() || emptyMappingOutputFormat("Audio Input", inputIndex);
+        const outputName = row['Audio Zone Output Name']?.trim() || emptyMappingOutputFormat("Audio Output", outputIndex);
 
         // Store Input Name
         if (inputIndex) {

@@ -1,3 +1,5 @@
+import { emptyMappingOutputFormat } from '../../utils/logOutputFormats.js';
+
 export function loadLightingLoadList(sheets) {
     console.log(`Loading data from sheet: Lighting Loads`);
     if (!sheets["Lighting Loads"]) {
@@ -6,22 +8,41 @@ export function loadLightingLoadList(sheets) {
     }
 
     const loadMap = {};
+
     sheets["Lighting Loads"].forEach(row => {
-        const vantageIndex = row['Load Index']?.trim();
-        const rtiIndex = row['RTI Index']?.trim(); // optional
+        const loadIndex = row['Load Index']?.trim();              // universal
+        const vantageIndex = row['Vantage Index']?.trim();        // Vantage-specific
         const loadRoom = row['Load Room']?.trim();
         const loadNameRaw = row['Load Name']?.trim();
 
-        const loadName = loadNameRaw || `(Empty Load Name [${vantageIndex}])`;
+        const loadName = loadNameRaw || emptyMappingOutputFormat("Load", loadIndex);
         const mappedValue = loadRoom ? `${loadRoom} - ${loadName}` : loadName;
 
-        if (vantageIndex) {
-            loadMap[`v_${vantageIndex}`] = mappedValue;
+        if (loadIndex) {
+            loadMap[loadIndex] = mappedValue; // universal key
         }
-        if (rtiIndex) {
-            loadMap[`r_${rtiIndex}`] = mappedValue;
+
+        if (vantageIndex) {
+            loadMap[`v_${vantageIndex}`] = mappedValue; // Vantage-specific key
         }
     });
+
+    // sheets["Lighting Loads"].forEach(row => {
+    //     const vantageIndex = row['Load Index']?.trim();
+    //     const rtiIndex = row['RTI Index']?.trim(); // optional
+    //     const loadRoom = row['Load Room']?.trim();
+    //     const loadNameRaw = row['Load Name']?.trim();
+
+    //     const loadName = loadNameRaw || `(Empty Load Name [${vantageIndex}])`;
+    //     const mappedValue = loadRoom ? `${loadRoom} - ${loadName}` : loadName;
+
+    //     if (vantageIndex) {
+    //         loadMap[`v_${vantageIndex}`] = mappedValue;
+    //     }
+    //     if (rtiIndex) {
+    //         loadMap[`r_${rtiIndex}`] = mappedValue;
+    //     }
+    // });
 
     console.log("✅ Lighting Loads loaded.");
     //console.log(loadMap);

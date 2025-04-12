@@ -1,3 +1,5 @@
+import { finalDriverOutputFormatLighting } from '../../utils/logOutputFormats.js';
+
 const debug1On = false;
 const debug2On = false;
 
