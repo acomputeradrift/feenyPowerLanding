@@ -50,7 +50,7 @@ export function loadTaskList(sheets) {
     // });
 
     console.log("✅ Task List loaded.");
-    //console.log(taskMap);
+    console.log(taskMap);
     return taskMap;
 }
 

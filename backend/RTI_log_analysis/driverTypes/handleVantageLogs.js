@@ -60,26 +60,52 @@ function handleVantageLoadInfo(text, loadNames) {
     let loadIndex = match[1].trim();
     let stateValue = parseFloat(match[2]);
 
-    let loadName = loadNames[`v_${loadIndex}`];
+    const v_loadIndex = `v_${loadIndex}`;
+    const loadName = loadNames[v_loadIndex];
+
     if (!loadName) {
-        loadName = `(⚠️  No Mapping Info Found)`;
-        console.log(`⚠️  No Mapping Info Found For Load ${loadIndex}`);
+      console.log(`⚠️  No Mapping Info Found For Load ${v_loadIndex}`);
     }
 
     let statePercentage = Math.round(stateValue) + "%";
+
     let result = finalDriverOutputFormatLighting(
-        "Info",
-        loadIndex,
-        loadName,
-        "Load",
-        `set to ${statePercentage}`,
-        "Vantage InFusion"
-      );      
-    //let result = `Driver Info: 'Load ${loadIndex} - ${loadName} set to ${statePercentage} (Vantage InFusion)'`;
+      "Info",
+      v_loadIndex, // ✅ display exactly what you use to look up
+      loadName,
+      "Load",
+      `set to ${statePercentage}`,
+      "Vantage InFusion"
+    );
 
     if (debug2On) { console.log(`✅ ${result}`); }
 
     return result;
+
+    // let loadIndex = match[1].trim();
+    // let stateValue = parseFloat(match[2]);
+
+    // const key = `v_${loadIndex}`;
+    // const loadName = loadNames[key];
+
+    // if (!loadName) {
+    //   console.log(`⚠️  No Mapping Info Found For Load ${key}`);
+    // }
+
+    // let statePercentage = Math.round(stateValue) + "%";
+    // let result = finalDriverOutputFormatLighting(
+    //     "Info",
+    //     loadIndex,
+    //     loadName,
+    //     "Load",
+    //     `set to ${statePercentage}`,
+    //     "Vantage InFusion"
+    //   );      
+    // //let result = `Driver Info: 'Load ${loadIndex} - ${loadName} set to ${statePercentage} (Vantage InFusion)'`;
+
+    // if (debug2On) { console.log(`✅ ${result}`); }
+
+    // return result;
 }
 
 function handleVantageLoadCommands(text, loadNames) {
@@ -131,15 +157,16 @@ function handleVantageButtonInfo(text, buttonNames) {
     let formattedAction = action === "press" ? "was Pressed" : "was Released";
 
     // Use 'v_' prefix for Vantage-based lookup
-    let buttonName = buttonNames[`v_${buttonIndex}`];
+    const v_buttonIdex = `v_${buttonIndex}`;
+    const buttonName = buttonNames[v_buttonIdex];
+
     if (!buttonName) {
-        buttonName = `(⚠️  No Mapping Info Found)`;
-        console.log(`⚠️  No Mapping Info Found For Button ${buttonIndex}`);
+      console.log(`⚠️  No Mapping Info Found For Button ${v_buttonIdex}`);
     }
 
     let result = finalDriverOutputFormatLighting(
         "Info",
-        buttonIndex,
+        v_buttonIdex,
         buttonName,
         "Button",
         formattedAction,
@@ -282,36 +309,70 @@ function handleVantageDriverEvents(text) {
 }
 
 function handleVantageTaskInfo(text, taskNames) {
-    if (debug1On) { console.log(`📢 handleVantageTaskInfo called: ${text}`); }
-  
-    let match = text.match(/TASK\s+(\d+)\s+(\d+)/);
-    if (!match) {
-      console.log(`❌ No match found for regex: ${text}`);
-      return text;
-    }
-  
-    let taskIndex = match[1].trim();
-    let state = match[2].trim();
-    let stateText = state === "1" ? "On" : "Off";
-  
-    let taskName = taskNames[`v_${taskIndex}`];
-    if (!taskName) {
-      console.log(`⚠️  No Mapping Info Found For Task ${taskIndex}`);
-    }
-  
-    let result = finalDriverOutputFormatLighting(
-      "Info",
-      taskIndex,
-      taskName,
-      "Task",
-      `set to ${stateText}`,
-      "Vantage InFusion"
-    );
-  
-    if (debug2On) { console.log(`✅ ${result}`); }
-  
-    return result;
+  if (debug1On) { console.log(`📢 handleVantageTaskInfo called: ${text}`); }
+
+  let match = text.match(/TASK\s+(\d+)\s+(\d+)/);
+  if (!match) {
+    console.log(`❌ No match found for regex: ${text}`);
+    return text;
   }
+
+  let taskIndex = match[1].trim();
+  let state = match[2].trim();
+  let stateText = state === "1" ? "On" : "Off";
+
+  const v_taskIndex = `v_${taskIndex}`;
+  const taskName = taskNames[v_taskIndex];
+
+  if (!taskName) {
+    console.log(`⚠️  No Mapping Info Found For Task ${v_taskIndex}`);
+  }
+
+  let result = finalDriverOutputFormatLighting(
+    "Info",
+    v_taskIndex,
+    taskName,
+    "Task",
+    `set to ${stateText}`,
+    "Vantage InFusion"
+  );
+
+  if (debug2On) { console.log(`✅ ${result}`); }
+
+  return result;
+}
+
+// function handleVantageTaskInfo(text, taskNames) {
+//     if (debug1On) { console.log(`📢 handleVantageTaskInfo called: ${text}`); }
+  
+//     let match = text.match(/TASK\s+(\d+)\s+(\d+)/);
+//     if (!match) {
+//       console.log(`❌ No match found for regex: ${text}`);
+//       return text;
+//     }
+  
+//     let taskIndex = match[1].trim();
+//     let state = match[2].trim();
+//     let stateText = state === "1" ? "On" : "Off";
+  
+//     let taskName = taskNames[`v_${taskIndex}`];
+//     if (!taskName) {
+//       console.log(`⚠️  No Mapping Info Found For Task ${taskIndex}`);
+//     }
+  
+//     let result = finalDriverOutputFormatLighting(
+//       "Info",
+//       taskIndex,
+//       taskName,
+//       "Task",
+//       `set to ${stateText}`,
+//       "Vantage InFusion"
+//     );
+  
+//     if (debug2On) { console.log(`✅ ${result}`); }
+  
+//     return result;
+//   }
   
 // function handleVantageTaskInfo(text, taskNames) {
 //     if (debug1On) { console.log(`📢 handleVantageTaskInfo called: ${text}`); }

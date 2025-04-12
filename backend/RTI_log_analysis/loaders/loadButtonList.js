@@ -29,28 +29,8 @@ export function loadButtonList(sheets) {
         }
     });
 
-    // sheets["Button List"].forEach(row => {
-    //     let vantageIndex = row['Button Index'];
-    //     let rtiIndex = row['RTI Index'];
-    //     let buttonName = row['Button Name']?.trim();
-
-    //     if (!buttonName) {
-    //         buttonName = `(Empty Button Name ${vantageIndex || rtiIndex})`;
-    //     }
-
-    //     if (vantageIndex) {
-    //         vantageIndex = `v_${vantageIndex.trim()}`;
-    //         buttonMap[vantageIndex] = buttonName;
-    //     }
-
-    //     if (rtiIndex) {
-    //         rtiIndex = `r_${rtiIndex.trim()}`;
-    //         buttonMap[rtiIndex] = buttonName;
-    //     }
-    // });
-
     console.log("✅ Button List loaded.");
-    //console.log(buttonMap);
+    console.log(buttonMap);
     return buttonMap;
 }
 
