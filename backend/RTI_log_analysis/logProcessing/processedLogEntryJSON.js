@@ -24,8 +24,8 @@ export function processedLogEntryJSON(logEntries, mappings) {
       case processedText.includes('Driver Event'):
         htmlClass = 'event';
         break;
-      case processedText.includes('Driver Info'):
-        htmlClass = "info";
+      case processedText.includes('3rd Party Info'):
+        htmlClass = "thirdPartyInfo";
         break;
       case processedText.includes('disconnected') || processedText.includes('Failed') || processedText.includes('Offline'):
         htmlClass = 'alert';

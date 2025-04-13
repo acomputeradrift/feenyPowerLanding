@@ -163,7 +163,6 @@
   position: relative;
 }
 
- 
 .macro {
   color: orange;
 }
@@ -176,7 +175,7 @@
 .event {
   color: magenta;
 }
-.info {
+.thirdPartyInfo {
   color: darkgray;
   opacity: 0.5;
 }

@@ -38,22 +38,60 @@ function handleCBUSDriverEvent(text, loadNames) {
 
 function handleCBUSDriverCommand(text, loadNames) {
     if (debug1On) { console.log(`📢 handleCBUSDriverCommand called: ${text}`); }
+  
     let match = text.match(/Immediate Switch\((\d+), (\d+), (\d+)\)/);
     if (!match) {
-        console.log(`❌ No match found for regex: ${text}`);
-        return text;
+      console.log(`❌ No match found for regex: ${text}`);
+      return text;
     }
-
-    let [, stateNum, groupId, category] = match;
-
-    if (category === "56") {
-        let state = stateNum === "1" ? "Off" : "On";
-        let groupName = loadNames[groupId] || `(Unknown Group ${groupId})`;
-        let result = `Driver Command: '${groupName} ${state} (Clipsal C-Bus)'`;
-        if (debug2On) { console.log(`✅  ${result}`); }
-        return result;
+  
+    let [, stateNum, groupId, appId] = match;
+  
+    if (appId === "56") {
+      let state = stateNum === "1" ? "Off" : "On";
+      let groupName = loadNames[groupId];
+      if (!groupName) {
+        console.log(`⚠️  No Mapping Info Found For Load ${groupId}`);
+      }
+  
+      let result = finalDriverOutputFormatLighting(
+        "Driver Command",
+        groupId,
+        groupName,
+        "Load",
+        `turned ${state}`,
+        "Clipsal C-Bus"
+      );
+  
+      if (debug2On) { console.log(`✅ ${result}`); }
+  
+      return result;
     } else {
-        if (debug2On) { console.log(`⚠️  Unhandled Category '${category}' in CBUS Driver Command: ${text}`); }
-        return text;
+      if (debug2On) {
+        console.log(`⚠️  Unhandled AppID '${appId}' in CBUS Driver Command: ${text}`);
+      }
+      return text;
     }
-}
+  }
+  
+// function handleCBUSDriverCommand(text, loadNames) {
+//     if (debug1On) { console.log(`📢 handleCBUSDriverCommand called: ${text}`); }
+//     let match = text.match(/Immediate Switch\((\d+), (\d+), (\d+)\)/);
+//     if (!match) {
+//         console.log(`❌ No match found for regex: ${text}`);
+//         return text;
+//     }
+
+//     let [, stateNum, groupId, category] = match;
+
+//     if (category === "56") {
+//         let state = stateNum === "1" ? "Off" : "On";
+//         let groupName = loadNames[groupId] || `(Unknown Group ${groupId})`;
+//         let result = `Driver Command: '${groupName} ${state} (Clipsal C-Bus)'`;
+//         if (debug2On) { console.log(`✅  ${result}`); }
+//         return result;
+//     } else {
+//         if (debug2On) { console.log(`⚠️  Unhandled Category '${category}' in CBUS Driver Command: ${text}`); }
+//         return text;
+//     }
+// }

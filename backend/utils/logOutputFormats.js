@@ -2,18 +2,24 @@ export function emptyMappingOutputFormat(label, index) {
     return `(Empty ${label} Name [${index}])`;
   }
 
+  // export function finalDriverOutputFormatLighting(type, index, name, category, stateOrAction, systemType) {
+  //   const resolvedName = name || `(⚠️  No Mapping Info Found)`;
+  //   const indexText = index ? `${category} ${index}` : `${category}`;  // omit index if null
+  //   return `Driver ${type}: ${indexText} - '${resolvedName}' ${stateOrAction} (${systemType})`;
+  // }
+
   export function finalDriverOutputFormatLighting(type, index, name, category, stateOrAction, systemType) {
     const resolvedName = name || `(⚠️  No Mapping Info Found)`;
-    const indexText = index ? `${category} ${index}` : `${category}`;  // omit index if null
-    return `Driver ${type}: ${indexText} - '${resolvedName}' ${stateOrAction} (${systemType})`;
+    const indexText = index ? `${category} ${index}` : `${category}`; // show "Load v_341" or just "Load"
+    return `${type}: ${indexText} - '${resolvedName}' ${stateOrAction} (${systemType})`;
   }
+  
   
   export function finalDriverOutputFormatAV({
     inputIndex = null,
     inputName = null,
     outputIndex = null,
     outputName = null,
-    category = "Zone",
     stateOrAction,
     driverName
   }) {
@@ -26,8 +32,9 @@ export function emptyMappingOutputFormat(label, index) {
     }
   
     // Driver Command: Zone - 'Living Room' Volume Up (AD-64)
-    return `Driver Command: ${category} - '${resolvedOutput}' ${stateOrAction} (${driverName})`;
+    return `Driver Command: Zone - '${resolvedOutput}' ${stateOrAction} (${driverName})`;
   }
+  
   
   
   

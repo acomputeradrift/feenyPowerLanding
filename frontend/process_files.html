@@ -30,17 +30,22 @@
             <!-- Search Controls Section -->
              <div class="log controls container">
 
+
                   
                 <div class="log-controls-container search-controls">
                     <label for="startTime">Start:</label>
                     <input type="datetime-local" id="startTime">
                     <label for="endTime">End:</label>
                     <input type="datetime-local" id="endTime">
-                    <input type="text" id="searchInput" placeholder="Filter by Keyword...">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        placeholder="Filter by Keyword..." 
+                        title="Use - to exclude (e.g. -debug), Use quotes for exact phrases (e.g. 'zone 1')">
                     <button id="searchButton">Filter</button>
                     <button id="clearFiltersButton">Clear</button>
                     <div id="recordCountDisplay" class="record-count">Total Records: 0</div>
-                </div>
+                  </div>
 
                 <!-- File Management Controls Section -->
                 <div class="log-controls-container file-controls">

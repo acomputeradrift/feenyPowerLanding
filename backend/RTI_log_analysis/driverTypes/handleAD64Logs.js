@@ -1,3 +1,5 @@
+import { finalDriverOutputFormatAV } from '../../utils/logOutputFormats.js';
+
 const debug1On = false;
 const debug2On = false;
 
@@ -19,25 +21,71 @@ export function handleAD64LogTypes(text) {
 
 function handleAD64ZoneVolumeCommands(text) {
     if (debug1On) { console.log(`📢 handleAD64ZoneVolumeCommands called: ${text}`); }
-
-    let result = text.replace(/Driver - Command:'RTI AD-64\\Zone Commands\\(.*?)\((.*?)\)'.*$/, 
-    (match, command, zoneName) => {
-        return `Driver Command: '${zoneName} ${command} (AD-64)'`;
+  
+    let match = text.match(/Driver - Command:'RTI AD-64\\Zone Commands\\(.*?)\((.*?)\)'.*$/);
+    if (!match) {
+      console.log(`❌ No match found for regex: ${text}`);
+      return text;
+    }
+  
+    let command = match[1].trim();
+    let zoneName = match[2].trim();
+  
+    let result = finalDriverOutputFormatAV({
+      outputName: zoneName,
+      stateOrAction: command,
+      driverName: "AD-64"
     });
+  
     if (debug2On) { console.log(`✅ ${result}`); }
+  
     return result;
-}
+  }
+  
+// function handleAD64ZoneVolumeCommands(text) {
+//     if (debug1On) { console.log(`📢 handleAD64ZoneVolumeCommands called: ${text}`); }
+
+//     let result = text.replace(/Driver - Command:'RTI AD-64\\Zone Commands\\(.*?)\((.*?)\)'.*$/, 
+//     (match, command, zoneName) => {
+//         return `Driver Command: '${zoneName} ${command} (AD-64)'`;
+//     });
+//     if (debug2On) { console.log(`✅ ${result}`); }
+//     return result;
+// }
 
 function handleAD64ZonePowerCommands(text) {
     if (debug1On) { console.log(`📢 handleAD64ZonePowerCommands called: ${text}`); }
-
-    let result = text.replace(/Driver - Command:'RTI AD-64\\Zone Commands\\(.*?)\((.*?)\)'.*$/, 
-    (match, command, zoneName) => {
-        return `Driver Command: '${zoneName} ${command} (AD-64)'`;
+  
+    let match = text.match(/Driver - Command:'RTI AD-64\\Zone Commands\\(.*?)\((.*?)\)'.*$/);
+    if (!match) {
+      console.log(`❌ No match found for regex: ${text}`);
+      return text;
+    }
+  
+    let command = match[1].trim();
+    let zoneName = match[2].trim();
+  
+    let result = finalDriverOutputFormatAV({
+      outputName: zoneName,
+      stateOrAction: command,
+      driverName: "AD-64"
     });
-
+  
     if (debug2On) { console.log(`✅ ${result}`); }
-
+  
     return result;
-}
+  }
+  
+// function handleAD64ZonePowerCommands(text) {
+//     if (debug1On) { console.log(`📢 handleAD64ZonePowerCommands called: ${text}`); }
+
+//     let result = text.replace(/Driver - Command:'RTI AD-64\\Zone Commands\\(.*?)\((.*?)\)'.*$/, 
+//     (match, command, zoneName) => {
+//         return `Driver Command: '${zoneName} ${command} (AD-64)'`;
+//     });
+
+//     if (debug2On) { console.log(`✅ ${result}`); }
+
+//     return result;
+// }
 

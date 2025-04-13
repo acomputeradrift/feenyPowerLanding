@@ -62,6 +62,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     runFilterLogs(renderLog);
   });
 
+  document.getElementById('searchInput').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // prevent form submission if inside a form
+      runFilterLogs(renderLog); // same function your button uses
+    }
+  });
+  
+
 });
 
 function renderLog(logArray) {
