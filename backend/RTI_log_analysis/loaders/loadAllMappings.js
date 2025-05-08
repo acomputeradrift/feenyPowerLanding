@@ -5,6 +5,7 @@ import { loadPageList } from './loadPageList.js';
 import { loadPortList } from './loadPortList.js';
 import { loadSourceList } from './loadSourceList.js';
 import { loadTaskList } from './loadTaskList.js';
+import { loadClimateZoneList } from './loadClimateZoneList.js';
 
 export function loadAllMappings(sheets) {
     const { inputMap: audioInputNames, outputMap: audioOutputNames } = loadAudioZoneList(sheets) || {};
@@ -18,5 +19,6 @@ export function loadAllMappings(sheets) {
         portNames: loadPortList(sheets),
         sourceNames: loadSourceList(sheets),
         taskNames: loadTaskList(sheets),
+        climateZoneNames: loadClimateZoneList(sheets)
     };
 }

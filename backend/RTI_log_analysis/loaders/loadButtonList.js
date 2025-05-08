@@ -30,7 +30,7 @@ export function loadButtonList(sheets) {
     });
 
     console.log("✅ Button List loaded.");
-    console.log(buttonMap);
+    //console.log(buttonMap);
     return buttonMap;
 }
 

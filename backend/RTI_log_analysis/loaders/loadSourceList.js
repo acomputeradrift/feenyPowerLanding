@@ -20,14 +20,6 @@ export function loadSourceList(sheets) {
         }
     });
     
-    // sheets["Source List"].forEach(row => {
-    //     const sourceIndex = row['Source Index']?.trim();
-    //     let sourceName = row['Source Name']?.trim();
-    //     if (!sourceName) sourceName = `(Empty Source Name [${sourceIndex}])`;
-    //     if (sourceIndex) {
-    //         sourceMap[sourceIndex] = sourceName;
-    //     }
-    // });
     console.log("✅ Source List loaded.");
     return sourceMap;
 }

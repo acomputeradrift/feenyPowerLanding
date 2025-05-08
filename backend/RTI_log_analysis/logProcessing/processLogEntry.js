@@ -27,7 +27,7 @@ export function processLogEntry(text, mappings) {
         case text.includes('Vaux Lattis Matrix'):
             return handleVauxLogTypes(text, mappings.audioInputNames, mappings.audioOutputNames);
         case text.includes('Vantage InFusion'):
-            return handleVantageLogTypes(text, mappings.loadNames, mappings.buttonNames, mappings.taskNames);
+            return handleVantageLogTypes(text, mappings.loadNames, mappings.buttonNames, mappings.taskNames, mappings.climateZoneNames);
         case text.includes('AD-64'):
             return handleAD64LogTypes(text);
         case text.includes('CoolMasterNet'):

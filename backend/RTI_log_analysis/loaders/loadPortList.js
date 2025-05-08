@@ -20,17 +20,6 @@ export function loadPortList(sheets) {
         }
     });
 
-    // sheets["Ports List"].forEach(row => {
-    //     const moduleName = row['Module Name']?.trim() || `(Empty Module Name)`;
-    //     const moduleType = row['Module Type']?.trim() || `(Empty Module Type)`;
-    //     const portIndex = row['Port Index']?.trim();
-    //     const portName = row['Port Name']?.trim() || `(Empty Port Name [${portIndex}])`;
-
-    //     if (portIndex) {
-    //         const key = `${moduleName}_${moduleType}_${portIndex}`;
-    //         portMap[key] = portName;
-    //     }
-    // });
     console.log("✅ Port List loaded.");
     return portMap;
 }
