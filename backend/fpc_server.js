@@ -51,6 +51,10 @@ app.get('/consultation', (req, res) => {
 
 });
 
+app.get('/faq', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/faq.html'));
+});
+
 // ✅ Redirect `/rti_diagnostics/` to `/rti_diagnostics/upload_files/`
 app.get('/rti_diagnostics/', (req, res) => {
     res.redirect('/rti_diagnostics/upload_files/');

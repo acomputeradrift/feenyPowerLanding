@@ -1,0 +1,81 @@
+/* FAQ layout only — not on live site yet. Uses existing site colors/fonts. */
+
+.faq-intro {
+    max-width: 720px;
+    margin: 0 auto 24px;
+    text-align: left;
+}
+
+.faq-list {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.faq-item {
+    margin-bottom: 16px;
+    border: 1px solid #a7a9ac;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #4a4a4c;
+}
+
+.faq-item summary {
+    cursor: pointer;
+    padding: 16px 20px;
+    font-weight: 500;
+    list-style: none;
+    text-align: left;
+}
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-item summary::after {
+    content: "+";
+    float: right;
+    color: #fcb040;
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.faq-item[open] summary::after {
+    content: "−";
+}
+
+.faq-item summary:hover {
+    background: #4f4f51;
+}
+
+.faq-answer {
+    padding: 0 20px 16px;
+    text-align: left;
+    color: #e8e8e8;
+}
+
+.faq-answer p {
+    margin: 0 0 12px;
+}
+
+.faq-answer p:last-child {
+    margin-bottom: 0;
+}
+
+.faq-answer strong {
+    color: #fcb040;
+}
+
+.faq-answer a {
+    color: #39b54a;
+}
+
+.faq-answer a:hover {
+    color: #2d9639;
+}
+
+.faq-trust {
+    margin-top: 28px;
+    font-size: 0.95rem;
+    color: #d0d0d0;
+}
