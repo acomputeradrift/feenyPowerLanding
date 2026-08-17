@@ -57,6 +57,7 @@ describe('FR-17 proposal email', () => {
     const body = JSON.parse(calls[0].init.body);
     assert.deepEqual(body.to, ['john@example.com']);
     assert.deepEqual(body.bcc, ['Feeny.jamie@gmail.com']);
+    assert.equal(body.reply_to, 'Feeny.jamie@gmail.com');
     assert.equal(body.from, 'proposals@feenypowerandcontrol.com');
     assert.equal(body.attachments[0].filename, 'proposal.pdf');
     assert.equal(body.attachments[0].content, Buffer.from('pdf-bytes').toString('base64'));

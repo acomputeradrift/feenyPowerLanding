@@ -19,7 +19,10 @@ function buildMessage({ submission, pdfBuffer, pdfFilename }, env) {
     subject: `RTI Proposal ${submission.reference}`,
     text: `Your RTI programming budget is attached (${hours} hours). Reference ${submission.reference}.`
   };
-  if (bcc) message.bcc = [bcc];
+  if (bcc) {
+    message.bcc = [bcc];
+    message.reply_to = bcc;
+  }
   if (pdfBuffer) {
     message.attachments = [{
       filename: pdfFilename || `${submission.reference}.pdf`,
