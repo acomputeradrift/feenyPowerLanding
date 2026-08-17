@@ -39,18 +39,19 @@ THIS IS A MULTI-ROOT WORKSPACE WITH TWO REPOSITORIES
 HARD CONSTRAINTS
 - Live production site. Do not modify frontend/styles/global.css,
   frontend/styles/consultation.css, or any existing route or page. Add new
-  files. Touch backend/fpc_server.js only to register the page route
-  /rti_proposal/ (and /rti_proposal redirect), plus the MONGO_URI fail-fast
-  fix in 05-data-model.md when you do persistence. The API mount and shared
-  static mount are already in place.
+  files. Touch backend/fpc_server.js only to register /rti_proposal/ routes
+  (page, redirect, later audit) plus the MONGO_URI fail-fast when both .env
+  files have MONGO_URI. The API mount and shared static mount are already
+  in place.
 - No build step. Vanilla HTML/CSS/JS with native ES modules.
 - Test-first with node --test. From backend: npm test
 - Do not commit or push unless explicitly asked.
-- Per-zone minute rates never reach the browser, including via /api/proposal/estimate.
-- Never send real email during development. Guard on PROPOSAL_EMAIL_ENABLED.
-- Preserve hour output exactly (04-calculations.md parity contract). Documented
-  oddities are not yours to fix: per-line rounding, timer double counting,
-  section-versus-total display mismatch, excluded processor hours.
+- Per-zone minute rates never reach the browser, including via
+  /api/proposal/estimate. Rates appear only on the audit view.
+- Never send real email unless PROPOSAL_EMAIL_ENABLED is the string 'true'.
+- Preserve hour output exactly (04-calculations.md parity contract).
+  Documented oddities are not yours to fix: per-line rounding, timer double
+  counting, section-versus-total display mismatch, excluded processor hours.
 
 WHAT IS ALREADY DONE (do not redo)
 1. Golden-master fixture at
@@ -70,37 +71,58 @@ WHAT IS ALREADY DONE (do not redo)
    /scripts/proposal/shared. Rate key is poolAndPumps (06-api.md was
    corrected from poolPumps).
 5. development_continuity.md and deployment.md restored at repo root.
+6. Form UI at GET /rti_proposal/ (ADR-011: redirect /rti_proposal only when
+   originalUrl with query stripped is exactly that path, then next()).
+   frontend/rti_proposal.html copies the FAQ header/partners/footer shell.
+   frontend/styles/rti_proposal.css is page-scoped. Renderer is
+   frontend/scripts/proposal/rti_proposal.js; answers/steps/repeats live in
+   formController.js. Browser imports /scripts/proposal/shared/{schema,
+   validate, repeatGroups}.js only — nothing from calc/. Header copy is
+   invented and may still be changed: "Describe the project scope and I will
+   email you a programming budget."
+7. Persistence + submit. ProposalSubmission model matches 05-data-model.md.
+   POST /api/proposal via createProposalRouter: honeypot non-empty → 201
+   plausible body and discard; unknown keys 400; persist first
+   (emailStatus pending), then PDF, then email (FR-15). PDF/email failure
+   still returns 201 with delivery: "pending". Rate limit 10 / 15 min,
+   body cap 100kb. Real mail only if PROPOSAL_EMAIL_ENABLED === 'true';
+   otherwise write JSON to backend/proposal/email/outbox/ (gitignored).
+   Provider not chosen; enabling email currently throws that a transactional
+   provider is not configured. Local Mongo is often not running — valid
+   submit returns persist_failed until it is. Validation 400 works without
+   Mongo.
+8. PDF with pdfmake@0.3.11 in backend/proposal/pdf/. Visual source is the
+   2026-08-14 Dave Marshall / OFFICE production Google Docs export: three
+   US Letter pages, centred type, Feeny then RTI logos, bands charcoal
+   #575759 / gold #f1b353 / steel #a7a9ac, Additional Info on page 3.
+   Wording from processFormDataForOutput.js (hours suffix, singularisation,
+   "None Included.", site summary, timer sentences, Input Zone (Sense) /
+   Output Zone (Relays)). Deliberate departures: current copyright year,
+   empty additional info punctuates as "No additional info.", named items
+   when supplied (FR-18), no rates (FR-19). Roboto via pdfmake fonts;
+   setLocalAccessPolicy allows only node_modules/pdfmake/fonts/Roboto/*.ttf.
+   This repo vendors node_modules for git-pull deploys.
 
 SPEC NOTES ALREADY APPLIED
 - 03-form-schema.md examples now match the catalogue (audioDiscreteSourceZones,
   optional names). Do not reintroduce a fictional audioSources id.
 - projectTimeline is an HTML date (yyyy-mm-dd), not the legacy mock's
   12/12/2025 string.
+- 07-pdf-document.md is three pages, not four. The four-page split was
+  inferred from a text dump and was wrong.
 - Do not implement the MONGO_URI fail-fast until local and server .env both
   have MONGO_URI; doing it earlier would break RTI diagnostics on boot.
 
 START HERE, IN THIS ORDER, AND STOP AFTER EACH FOR REVIEW
-1. Form UI. Create frontend/rti_proposal.html (copy the existing header /
-   partners / footer shell from consultation.html / faq.html; do not extract
-   a template engine), frontend/styles/rti_proposal.css (08-design-system.md;
-   do not edit global.css or consultation.css), and a vanilla schema-driven
-   renderer that imports /scripts/proposal/shared/schema.js, validate.js,
-   and repeatGroups.js. Ten steps, back/forward, progress, visibleIf,
-   count-driven repeats with FR-6 preservation. Debounced POST to
-   /api/proposal/estimate for the running total (FR-9). Register
-   GET /rti_proposal/ and a redirect from /rti_proposal in fpc_server.js.
-   Do not import anything from backend/proposal/calc/ in browser code.
-2. Persistence + submit. backend/models/ProposalSubmission.js (05-data-model.md),
-   POST /api/proposal with honeypot, shared validate.js, persist first
-   (emailStatus pending), then PDF, then email (FR-15). Unknown keys 400.
-   PROPOSAL_EMAIL_ENABLED must be explicitly true to send mail; otherwise
-   write the payload to disk or log it.
-3. PDF with pdfmake (07-pdf-document.md). Visual design is still unspecified —
-   ask whether to follow 08-design-system.md or wait for a template PDF
-   export. Do not guess at logo/fonts/spacing and call it done.
-4. Audit view GET /rti_proposal/audit/:reference (FR-20, FR-21). Disabled
-   entirely if PROPOSAL_AUDIT_TOKEN is unset. 404 on bad token, not 403.
-5. MONGO_URI fail-fast in fpc_server.js only after both .env files have
+1. Audit view GET /rti_proposal/audit/:reference (FR-20, FR-21, 06-api.md).
+   Disabled entirely if PROPOSAL_AUDIT_TOKEN is unset (never treat unset as
+   open). Constant-time compare. 404 on a bad token, not 403. Send
+   X-Robots-Tag: noindex and Cache-Control: no-store. HTML table of every
+   line item grouped by section: count, minutes per unit, rawHours, hours,
+   section subtotals, project total, plus rateCardVersion, schemaVersion,
+   submittedAt. This is the only surface that shows rates. Do not link it
+   from any public page.
+2. MONGO_URI fail-fast in fpc_server.js only after both .env files have
    MONGO_URI. Then verify /consultation, /faq, and RTI diagnostics still
    serve.
 
@@ -111,16 +133,19 @@ Do not add React, a bundler, or a second test framework.
 
 ## Open items still unresolved
 
-- **PDF visual design is unspecified.** See [07-pdf-document.md](07-pdf-document.md).
 - **Email provider not chosen.** ADR-010 requires a transactional HTTPS API
-  (Resend vs Postmark undecided). SPF and DKIM are part of that work.
+  (Resend vs Postmark undecided). SPF and DKIM are part of that work. Until
+  then, `PROPOSAL_EMAIL_ENABLED` stays off and submissions write to
+  `backend/proposal/email/outbox/`.
+- **Form header copy is invented** and may still be changed.
 - **Backup and retention deliberately deferred.** [05-data-model.md](05-data-model.md).
 
 ## How to verify before starting
 
 ```bash
 cd "/Users/jamiefeeny/Development (Not Shared)/feenyPowerLanding/backend"
-node --test proposal/calc/*.test.js proposal/shared/*.test.js proposal/estimate.test.js routes/proposal.test.js
+npm test
 ```
 
-Expect 32 passing tests. This work is on `master` once committed.
+Expect 75 passing tests (`node --test` suites listed in `backend/package.json`).
+This work is on `master`.

@@ -46,16 +46,19 @@ feenyPowerLanding/
   frontend/                    # Static pages, assets
     consultation.html          # Main landing page (homepage redirect target)
     faq.html                   # Dealer FAQ page
+    rti_proposal.html          # RTI programming budget form
     upload_files.html          # RTI diagnostics — upload
     process_files.html         # RTI diagnostics — process/view
     styles/
       global.css               # Site-wide base styles — shared, avoid breaking changes
       consultation.css         # Landing/FAQ shared layout — shared, avoid breaking changes
       faq.css                  # FAQ-only styles (accordion, green links)
+      rti_proposal.css         # Proposal form only (08-design-system.md)
       upload_files.css
       process_files.css
     scripts/
       consultation.js          # Calendly popup + RTI logo click handler
+      proposal/                # Schema-driven RTI proposal form (vanilla ES modules)
       upload_files.js
       process_files.js
       filterLogs.js
@@ -72,7 +75,7 @@ feenyPowerLanding/
       LogFile.js
       MapFile.js
       User.js
-    proposal/                  # RTI proposal form (in progress). Calc is server-side only.
+    proposal/                  # RTI proposal form. Calc is server-side only; shared schema is served to the browser.
       calc/
         rates.js               # Minute-per-unit values. Never served to the browser.
         systemData.js
@@ -107,6 +110,8 @@ feenyPowerLanding/
 | `/` | Redirect → `/consultation` |
 | `/consultation` | `frontend/consultation.html` |
 | `/faq` | `frontend/faq.html` |
+| `/rti_proposal` | Redirect → `/rti_proposal/` |
+| `/rti_proposal/` | `frontend/rti_proposal.html` |
 | `/rti_diagnostics/` | Redirect → `/rti_diagnostics/upload_files/` |
 | `/rti_diagnostics/upload_files/` | `frontend/upload_files.html` |
 | `/rti_diagnostics/process_files/` | `frontend/process_files.html` |
@@ -119,13 +124,18 @@ feenyPowerLanding/
 | POST | `/api/process` | `routes/process.js` |
 | POST | `/api/retrieve` | `routes/retrieve.js` |
 | POST | `/api/proposal/estimate` | `routes/proposal.js` — hours totals only, no rates |
+| POST | `/api/proposal` | `routes/proposal.js` — persist submission, then PDF, then email |
 
-**MongoDB:** connected in `fpc_server.js` via `MONGO_URI` (from `.env` or fallback `mongodb://localhost:27017/testdb`). Required for RTI diagnostics upload/process flow.
+**MongoDB:** connected in `fpc_server.js` via `MONGO_URI` (from `.env` or fallback `mongodb://localhost:27017/testdb`). Required for RTI diagnostics and for persisting proposal submissions.
 
 **Environment:** `backend/.env` is gitignored. Expected variables:
 
 - `MONGO_URI` — production MongoDB connection string
 - `PORT` — defaults to `3000`
+- `PROPOSAL_EMAIL_ENABLED` — must be the string `true` to send real proposal mail; otherwise the payload is written to `backend/proposal/email/outbox/`
+- `PROPOSAL_EMAIL_API_KEY`, `PROPOSAL_EMAIL_FROM`, `PROPOSAL_EMAIL_BCC` — transactional mail (provider not chosen yet)
+- `PROPOSAL_AUDIT_TOKEN` — audit view (not built yet)
+- `PROPOSAL_IP_HASH_SALT` — salt for hashing submitter IPs; if unset, no hash is stored
 
 ---
 
@@ -198,6 +208,7 @@ Quick checks:
 |------|-----|
 | Landing | http://localhost:3000/consultation |
 | FAQ | http://localhost:3000/faq |
+| RTI proposal | http://localhost:3000/rti_proposal/ |
 | RTI upload | http://localhost:3000/rti_diagnostics/upload_files/ |
 
 MongoDB must be reachable for RTI API flows. Static pages (consultation, FAQ) work without MongoDB; the server will log a connection error but still serve HTML.
@@ -248,3 +259,6 @@ Details and step-by-step deploy commands are in `deployment.md`. Quick facts:
 |------|--------|
 | 2026-08-13 | Added `/faq` page (`frontend/faq.html`, `frontend/styles/faq.css`, route in `fpc_server.js`). Deployed to production. |
 | 2026-08-17 | Restored this file and `deployment.md` (written 13 Aug, never committed). Golden-master fixture and ported hour calculators under `backend/proposal/calc/`. Shared question schema and validation under `backend/proposal/shared/`. `POST /api/proposal/estimate` plus static mount `/scripts/proposal/shared`. No existing pages or shared CSS were changed. |
+| 2026-08-17 | Schema-driven RTI proposal form at `/rti_proposal/` (`frontend/rti_proposal.html`, `frontend/styles/rti_proposal.css`, `frontend/scripts/proposal/`). Live hours total via debounced `POST /api/proposal/estimate`. |
+| 2026-08-17 | `POST /api/proposal` persists a `ProposalSubmission` first (`emailStatus: pending`), then PDF, then email (FR-15). Real mail only if `PROPOSAL_EMAIL_ENABLED=true`; otherwise write to `backend/proposal/email/outbox/`. |
+| 2026-08-17 | pdfmake proposal document matching the production Google Docs export (cover / gold systems page / steel equipment page). Named items listed when supplied. |

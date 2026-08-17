@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTI Programming Budget | Feeny Power &amp; Control Ltd</title>
+    <meta name="description" content="Request an RTI programming budget from Feeny Power and Control. Describe the project scope and receive a proposal by email.">
+    <link rel="icon" href="/images/feeny-logo-512-circle-black-back.png" type="image/x-icon">
+    <link rel="stylesheet" href="/styles/global.css">
+    <link rel="stylesheet" href="/styles/consultation.css">
+    <link rel="stylesheet" href="/styles/rti_proposal.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="/images/feeny-logo-white.png" alt="Feeny Power and Control Logo">
+        </div>
+        <h1><span class="text-light-grey">RTI</span> <span class="text-black">Programming Budget</span></h1>
+        <div class="book-a-free">
+            <p><span class="text-dark-grey">Describe the project scope and I will email you a programming budget.</span></p>
+        </div>
+    </header>
+
+    <section class="partners">
+        <img src="/images/lutron-logo.png" alt="Lutron Logo">
+        <img src="/images/rti-logo-bigger.png" alt="RTI Logo">
+        <img src="/images/vantage-logo.png" alt="Vantage Logo">
+    </section>
+
+    <section class="benefits proposal-section">
+        <div class="proposal-layout">
+            <div class="proposal-main">
+                <p id="proposal-intro" class="proposal-intro">This form is meant to capture the necessary project information to calculate a programming budget for RTI control systems. It is meant for clients (and potential clients) of Feeny Power and Control Ltd. and may not be relevant to every market. Please fill out the form to the best of your ability. The more info I get, the better the budget estimate.</p>
+
+                <div class="proposal-progress">
+                    <p id="proposal-progress-text" class="proposal-progress-text">Step 1 of 10</p>
+                    <ol id="proposal-progress-list" class="proposal-progress-list"></ol>
+                </div>
+
+                <div id="proposal-live" class="visually-hidden" aria-live="polite"></div>
+
+                <form id="proposal-form" class="proposal-form" novalidate>
+                    <div class="proposal-honeypot" aria-hidden="true">
+                        <label for="proposal-honeypot">Company website</label>
+                        <input id="proposal-honeypot" type="text" name="website" tabindex="-1" autocomplete="off">
+                    </div>
+                    <div id="proposal-step" class="proposal-step"></div>
+                    <p id="proposal-status" class="proposal-status" aria-live="polite"></p>
+                    <div class="proposal-nav">
+                        <button type="button" id="proposal-back" class="proposal-btn proposal-btn-secondary">Back</button>
+                        <button type="submit" id="proposal-primary" class="proposal-btn proposal-btn-primary">Next</button>
+                    </div>
+                </form>
+
+                <div id="proposal-success" class="proposal-success" hidden></div>
+            </div>
+
+            <aside class="proposal-estimate" aria-live="polite">
+                <p class="proposal-estimate-label">Estimated hours</p>
+                <p id="proposal-hours-value" class="proposal-estimate-value">—</p>
+                <p id="proposal-estimate-pending" class="proposal-estimate-pending" hidden>Updating…</p>
+            </aside>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2026 Feeny Power and Control Ltd. All Rights Reserved.</p>
+    </footer>
+
+    <script type="module" src="/scripts/proposal/rti_proposal.js"></script>
+</body>
+</html>

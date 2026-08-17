@@ -13,15 +13,26 @@ is reproduced; its mechanism is not.
 The template text is reproduced verbatim in Appendix B of the planning document at
 `~/.cursor/plans/rti_proposal_web_app_a87770fa.plan.md`.
 
-**Visual fidelity is not yet specified.** Only a text export of the template was
-available, which loses the logo, fonts, colours and spacing. Before building this,
-either obtain a PDF export of the original template or agree that the new document
-follows the site design system in [08-design-system.md](08-design-system.md)
-instead. Do not guess at a layout and call it done.
+**Visual reference.** Layout, colours and logo placement are taken from a
+production Google Docs export (Dave Marshall / OFFICE, 2026-08-14). US Letter,
+centred type, Feeny logo then RTI logo on the cover.
+
+| Page | Band | Colour |
+|---|---|---|
+| 1 Cover | lower third | charcoal `#575759`, white type |
+| 2 System Integration Scope | body | gold `#f1b353`, black type |
+| 3 RTI Equipment Scope | equipment block | steel `#a7a9ac`, black type |
+
+Additional Info sits on page 3 below the equipment block, matching the live
+export. The earlier four-page split was inferred from a text dump and was
+wrong: production is three pages. Copyright is on every page; the year is
+derived, not hardcoded 2025.
+
+Do not put per-zone rates in this document.
 
 ## Structure
 
-Four pages.
+Three pages, matching the production Google Docs export.
 
 ### Page 1 - Cover
 
@@ -50,10 +61,13 @@ specified for the job, plus any inputs or outputs."
 Then Controllers, then Inputs/Outputs, in the same heading-plus-list form.
 
 The split across pages 2 and 3 matters: the seven scope sections are **two groups**,
-not one flat list. Systems being controlled are separated from RTI hardware doing
-the controlling.
+not one flat list. Systems being controlled are separated from the RTI hardware
+doing the controlling.
 
-### Page 4 - Additional Info
+Additional Info follows on the same page: the project site summary, optional
+room names, then the dealer's notes.
+
+### Additional Info
 
 - The project site summary sentence
 - The dealer's additional info

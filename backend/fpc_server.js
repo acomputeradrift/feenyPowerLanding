@@ -59,6 +59,22 @@ app.get('/faq', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/faq.html'));
 });
 
+app.get('/rti_proposal', (req, res, next) => {
+    // Express is not strict about trailing slashes: `/rti_proposal` and
+    // `/rti_proposal/` match the same route. Redirect only the unsuffixed URL
+    // so `/rti_proposal/` can still serve the page.
+    const pathOnly = req.originalUrl.split('?')[0];
+    if (pathOnly === '/rti_proposal') {
+        res.redirect('/rti_proposal/');
+        return;
+    }
+    next();
+});
+
+app.get('/rti_proposal/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/rti_proposal.html'));
+});
+
 // ✅ Redirect `/rti_diagnostics/` to `/rti_diagnostics/upload_files/`
 app.get('/rti_diagnostics/', (req, res) => {
     res.redirect('/rti_diagnostics/upload_files/');

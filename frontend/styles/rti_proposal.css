@@ -1,0 +1,319 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,500;1,300&display=swap');
+
+.proposal-section {
+    --proposal-action: #fcb040;
+    --proposal-action-hover: #FF8C00;
+    --proposal-positive: #39b54a;
+    --proposal-positive-hover: #2d9639;
+    --proposal-band: #575759;
+    --proposal-card: #4a4a4c;
+    --proposal-card-hover: #4f4f51;
+    --proposal-border: #a7a9ac;
+    --proposal-text: #333;
+    --proposal-label: #e8e8e8;
+    --proposal-footer: #222;
+    --proposal-footer-hover: #444;
+    --proposal-error: #ff8a80;
+    --proposal-input-bg: #3a3a3c;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.proposal-layout {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.proposal-intro {
+    color: var(--proposal-label);
+    margin: 0 0 24px;
+}
+
+.proposal-progress {
+    margin-bottom: 24px;
+}
+
+.proposal-progress-text {
+    color: var(--proposal-label);
+    margin: 0 0 12px;
+    font-weight: 500;
+}
+
+.proposal-progress-list {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+}
+
+.proposal-progress-step button {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid var(--proposal-border);
+    background: var(--proposal-card);
+    color: var(--proposal-label);
+    cursor: pointer;
+}
+
+.proposal-progress-step-current button {
+    background: var(--proposal-action);
+    border-color: var(--proposal-action);
+    color: #000;
+}
+
+.proposal-progress-step-complete button {
+    background: var(--proposal-positive);
+    border-color: var(--proposal-positive);
+    color: #fff;
+}
+
+.proposal-progress-step-upcoming button {
+    cursor: default;
+}
+
+.proposal-progress-step button:focus-visible,
+.proposal-btn:focus-visible,
+.proposal-field input:focus-visible,
+.proposal-field select:focus-visible,
+.proposal-field textarea:focus-visible {
+    outline: 2px solid var(--proposal-action);
+    outline-offset: 2px;
+}
+
+.proposal-step h2 {
+    color: var(--proposal-label);
+    margin: 0 0 20px;
+    font-size: 1.35rem;
+}
+
+.proposal-fields {
+    display: grid;
+    gap: 18px;
+}
+
+.proposal-field label {
+    display: block;
+    color: var(--proposal-label);
+    margin-bottom: 6px;
+}
+
+.proposal-required {
+    color: var(--proposal-action);
+}
+
+.proposal-help {
+    margin: 6px 0 0;
+    color: var(--proposal-border);
+    font-size: 0.95rem;
+}
+
+.proposal-error {
+    margin: 6px 0 0;
+    color: var(--proposal-error);
+}
+
+.proposal-field input,
+.proposal-field select,
+.proposal-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 1px solid var(--proposal-border);
+    border-radius: 8px;
+    background: var(--proposal-input-bg);
+    color: var(--proposal-label);
+    font: inherit;
+}
+
+.proposal-field input[aria-invalid="true"],
+.proposal-field select[aria-invalid="true"],
+.proposal-field textarea[aria-invalid="true"] {
+    border-color: var(--proposal-error);
+}
+
+.proposal-repeat {
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 16px;
+}
+
+.proposal-repeat > legend {
+    color: var(--proposal-label);
+    font-weight: 500;
+    padding: 0;
+    margin-bottom: 4px;
+}
+
+.proposal-card {
+    margin: 0;
+    padding: 16px;
+    border: 1px solid var(--proposal-border);
+    border-radius: 8px;
+    background: var(--proposal-card);
+    display: grid;
+    gap: 16px;
+}
+
+.proposal-card > legend {
+    color: var(--proposal-label);
+    padding: 0 6px;
+}
+
+.proposal-card:hover {
+    background: var(--proposal-card-hover);
+}
+
+.proposal-status {
+    min-height: 1.6em;
+    color: var(--proposal-error);
+    margin: 16px 0 0;
+}
+
+.proposal-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.proposal-btn {
+    border-radius: 30px;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+}
+
+.proposal-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.proposal-btn-primary {
+    background: var(--proposal-action);
+    color: #000;
+}
+
+.proposal-btn-primary:hover:not(:disabled) {
+    background: var(--proposal-action-hover);
+}
+
+.proposal-btn-secondary {
+    background: var(--proposal-footer);
+    color: #fff;
+}
+
+.proposal-btn-secondary:hover:not(:disabled) {
+    background: var(--proposal-footer-hover);
+}
+
+.proposal-estimate {
+    margin-top: 24px;
+    padding: 16px 20px;
+    border: 1px solid var(--proposal-border);
+    border-radius: 8px;
+    background: var(--proposal-card);
+    color: var(--proposal-label);
+}
+
+.proposal-estimate-label {
+    margin: 0;
+    color: var(--proposal-border);
+}
+
+.proposal-estimate-value {
+    margin: 4px 0 0;
+    font-size: 1.8rem;
+    color: var(--proposal-action);
+}
+
+.proposal-estimate-pending {
+    margin: 4px 0 0;
+    color: var(--proposal-border);
+    font-size: 0.9rem;
+}
+
+.proposal-success {
+    color: var(--proposal-label);
+}
+
+.proposal-success h2 {
+    color: var(--proposal-label);
+}
+
+.proposal-success a {
+    color: var(--proposal-positive);
+}
+
+.proposal-success a:hover {
+    color: var(--proposal-positive-hover);
+}
+
+.proposal-honeypot {
+    position: absolute;
+    left: -10000px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.proposal-form {
+    position: relative;
+}
+
+@media only screen and (max-width: 899px) {
+    .proposal-main {
+        padding-bottom: 96px;
+    }
+
+    .proposal-estimate {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0;
+        border-radius: 8px 8px 0 0;
+        z-index: 5;
+    }
+}
+
+@media only screen and (min-width: 900px) {
+    .proposal-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 720px) 220px;
+        gap: 24px;
+        max-width: 980px;
+        align-items: start;
+    }
+
+    .proposal-estimate {
+        position: sticky;
+        top: 16px;
+        margin-top: 0;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .proposal-btn {
+        font-size: 18px;
+        padding: 15px 25px;
+    }
+}

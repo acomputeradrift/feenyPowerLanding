@@ -218,3 +218,21 @@ visible error. SPF and DKIM records for the sending domain are part of this
 decision, not an optional extra.
 
 **Rejected.** Direct SMTP from the droplet.
+
+---
+
+## ADR-011: Canonical /rti_proposal/ URL with an originalUrl-guarded redirect
+
+**Decision.** Serve the form at `/rti_proposal/`. Redirect `/rti_proposal` only
+when `req.originalUrl` (query stripped) is exactly that path, then `next()` to
+the trailing-slash handler.
+
+**Why.** Express has `strict routing` off by default, so `/rti_proposal` and
+`/rti_proposal/` are the same route. An unguarded redirect would loop on the
+canonical URL.
+
+**Rejected.** Enabling `app.set('strict routing', true)` globally, which would
+change every existing route.
+
+**Revisit if.** The application enables strict routing for other reasons.
+

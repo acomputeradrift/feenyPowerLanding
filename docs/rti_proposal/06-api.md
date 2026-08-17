@@ -16,6 +16,15 @@ app.use('/api/proposal', proposalRoutes);
 app.use('/scripts/proposal/shared',
     express.static(path.join(__dirname, 'proposal/shared')));
 
+app.get('/rti_proposal', (req, res, next) => {
+    const pathOnly = req.originalUrl.split('?')[0];
+    if (pathOnly === '/rti_proposal') {
+        res.redirect('/rti_proposal/');
+        return;
+    }
+    next();
+});
+
 app.get('/rti_proposal/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/rti_proposal.html'));
 });
@@ -33,6 +42,12 @@ modules by the browser.
 
 Trailing slash matches the `/rti_diagnostics/` convention. Add a redirect from
 `/rti_proposal` so both forms work.
+
+Express does **not** treat those as distinct paths by default (`strict routing`
+is off), so a naive `app.get('/rti_proposal')` redirect would also match
+`/rti_proposal/` and loop. Redirect only when `req.originalUrl` (query stripped)
+is exactly `/rti_proposal`, then `next()` so the trailing-slash handler can
+serve the page.
 
 ---
 
@@ -106,6 +121,9 @@ The real submission (FR-11).
 }
 ```
 
+When PDF generation or email delivery has not completed, the same 201 body
+includes `"delivery": "pending"`. That is an operational note, not a client error.
+
 **Response 400**
 
 ```json
@@ -113,7 +131,7 @@ The real submission (FR-11).
   "error": "validation_failed",
   "fieldErrors": {
     "contractorEmail": "A valid email address is required",
-    "audioSourceDetails[1].name": "Source name is required"
+    "bonus": "Unknown field"
   }
 }
 ```

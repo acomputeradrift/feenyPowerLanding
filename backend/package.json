@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "node --test proposal/calc/*.test.js proposal/shared/*.test.js proposal/estimate.test.js routes/proposal.test.js"
+    "test": "node --test proposal/calc/*.test.js proposal/shared/*.test.js proposal/estimate.test.js proposal/formController.test.js proposal/submit.test.js proposal/pdf/*.test.js routes/proposal.test.js"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +16,7 @@
     "express": "^4.21.2",
     "mongoose": "^8.9.4",
     "multer": "^1.4.5-lts.2",
+    "pdfmake": "^0.3.11",
     "xlsx": "^0.18.5"
   }
 }
