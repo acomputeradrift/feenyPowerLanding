@@ -1,6 +1,7 @@
 import express from 'express';
 import { estimateHours } from '../proposal/estimate.js';
 import { processSubmission } from '../proposal/submit.js';
+import { createAuditHandler, handleProposalAudit } from '../proposal/audit.js';
 
 const ESTIMATE_WINDOW_MS = 60_000;
 const ESTIMATE_MAX_PER_WINDOW = 120;
@@ -86,5 +87,7 @@ export {
   allowSubmit,
   ESTIMATE_MAX_PER_WINDOW,
   SUBMIT_MAX_PER_WINDOW,
-  MAX_SUBMIT_BYTES
+  MAX_SUBMIT_BYTES,
+  createAuditHandler,
+  handleProposalAudit
 };

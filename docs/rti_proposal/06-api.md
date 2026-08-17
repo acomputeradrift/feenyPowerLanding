@@ -6,10 +6,11 @@ Four routes, registered from `backend/routes/proposal.js` and mounted in
 ## Registration
 
 Follow the existing pattern in `fpc_server.js`. The only additions to that file are
-the router mount, the page route, and the shared-module static mount:
+the router mount, the page route, the audit page route, and the shared-module
+static mount:
 
 ```javascript
-import proposalRoutes from './routes/proposal.js';
+import proposalRoutes, { handleProposalAudit } from './routes/proposal.js';
 
 app.use('/api/proposal', proposalRoutes);
 
@@ -28,6 +29,8 @@ app.get('/rti_proposal', (req, res, next) => {
 app.get('/rti_proposal/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/rti_proposal.html'));
 });
+
+app.get('/rti_proposal/audit/:reference', handleProposalAudit);
 ```
 
 Note that `express.json()` is already applied globally in `fpc_server.js`, so no
@@ -175,13 +178,14 @@ to re-enter a 60-field form because an email provider had an outage.
 Internal breakdown view (FR-20, FR-21).
 
 **Authentication.** A shared secret from `process.env.PROPOSAL_AUDIT_TOKEN`,
-supplied as a query parameter or header. This is deliberately not a login system;
+supplied as the query parameter `token` or the header `X-Proposal-Audit-Token`.
+The header wins if both are present. This is deliberately not a login system;
 the site has no auth and this feature does not justify building one.
 
 Requirements:
 
-- If `PROPOSAL_AUDIT_TOKEN` is unset, the route must be disabled entirely rather
-  than open. An unset secret must never mean unauthenticated access.
+- If `PROPOSAL_AUDIT_TOKEN` is unset or empty, the route must be disabled entirely
+  rather than open. An unset secret must never mean unauthenticated access.
 - Compare in constant time.
 - Return 404, not 403, on a bad token, so the route's existence is not confirmed to
   a prober.

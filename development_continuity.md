@@ -112,6 +112,7 @@ feenyPowerLanding/
 | `/faq` | `frontend/faq.html` |
 | `/rti_proposal` | Redirect → `/rti_proposal/` |
 | `/rti_proposal/` | `frontend/rti_proposal.html` |
+| `/rti_proposal/audit/:reference` | Server-rendered audit table. Disabled unless `PROPOSAL_AUDIT_TOKEN` is set. Not linked from any public page. |
 | `/rti_diagnostics/` | Redirect → `/rti_diagnostics/upload_files/` |
 | `/rti_diagnostics/upload_files/` | `frontend/upload_files.html` |
 | `/rti_diagnostics/process_files/` | `frontend/process_files.html` |
@@ -134,7 +135,7 @@ feenyPowerLanding/
 - `PORT` — defaults to `3000`
 - `PROPOSAL_EMAIL_ENABLED` — must be the string `true` to send real proposal mail; otherwise the payload is written to `backend/proposal/email/outbox/`
 - `PROPOSAL_EMAIL_API_KEY`, `PROPOSAL_EMAIL_FROM`, `PROPOSAL_EMAIL_BCC` — transactional mail (provider not chosen yet)
-- `PROPOSAL_AUDIT_TOKEN` — audit view (not built yet)
+- `PROPOSAL_AUDIT_TOKEN` — shared secret for `GET /rti_proposal/audit/:reference`. If unset or empty the route is disabled (404). Supply as `?token=` or `X-Proposal-Audit-Token`.
 - `PROPOSAL_IP_HASH_SALT` — salt for hashing submitter IPs; if unset, no hash is stored
 
 ---
@@ -262,3 +263,4 @@ Details and step-by-step deploy commands are in `deployment.md`. Quick facts:
 | 2026-08-17 | Schema-driven RTI proposal form at `/rti_proposal/` (`frontend/rti_proposal.html`, `frontend/styles/rti_proposal.css`, `frontend/scripts/proposal/`). Live hours total via debounced `POST /api/proposal/estimate`. |
 | 2026-08-17 | `POST /api/proposal` persists a `ProposalSubmission` first (`emailStatus: pending`), then PDF, then email (FR-15). Real mail only if `PROPOSAL_EMAIL_ENABLED=true`; otherwise write to `backend/proposal/email/outbox/`. |
 | 2026-08-17 | pdfmake proposal document matching the production Google Docs export (cover / gold systems page / steel equipment page). Named items listed when supplied. |
+| 2026-08-17 | Audit view at `GET /rti_proposal/audit/:reference` (FR-20, FR-21). Token-gated, noindex, no-store. The only surface that shows per-zone rates. |

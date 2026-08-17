@@ -9,7 +9,7 @@ import { dirname } from 'path';
 import uploadRoutes from './routes/upload.js';
 import processRoute from './routes/process.js';
 import retrieveRoute from './routes/retrieve.js';
-import proposalRoutes from './routes/proposal.js';
+import proposalRoutes, { handleProposalAudit } from './routes/proposal.js';
 
 
 
@@ -74,6 +74,8 @@ app.get('/rti_proposal', (req, res, next) => {
 app.get('/rti_proposal/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/rti_proposal.html'));
 });
+
+app.get('/rti_proposal/audit/:reference', handleProposalAudit);
 
 // ✅ Redirect `/rti_diagnostics/` to `/rti_diagnostics/upload_files/`
 app.get('/rti_diagnostics/', (req, res) => {
