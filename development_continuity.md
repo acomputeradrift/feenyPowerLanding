@@ -134,7 +134,7 @@ feenyPowerLanding/
 - `MONGO_URI` — required. Process exits if unset. Local typical value: `mongodb://localhost:27017/testdb`. Production uses the server `.env` value.
 - `PORT` — defaults to `3000`
 - `PROPOSAL_EMAIL_ENABLED` — must be the string `true` to send real proposal mail; otherwise the payload is written to `backend/proposal/email/outbox/`
-- `PROPOSAL_EMAIL_API_KEY`, `PROPOSAL_EMAIL_FROM`, `PROPOSAL_EMAIL_BCC` — transactional mail (provider not chosen yet)
+- `PROPOSAL_EMAIL_API_KEY`, `PROPOSAL_EMAIL_FROM`, `PROPOSAL_EMAIL_BCC` — Resend. Real mail only if `PROPOSAL_EMAIL_ENABLED` is the string `true`.
 - `PROPOSAL_AUDIT_TOKEN` — shared secret for `GET /rti_proposal/audit/:reference`. If unset or empty the route is disabled (404). Supply as `?token=` or `X-Proposal-Audit-Token`.
 - `PROPOSAL_IP_HASH_SALT` — salt for hashing submitter IPs; if unset, no hash is stored
 

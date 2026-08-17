@@ -133,10 +133,9 @@ Do not add React, a bundler, or a second test framework.
 
 ## Open items still unresolved
 
-- **Email provider not chosen.** ADR-010 requires a transactional HTTPS API
-  (Resend vs Postmark undecided). SPF and DKIM are part of that work. Until
-  then, `PROPOSAL_EMAIL_ENABLED` stays off and submissions write to
-  `backend/proposal/email/outbox/`.
+- **Email.** Resend is wired. Sending stays off until the domain DNS records
+  are added in Namecheap and verified. Then set `PROPOSAL_EMAIL_ENABLED=true`
+  on the server.
 - **Form header copy is invented** and may still be changed.
 - **Backup and retention deliberately deferred.** [05-data-model.md](05-data-model.md).
 

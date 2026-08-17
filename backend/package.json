@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "test": "node --test proposal/calc/*.test.js proposal/shared/*.test.js proposal/estimate.test.js proposal/formController.test.js proposal/submit.test.js proposal/pdf/*.test.js proposal/audit.test.js requireMongoUri.test.js routes/proposal.test.js"
+    "test": "node --test proposal/calc/*.test.js proposal/shared/*.test.js proposal/estimate.test.js proposal/formController.test.js proposal/submit.test.js proposal/pdf/*.test.js proposal/audit.test.js proposal/email/*.test.js requireMongoUri.test.js routes/proposal.test.js"
   },
   "keywords": [],
   "author": "",
