@@ -31,7 +31,7 @@ arrays of objects:
 {
   contractorName: "John Smith",
   contractorEmail: "john@example.com",
-  audioSources: 2,
+  audioDiscreteSourceZones: 2,
   audioSourceDetails: [
     { name: "Sonos Port", type: "Streamer" },
     { name: "Rega Planar", type: "Turntable" }
@@ -95,9 +95,9 @@ fields were free-text, which is how `NaN` entered the calculations.
 ```javascript
 {
   kind: "count",
-  id: "audioZones",
-  label: "Distributed Audio Zones",
-  visibleIf: (answers) => answers.audioSources > 0
+  id: "floorplanAddOnCount",
+  label: "Floorplan Add On for Global Controllers",
+  visibleIf: (answers) => answers.globalControllerCount > 0
 }
 ```
 
@@ -120,11 +120,11 @@ The feature that motivated the whole project (FR-5).
 {
   kind: "repeat",
   id: "audioSourceDetails",
-  repeatFor: "audioSources",
+  repeatFor: "audioDiscreteSourceZones",
   itemLabel: (index) => `Audio Source ${index + 1}`,
   max: 40,
   fields: [
-    { kind: "text", id: "name", label: "Source name", required: true },
+    { kind: "text", id: "name", label: "Source name", required: false },
     { kind: "select", id: "type", label: "Type",
       options: ["Streamer", "Tuner", "Turntable", "Other"] }
   ]

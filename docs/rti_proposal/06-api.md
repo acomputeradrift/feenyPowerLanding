@@ -60,7 +60,7 @@ Partial answers are expected and normal. Missing fields are treated as zero.
     "audioVideo": 3.6,
     "climate": 0,
     "security": 0,
-    "poolPumps": 0,
+    "poolAndPumps": 0,
     "inputOutput": 0,
     "controllers": 0
   },

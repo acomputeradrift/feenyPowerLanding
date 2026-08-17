@@ -9,6 +9,7 @@ import { dirname } from 'path';
 import uploadRoutes from './routes/upload.js';
 import processRoute from './routes/process.js';
 import retrieveRoute from './routes/retrieve.js';
+import proposalRoutes from './routes/proposal.js';
 
 
 
@@ -28,11 +29,14 @@ app.use(express.json());
 app.use('/api/upload', uploadRoutes);
 app.use(processRoute);
 app.use(retrieveRoute);
+app.use('/api/proposal', proposalRoutes);
 
 
 
 // Serve static files explicitly
 app.use('/styles', express.static(path.join(__dirname, '../frontend/styles')));
+app.use('/scripts/proposal/shared',
+    express.static(path.join(__dirname, 'proposal/shared')));
 app.use('/scripts', express.static(path.join(__dirname, '../frontend/scripts')));
 app.use('/images', express.static(path.join(__dirname, '../frontend/images')));
 
