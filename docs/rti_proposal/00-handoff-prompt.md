@@ -110,8 +110,8 @@ SPEC NOTES ALREADY APPLIED
   12/12/2025 string.
 - 07-pdf-document.md is three pages, not four. The four-page split was
   inferred from a text dump and was wrong.
-- Do not implement the MONGO_URI fail-fast until local and server .env both
-  have MONGO_URI; doing it earlier would break RTI diagnostics on boot.
+- MONGO_URI fail-fast is implemented. Local backend/.env has a localhost
+  testdb URI; server .env already had MONGO_URI.
 
 START HERE, IN THIS ORDER, AND STOP AFTER EACH FOR REVIEW
 1. Audit view GET /rti_proposal/audit/:reference (FR-20, FR-21, 06-api.md).

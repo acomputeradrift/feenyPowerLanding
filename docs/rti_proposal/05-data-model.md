@@ -132,24 +132,11 @@ persistence (ADR-006). Never write a submission that has not passed that validat
 chronological listing. Nothing else needs an index at this volume; add one when a
 real query demands it, not speculatively.
 
-## Configuration defect to fix
+## Configuration
 
-`backend/fpc_server.js` currently falls back to a database named `testdb` when
-`MONGO_URI` is absent:
-
-```javascript
-const dbURI = process.env.MONGO_URI || 'mongodb://localhost:27017/testdb';
-```
-
-This must fail loudly instead. Once proposals are business records, a missing
-environment variable on the droplet would silently write real customer submissions
-into a throwaway database, and nothing would look wrong until someone went looking
-for a proposal that was never in the expected place.
-
-Change it to require `MONGO_URI` and exit with a clear message if it is unset. Note
-that this touches shared server startup, so verify the RTI diagnostics pages and the
-marketing routes still behave afterwards, and add `MONGO_URI` to both the local and
-server `.env` files first - `deployment.md` records that the two are not synced by
+`backend/fpc_server.js` requires `MONGO_URI` and exits at startup if it is unset
+or empty. There is no fallback to `testdb`. Both the local and server `.env`
+files must set it; `deployment.md` records that those files are not synced by
 git.
 
 ## Retention and backup

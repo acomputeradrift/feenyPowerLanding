@@ -1,6 +1,4 @@
 import dotenv from 'dotenv';
-dotenv.config();
-
 import path from 'path';
 import express from 'express';
 import mongoose from 'mongoose';
@@ -10,15 +8,11 @@ import uploadRoutes from './routes/upload.js';
 import processRoute from './routes/process.js';
 import retrieveRoute from './routes/retrieve.js';
 import proposalRoutes, { handleProposalAudit } from './routes/proposal.js';
+import { requireMongoUri } from './requireMongoUri.js';
 
-
-
-
-
-
-// Define __dirname since it's not available in ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 
@@ -98,7 +92,13 @@ app.get('/rti_diagnostics/process_files/', (req, res) => {
 });
 
 // ✅ MongoDB Connection
-const dbURI = process.env.MONGO_URI || 'mongodb://localhost:27017/testdb';
+let dbURI;
+try {
+    dbURI = requireMongoUri(process.env.MONGO_URI);
+} catch (err) {
+    console.error(err.message);
+    process.exit(1);
+}
 mongoose.connect(dbURI)
     .then(() => console.log('✅ MongoDB connected'))
     .catch(err => console.error('❌ MongoDB connection error:', err));

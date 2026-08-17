@@ -127,11 +127,11 @@ feenyPowerLanding/
 | POST | `/api/proposal/estimate` | `routes/proposal.js` — hours totals only, no rates |
 | POST | `/api/proposal` | `routes/proposal.js` — persist submission, then PDF, then email |
 
-**MongoDB:** connected in `fpc_server.js` via `MONGO_URI` (from `.env` or fallback `mongodb://localhost:27017/testdb`). Required for RTI diagnostics and for persisting proposal submissions.
+**MongoDB:** connected in `fpc_server.js` via `MONGO_URI` from `.env`. Required. The process exits at startup if it is unset. Required for RTI diagnostics and for persisting proposal submissions.
 
 **Environment:** `backend/.env` is gitignored. Expected variables:
 
-- `MONGO_URI` — production MongoDB connection string
+- `MONGO_URI` — required. Process exits if unset. Local typical value: `mongodb://localhost:27017/testdb`. Production uses the server `.env` value.
 - `PORT` — defaults to `3000`
 - `PROPOSAL_EMAIL_ENABLED` — must be the string `true` to send real proposal mail; otherwise the payload is written to `backend/proposal/email/outbox/`
 - `PROPOSAL_EMAIL_API_KEY`, `PROPOSAL_EMAIL_FROM`, `PROPOSAL_EMAIL_BCC` — transactional mail (provider not chosen yet)
@@ -264,3 +264,4 @@ Details and step-by-step deploy commands are in `deployment.md`. Quick facts:
 | 2026-08-17 | `POST /api/proposal` persists a `ProposalSubmission` first (`emailStatus: pending`), then PDF, then email (FR-15). Real mail only if `PROPOSAL_EMAIL_ENABLED=true`; otherwise write to `backend/proposal/email/outbox/`. |
 | 2026-08-17 | pdfmake proposal document matching the production Google Docs export (cover / gold systems page / steel equipment page). Named items listed when supplied. |
 | 2026-08-17 | Audit view at `GET /rti_proposal/audit/:reference` (FR-20, FR-21). Token-gated, noindex, no-store. The only surface that shows per-zone rates. |
+| 2026-08-17 | `MONGO_URI` is required at startup. Missing or empty value exits the process. No `testdb` fallback. |

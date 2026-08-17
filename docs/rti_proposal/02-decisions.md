@@ -152,11 +152,8 @@ comfortable than the aggregation pipeline.
 **Rejected.** SQLite with Prisma, proposed before the existing MongoDB setup was
 known. Postgres, for the same reason plus higher operational cost.
 
-**Related defect to fix.** `backend/fpc_server.js` currently falls back to
-`mongodb://localhost:27017/testdb` when `MONGO_URI` is unset. That is acceptable
-for log diagnostics but not for business records: a missing environment variable
-on the server would silently write real proposals into a database named `testdb`.
-Connection configuration must fail loudly at startup instead.
+**Follow-up, done.** `backend/fpc_server.js` requires `MONGO_URI` and exits if it
+is unset or empty. There is no `testdb` fallback.
 
 ---
 
