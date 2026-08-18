@@ -65,7 +65,24 @@ function answersFromFixture() {
   }
   // Legacy mock used a US date string; the new schema is an HTML date input.
   answers.projectTimeline = '2025-12-12';
-  return syncRepeatGroups(steps, answers);
+  answers.audioDiscreteSourceZones += answers.audioClonedSourceZones;
+  answers.videoDiscreteSourceZones += answers.videoClonedSourceZones;
+  answers.avReceiverDiscreteZones += answers.avReceiverClonedZones;
+  answers.displayDiscreteZones += answers.displayClonedZones;
+  delete answers.audioClonedSourceZones;
+  delete answers.videoClonedSourceZones;
+  delete answers.avReceiverClonedZones;
+  delete answers.displayClonedZones;
+  const next = syncRepeatGroups(steps, answers);
+  const fillType = (id, type) => {
+    if (!Array.isArray(next[id])) return;
+    next[id] = next[id].map((item) => ({ ...item, type: item.type || type }));
+  };
+  fillType('audioSourceDetails', 'Streamer');
+  fillType('videoSourceDetails', 'Media Player');
+  fillType('displayDetails', 'TV');
+  fillType('globalControllerDetails', 'iPhone');
+  return next;
 }
 
 describe('FR-2 FR-3 schema catalogue', () => {
@@ -93,8 +110,32 @@ describe('FR-2 FR-3 schema catalogue', () => {
   it('uses camelCase ids, not Google Form titles, as keys', () => {
     const ids = getQuestions(steps).map((question) => question.id);
     assert.ok(ids.includes('audioDiscreteSourceZones'));
+    assert.equal(ids.includes('audioClonedSourceZones'), false);
+    assert.equal(ids.includes('videoClonedSourceZones'), false);
+    assert.equal(ids.includes('avReceiverClonedZones'), false);
+    assert.equal(ids.includes('displayClonedZones'), false);
     assert.equal(ids.includes('Discrete Audio Sources'), false);
     assert.equal(ids.includes('audioSources'), false);
+  });
+
+  it('does not use Discrete or Cloned in live form labels', () => {
+    for (const question of getQuestions(steps)) {
+      assert.equal(
+        /discrete|cloned/i.test(question.label),
+        false,
+        question.id
+      );
+    }
+  });
+
+  it('uses dealer-facing project detail labels, defaults, and a required timeline', () => {
+    assert.equal(findQuestion('contractorName').label, 'Your Name');
+    assert.equal(findQuestion('contractorEmail').label, 'Your Email');
+    assert.equal(findQuestion('projectAddress').label, 'Project Location');
+    assert.equal(findQuestion('projectAddress').help, 'A city is fine.');
+    assert.equal(findQuestion('projectClientName').default, 'Private Client');
+    assert.equal(findQuestion('projectAddress').default, 'Private Location');
+    assert.equal(findQuestion('projectTimeline').required, true);
   });
 
   it('FR-10 preserves quoted help text verbatim', () => {
@@ -212,14 +253,10 @@ describe('FR-8 validation', () => {
       keypadZones: 0,
       audioZones: 0,
       audioDiscreteSourceZones: 0,
-      audioClonedSourceZones: 0,
       videoZones: 0,
       videoDiscreteSourceZones: 0,
-      videoClonedSourceZones: 0,
       avReceiverDiscreteZones: 0,
-      avReceiverClonedZones: 0,
       displayDiscreteZones: 0,
-      displayClonedZones: 0,
       thermostatZones: 0,
       heaterZones: 0,
       fanZones: 0,
@@ -233,7 +270,7 @@ describe('FR-8 validation', () => {
       globalControllerCount: 0,
       roomControllerCount: 1
     });
-    assert.equal(errors.contractorName, 'Contractor Name is required');
+    assert.equal(errors.contractorName, 'Your Name is required');
     assert.equal(errors.contractorEmail, 'A valid email address is required');
   });
 
@@ -290,9 +327,15 @@ describe('FR-8 validation', () => {
     assert.equal(validate(steps, roomOnly).globalControllerCount, undefined);
     assert.equal(validate(steps, roomOnly).roomControllerCount, undefined);
 
-    const globalOnly = { ...bothZero, globalControllerCount: 1, globalControllerDetails: [{}] };
+    const globalOnly = { ...bothZero, globalControllerCount: 1, globalControllerDetails: [{ type: 'iPhone' }] };
     assert.equal(validate(steps, globalOnly).globalControllerCount, undefined);
     assert.equal(validate(steps, globalOnly).roomControllerCount, undefined);
+  });
+
+  it('requires a project timeline', () => {
+    const answers = answersFromFixture();
+    answers.projectTimeline = '';
+    assert.equal(validate(steps, answers).projectTimeline, 'Project Timeline is required');
   });
 
   it('rejects unknown keys instead of ignoring them', () => {
@@ -302,15 +345,25 @@ describe('FR-8 validation', () => {
 
   it('does not require names inside repeat groups', () => {
     const answers = answersFromFixture();
-    assert.equal(answers.audioSourceDetails.length, 1);
+    assert.equal(answers.audioSourceDetails.length, 4);
     assert.equal(answers.audioSourceDetails[0].name, 'Audio Source 1');
-    answers.audioSourceDetails = [{}];
+    answers.audioSourceDetails[0] = { type: 'Streamer' };
     assert.equal(validate(steps, answers)['audioSourceDetails[0].name'], undefined);
+  });
+
+  it('requires a type on source, display, and global controller cards', () => {
+    const answers = answersFromFixture();
+    answers.audioSourceDetails[0] = { name: 'Port' };
+    assert.equal(validate(steps, answers)['audioSourceDetails[0].type'], 'Type is required');
+    answers.audioSourceDetails[0] = { name: 'Port', type: 'Streamer' };
+    answers.globalControllerDetails = [{}];
+    answers.globalControllerCount = 1;
+    assert.equal(validate(steps, answers)['globalControllerDetails[0].type'], 'Type is required');
   });
 
   it('reports repeat-field errors with indexed paths', () => {
     const answers = answersFromFixture();
-    answers.audioSourceDetails = [{ type: 'Not A Type' }];
+    answers.audioSourceDetails[0] = { type: 'Not A Type' };
     assert.equal(
       validate(steps, answers)['audioSourceDetails[0].type'],
       'Type must be one of: Streamer, Tuner, Turntable, Custom'

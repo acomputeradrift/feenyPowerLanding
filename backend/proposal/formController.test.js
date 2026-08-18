@@ -34,6 +34,7 @@ function fillProjectDetails(form) {
   form.setAnswer('contractorEmail', 'john@example.com');
   form.setAnswer('projectPoName', 'LAKE HOUSE');
   form.setAnswer('projectAddress', '123 Main St');
+  form.setAnswer('projectTimeline', '2026-08-18');
 }
 
 describe('FR-3 step navigation', () => {
@@ -56,7 +57,7 @@ describe('FR-3 step navigation', () => {
     const result = form.next();
     assert.equal(result.ok, false);
     assert.equal(form.getState().stepIndex, 0);
-    assert.equal(form.getState().fieldErrors.contractorName, 'Contractor Name is required');
+    assert.equal(form.getState().fieldErrors.contractorName, 'Your Name is required');
     assert.equal(form.getState().fieldErrors.rooms, undefined);
   });
 
@@ -114,6 +115,8 @@ describe('default answers', () => {
     assert.equal(answers.cameraZones, 0);
     assert.equal(answers.globalControllerCount, 0);
     assert.equal(answers.roomControllerCount, 0);
+    assert.equal(answers.projectClientName, 'Private Client');
+    assert.equal(answers.projectAddress, 'Private Location');
   });
 });
 
@@ -295,9 +298,9 @@ describe('submission client flow', () => {
     form.setAnswer('roomControllerCount', 1);
     const zeroCounts = [
       'rooms', 'floors', 'exteriorZones', 'lightingZones', 'shadingZones', 'keypadZones',
-      'audioZones', 'audioDiscreteSourceZones', 'audioClonedSourceZones', 'videoZones',
-      'videoDiscreteSourceZones', 'videoClonedSourceZones', 'avReceiverDiscreteZones',
-      'avReceiverClonedZones', 'displayDiscreteZones', 'displayClonedZones',
+      'audioZones', 'audioDiscreteSourceZones', 'videoZones',
+      'videoDiscreteSourceZones', 'avReceiverDiscreteZones',
+      'displayDiscreteZones',
       'thermostatZones', 'heaterZones', 'fanZones', 'alarmZones', 'accessZones',
       'cameraZones', 'poolZones', 'pumpZones', 'inputSenseZones', 'outputRelayZones',
       'globalControllerCount', 'roomControllerCount'
@@ -383,6 +386,12 @@ describe('FR-1 page contract', () => {
     );
     assert.match(css, /--proposal-label:\s*#e8e8e8/);
     assert.match(css, /--proposal-action:\s*#fcb040/);
+  });
+
+  it('fades unedited default names, not Type selects', () => {
+    assert.match(css, /\.proposal-field input\.proposal-value-default/);
+    assert.match(renderer, /function applyDefaultHint/);
+    assert.match(renderer, /question\.kind === 'select' \|\| question\.kind === 'count'/);
   });
 
   it('does not show a live hours estimate on the public form', () => {

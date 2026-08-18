@@ -4,7 +4,7 @@ Use this file to onboard a new agent (or Jamie) on how this repo works, where th
 
 **Start here:** read this file, then `deployment.md` if the task involves shipping changes.
 
-For the RTI proposal form (`/rti_proposal/`), also read `docs/rti_proposal/CONTINUITY.md` — that is the short catch-up. Do not reload the full spec set for a visual pass.
+For the RTI proposal form (`/rti_proposal/`), also read `docs/rti_proposal/CONTINUITY.md` — that is the short catch-up for look, copy, and form-behavior work. Do not reload the full spec set for a visual pass.
 
 ---
 
@@ -268,4 +268,4 @@ Details and step-by-step deploy commands are in `deployment.md`. Quick facts:
 | 2026-08-17 | Audit view at `GET /rti_proposal/audit/:reference` (FR-20, FR-21). Token-gated, noindex, no-store. The only surface that shows per-zone rates. |
 | 2026-08-17 | `MONGO_URI` is required at startup. Missing or empty value exits the process. No `testdb` fallback. |
 | 2026-08-17 | Proposal email via Resend. Reply-To / BCC: Jamie's Gmail. |
-| 2026-08-17 | `docs/rti_proposal/CONTINUITY.md` — short agent catch-up for look/copy work. |
+| 2026-08-18 | Proposal form: no live hours on the public page; rooms/floors min 1; exterior names; repeats sit under their count; source type Other → Custom; no AV receiver names; global controller types iPhone/iPad/Touchscreen; at least one controller required. Type selects are required. Session workflow is localhost-first, then commit/push/server pull when Jamie asks. See `docs/rti_proposal/CONTINUITY.md`. |

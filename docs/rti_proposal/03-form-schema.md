@@ -125,7 +125,7 @@ The feature that motivated the whole project (FR-5).
   max: 40,
   fields: [
     { kind: "text", id: "name", label: "Source name", required: false },
-    { kind: "select", id: "type", label: "Type",
+    { kind: "select", id: "type", label: "Type", required: true,
       options: ["Streamer", "Tuner", "Turntable", "Custom"] }
   ]
 }
@@ -152,7 +152,7 @@ Rules:
 Named detail is collected where a name or type is useful in the proposal, and is
 **optional to fill in** - a dealer in a hurry can leave names blank and still
 submit. Attach groups to: audio sources, video sources, displays, rooms,
-exterior zones, cameras, and discrete global controllers. Each group renders
+exterior zones, cameras, and global controllers. Each group renders
 immediately below its driving count.
 
 Do not attach groups to abstract quantities where a per-item name carries no
@@ -191,20 +191,19 @@ at least 1.
 
 | id | kind | label | required |
 |---|---|---|---|
-| `contractorName` | text | Contractor Name | yes |
-| `contractorEmail` | email | Contractor Email | yes |
-| `projectClientName` | text | Project Client Name | no |
+| `contractorName` | text | Your Name | yes |
+| `contractorEmail` | email | Your Email | yes |
+| `projectClientName` | text | Project Client Name | no, default `Private Client` |
 | `projectPoName` | text | Project PO Name | yes |
-| `projectAddress` | text | Project Address | yes |
-| `projectTimeline` | date | Project Timeline | no |
+| `projectAddress` | text | Project Location | yes, default `Private Location` |
+| `projectTimeline` | date | Project Timeline | yes |
 
 Help text:
 
 - Contractor Email - "Please enter a valid email below and a proposal will be
   emailed to you."
 - Project PO Name - "Include this for invoicing."
-- Project Address - "Include this for location services, like weather. A city is
-  fine."
+- Project Location - "A city is fine."
 - Project Timeline - "Include expected install date."
 
 ### Step 2 - Site Details
@@ -244,42 +243,39 @@ All required.
 
 ### Step 4 - Audio/Video Control
 
-All required. The discrete versus cloned distinction is load-bearing: cloned
-devices are charged at half the discrete rate. See
-[04-calculations.md](04-calculations.md).
+All required. The live form does not ask dealers to distinguish discrete from
+cloned devices. Count every unit, collect a type on each source and display, and
+let `systemData` derive the split used by the calculator: the first of each type
+is discrete, later units of the same type are cloned. `Custom` is the exception:
+every Custom item is discrete and is never cloned. AV receivers have no type;
+the first unit is discrete and the rest are cloned. Cloned devices are still
+charged at half the discrete rate. See [04-calculations.md](04-calculations.md).
 
 - `audioZones` - Distributed Audio Zones
-- `audioDiscreteSourceZones` - Discrete Audio Sources. "Include any streamers,
+- `audioDiscreteSourceZones` - Audio Sources. "Include any streamers,
   turntables or other audio only sources (distributed and local)."
-- `audioClonedSourceZones` - Cloned Audio Sources. "Include any duplicate
-  streamers, turntables or other audio only sources (distributed and local)."
 - `videoZones` - Distributed Video Zones
-- `videoDiscreteSourceZones` - Discrete Video Sources. "Include any media players,
+- `videoDiscreteSourceZones` - Video Sources. "Include any media players,
   cable/sat boxes or other video sources (distributed and local)."
-- `videoClonedSourceZones` - Cloned Video Sources. "Include any duplicate media
-  players, cable/sat boxes or other video sources (distributed and local)."
-- `avReceiverDiscreteZones` - Discrete AV Receiver Zones. "Include theatres,
+- `avReceiverDiscreteZones` - AV Receiver Zones. "Include theatres,
   cinemas and other rooms with a surround sound receiver."
-- `avReceiverClonedZones` - Cloned AV Receiver Zones. "Include theatres, cinemas
-  and other rooms with a duplicate surround sound receiver."
-- `displayDiscreteZones` - Discrete Display Zones. "Include any TVs or projectors
+- `displayDiscreteZones` - Display Zones. "Include any TVs or projectors
   to be controlled."
-- `displayClonedZones` - Cloned Display Zones. "Include any duplicate TVs or
-  projectors to be controlled."
 
-Repeat groups, each immediately below its discrete count. New name fields default
+Repeat groups, each immediately below its count. New name fields default
 to the item label (`Audio Source 1`, `Video Source 1`, `Display 1`). Source type
 `Other` is `Custom`.
 
-- `audioSourceDetails` over `audioDiscreteSourceZones` - name, type
-  (Streamer / Tuner / Turntable / Custom)
-- `videoSourceDetails` over `videoDiscreteSourceZones` - name, type
-  (Media Player / Cable or Satellite / Games Console / Custom)
-- `displayDetails` over `displayDiscreteZones` - name, type (TV / Projector)
+- `audioSourceDetails` over `audioDiscreteSourceZones` - name (optional), type
+  (required: Streamer / Tuner / Turntable / Custom)
+- `videoSourceDetails` over `videoDiscreteSourceZones` - name (optional), type
+  (required: Media Player / Cable or Satellite / Games Console / Custom)
+- `displayDetails` over `displayDiscreteZones` - name (optional), type (required:
+  TV / Projector)
 
-AV receivers have a count only — no name fields. Groups attach to the discrete
-counts only. Cloned items are by definition duplicates of a discrete device and
-need no separate name.
+AV receivers have a count only — no name or type fields. There are no cloned
+count questions on the live form. The `*Cloned*` ids remain on the calculator
+output and on legacy answers for golden-master parity.
 
 ### Step 5 - Climate Control
 
@@ -323,11 +319,11 @@ All required. No repeat groups.
 
 ### Step 9 - Controllers
 
-- `globalControllerCount` - Discrete Global Controllers, required. "iPhone, iPad,
+- `globalControllerCount` - Global Controllers, required. "iPhone, iPad,
   Touchscreens (controls all rooms, all sources)"
 
 Repeat group: `globalControllerDetails` over `globalControllerCount`, immediately
-below the count. Type select: iPhone / iPad / Touchscreen.
+below the count. Type select is required: iPhone / iPad / Touchscreen.
 
 - `floorplanAddOnCount` - Floorplan Add On for Global Controllers, optional.
   "Include this for each Global Controller (iPad, Touchscreens) that you would
@@ -349,7 +345,8 @@ exceed the global controller count.
 
 The calculators consume camelCase ids. Legacy Google Form titles map as follows;
 this table exists so the golden-master fixture can be built from the legacy mock
-data. See [04-calculations.md](04-calculations.md).
+data. See [04-calculations.md](04-calculations.md). The live form no longer uses
+the Discrete/Cloned labels, but the ids and this mapping stay for parity.
 
 | Legacy form title | Schema id |
 |---|---|

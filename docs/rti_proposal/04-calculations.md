@@ -49,8 +49,12 @@ reproduced exactly.
 | `roomController` | 20 | see the controllers formula |
 | `floorplanAddOn` | 7 | see the controllers formula |
 
-Cloned devices are charged at exactly half the discrete rate. That relationship is
-intentional and is the reason the schema separates discrete from cloned counts.
+Cloned devices are charged at exactly half the discrete rate. The live form does
+not collect those counts: `systemData` derives them from types (first of each
+type is discrete, later units of the same type are cloned). `Custom` is never
+cloned: each Custom item is discrete. AV receivers have no type, so the first
+unit is discrete and the rest are cloned. Answers that still
+include `*Cloned*` count fields are used as-is so golden-master parity holds.
 
 ### Unused rates
 
@@ -226,6 +230,12 @@ roomControllerHours = ceil(
 ```
 
 where `safeRooms = rooms > 0 ? rooms : 1`, guarding against division by zero.
+
+When global controller types are present, the `globalControllerCount` used in that
+formula is the number of distinct types (the first of each type). Extra
+controllers of a type already counted do not add to the multiplier. Answers
+without types keep using the total count, which is how the golden-master fixture
+is priced.
 
 Controller effort scales with overall project size rather than with a unit count,
 because a global controller must present every zone in the project. For these

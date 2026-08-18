@@ -1,20 +1,31 @@
 # RTI proposal — agent continuity
 
-Catch-up for look and copy work. Do not rebuild the feature.
+Catch-up for look, copy, and form-behavior work. Do not rebuild the feature.
 
-Live URL: https://www.feenypowerandcontrol.com/rti_proposal/
+Live URL: https://www.feenypowerandcontrol.com/rti_proposal/  
+Local: http://localhost:3000/rti_proposal/
 
 ## Read, then stop
 
 | Task | Read |
 |---|---|
 | Look, layout, CSS, header copy | this file, then [08-design-system.md](08-design-system.md) |
-| Question labels or help text | [03-form-schema.md](03-form-schema.md) and `backend/proposal/shared/schema.js` |
+| Question labels, help text, defaults, repeats, validation | this file, then [03-form-schema.md](03-form-schema.md) and `backend/proposal/shared/schema.js` |
 | Hours, API, PDF, email, audit | the matching `0N-*.md` spec — only if that is the task |
 
-Do not read the full spec set for a visual pass. `01`–`08` are constraining specs, not a backlog. If a spec is wrong, say so and update it in the same change.
+Do not read the full spec set for a visual or form pass. `01`–`08` are constraining specs, not a backlog. If a spec is wrong, say so and update it in the same change.
 
 Repo-wide rules: `development_continuity.md` and `deployment.md` at the repo root.
+
+## Session workflow (Jamie’s preference)
+
+1. Keep local Node running: `cd backend && node fpc_server.js`
+2. Change code. Show/test at **localhost**, not the live site. Open the Cursor browser to http://localhost:3000/rti_proposal/ after a round. Hard-refresh (`Cmd+Shift+R`) if CSS/JS looks stale.
+3. Do **not** commit, push, or deploy until Jamie says the session is done.
+4. Then, in order: commit → `git push origin master` → SSH `my-do-server` and `cd /root/feenyPowerLanding && git pull origin master && pm2 restart "FPC Website"`. Tell Jamie at each step.
+5. Verify https://www.feenypowerandcontrol.com/rti_proposal/ with a hard refresh.
+
+Pushing to GitHub does not update the live site.
 
 ## What this is
 
@@ -31,22 +42,52 @@ Vanilla HTML/CSS/JS. No React, no bundler, no second test framework. Deploy is `
 - Do not send real mail unless `PROPOSAL_EMAIL_ENABLED` is the string `true`.
 - Do not link `/rti_proposal/audit/` from any public page.
 - Do not commit or push unless asked. Never commit `.env`.
+- Do not re-add a live hours estimate on the public form.
 
-## Where the look lives
+## Where the look and form live
 
 | File | Role |
 |---|---|
-| `frontend/rti_proposal.html` | Page shell, header, partners, footer. Header line is invented and may change. |
-| `frontend/styles/rti_proposal.css` | **Only** stylesheet you should edit for this page. Palette is CSS variables at the top. |
-| `frontend/scripts/proposal/rti_proposal.js` | DOM: steps, inputs, estimate, submit. |
-| `frontend/scripts/proposal/formController.js` | Answers object is the source of truth. Re-render from it. |
+| `frontend/rti_proposal.html` | Page shell, header, partners, footer. Header line is invented and may change. No hours aside. |
+| `frontend/styles/rti_proposal.css` | **Only** stylesheet you should edit for this page. Palette is CSS variables at the top. Single centered column (`max-width: 720px`). |
+| `frontend/scripts/proposal/rti_proposal.js` | DOM: steps, inputs, submit. Does not call the estimate API. |
+| `frontend/scripts/proposal/formController.js` | Answers object is the source of truth. Re-render from it. Count defaults use `question.min ?? 0`. |
 | `backend/proposal/shared/schema.js` | Questions, help text (preserve verbatim unless Jamie asks to change it), `visibleIf`, repeats. |
+| `backend/proposal/shared/repeatGroups.js` | Resize arrays to the driving count. New items get `name` from `itemLabel` (Room 1, …). |
+| `backend/proposal/shared/validate.js` | Shared client/server validation, including the controller-pair rule. |
 
 Load order in the HTML, do not reorder:
 
 `global.css` → `consultation.css` → `rti_proposal.css`
 
 Shared schema is imported by the browser from `/scripts/proposal/shared/{schema,validate,repeatGroups}.js` only.
+
+## Form rules that are easy to break
+
+These are current product rules, not a backlog.
+
+**Counts**
+
+- Rooms **min 1**. Floors **min 1**. Both default to 1.
+- Other counts default to 0.
+- Exterior zones may be 0.
+- Global controllers may be 0, and room controllers may be 0, but **not both**. Error: *Enter at least one global controller or one room controller*.
+
+**Repeat groups** render **immediately under** the count that drives them. Do not park them at the end of the step.
+
+| Count | Repeat | Defaults / fields |
+|---|---|---|
+| `rooms` | `roomDetails` | Name: Room 1, Room 2, … (optional to edit) |
+| `exteriorZones` | `exteriorZoneDetails` | Name: Exterior Zone 1, … (optional to edit) |
+| `audioDiscreteSourceZones` | `audioSourceDetails` | Name default; **type required**: Streamer / Tuner / Turntable / Custom |
+| `videoDiscreteSourceZones` | `videoSourceDetails` | Name default; **type required**: Media Player / Cable or Satellite / Games Console / Custom |
+| `displayDiscreteZones` | `displayDetails` | Name default; **type required**: TV / Projector |
+| `cameraZones` | `cameraDetails` | Name default Camera 1, …; location optional |
+| `globalControllerCount` | `globalControllerDetails` | **Type required**: iPhone / iPad / Touchscreen |
+
+No name fields on AV receivers (count only). Discrete versus cloned is derived from types (first of each type is discrete; AV receivers are one type), not collected on the form. `Custom` is never cloned.
+
+Leaving a type on “Select…” must block Next/Submit with *Type is required*. Names may stay as the auto-filled label.
 
 ## Copy that is fair game
 
@@ -56,22 +97,20 @@ Shared schema is imported by the browser from `/scripts/proposal/shared/{schema,
 
 Help text in the schema is domain knowledge. Do not rewrite it for tone.
 
-## Implementation snapshot (2026-08-17)
+## Implementation snapshot (2026-08-18)
 
 Built and live. Do not reimplement.
 
 - Form, persist, pdfmake PDF, Resend email, audit route, `MONGO_URI` fail-fast.
-  The public form does not show a live hours estimate; hours remain on the PDF
-  and audit view. Count fields default to their minimum (rooms and floors start at 1; most
-  others at 0). Repeat names default to the item label (Room 1, Exterior Zone 1,
-  Audio Source 1, …). Zero rooms or zero floors is invalid. At least one global or room
-  controller is required.
+- Public form has **no** live hours estimate. Hours remain on the PDF and audit view. The estimate API may still exist; the page does not call it.
 - Reply-To is `Feeny.jamie@gmail.com`. BCC is the same inbox. Sending is on in production.
 - Audit route is disabled until `PROPOSAL_AUDIT_TOKEN` is set on the **server** `.env`.
 - FAQ still links the old Google Form. Cutover (point dealers here, retire the Form) is not done.
 - Backup/retention was deferred on purpose.
 
-## Verify a look change
+Last production deploy (as of this snapshot): `e7de53f` plus earlier look changes. If *Type is required* is still only in the local working tree, do not assume it is live until Jamie asks to commit, push, and pull.
+
+## Verify a look or form change
 
 ```bash
 cd backend && npm test

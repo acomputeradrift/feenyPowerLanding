@@ -140,6 +140,11 @@
     font: inherit;
 }
 
+.proposal-field input.proposal-value-default,
+.proposal-field textarea.proposal-value-default {
+    color: var(--proposal-border);
+}
+
 .proposal-field input[aria-invalid="true"],
 .proposal-field select[aria-invalid="true"],
 .proposal-field textarea[aria-invalid="true"] {

@@ -46,7 +46,7 @@ function readValue(question, element) {
   return element.value;
 }
 
-function createInput(question, value, id) {
+function createInput(question, value, id, hintValue) {
   if (question.kind === 'paragraph') {
     const element = document.createElement('textarea');
     element.id = id;
@@ -54,6 +54,7 @@ function createInput(question, value, id) {
     element.rows = 6;
     if (question.maxLength) element.maxLength = question.maxLength;
     element.value = value ?? '';
+    applyDefaultHint(element, question, value, hintValue);
     return element;
   }
 
@@ -95,10 +96,20 @@ function createInput(question, value, id) {
     if (question.maxLength) element.maxLength = question.maxLength;
   }
   element.value = value === undefined || value === null ? '' : String(value);
+  applyDefaultHint(element, question, value, hintValue);
   return element;
 }
 
-function renderField(question, state, value, path, onChange) {
+function applyDefaultHint(element, question, value, hintValue) {
+  if (question.kind === 'select' || question.kind === 'count' || question.kind === 'date') return;
+  const hint = hintValue ?? question.default;
+  if (hint == null || value == null || value === '') return;
+  if (String(value) === String(hint)) {
+    element.classList.add('proposal-value-default');
+  }
+}
+
+function renderField(question, state, value, path, onChange, hintValue) {
   const wrapper = document.createElement('div');
   wrapper.className = 'proposal-field';
   const id = fieldDomId(path);
@@ -114,7 +125,7 @@ function renderField(question, state, value, path, onChange) {
     label.appendChild(mark);
   }
 
-  const input = createInput(question, value, id);
+  const input = createInput(question, value, id, hintValue);
   input.setAttribute('aria-required', question.required ? 'true' : 'false');
   const describedBy = [];
   if (question.help) describedBy.push(helpDomId(path));
@@ -174,7 +185,10 @@ function renderRepeat(question, state) {
         path,
         (value, selection) => {
           controller.setRepeatField(question.id, index, field.id, value, selection);
-        }
+        },
+        field.id === 'name' && typeof question.itemLabel === 'function'
+          ? question.itemLabel(index)
+          : undefined
       ));
     }
     group.appendChild(card);

@@ -69,6 +69,11 @@ Secondary actions (Back) use `#222` with white text, following
 **Cards** use `1px solid #a7a9ac`, `border-radius: 8px`, on `#4a4a4c`, matching
 `.faq-item`. Each repeat-group instance renders as one of these.
 
+Unedited default text values (schema defaults such as `Private Client`, and
+auto-filled names such as `Room 1`) use the hint colour `#a7a9ac`. As soon as the
+dealer changes the value, it returns to `#e8e8e8`. Do not apply this to selects,
+including Type.
+
 **Content column** is `max-width: 720px; margin: 0 auto; text-align: left`, the
 pattern `.faq-list` established for readable content on the dark band.
 

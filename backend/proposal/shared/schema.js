@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = '2026.1';
+export const SCHEMA_VERSION = '2026.3';
 export const REPEAT_GROUP_MAX = 40;
 
 function text(id, label, extra = {}) {
@@ -10,6 +10,7 @@ function text(id, label, extra = {}) {
     maxLength: extra.maxLength ?? 200
   };
   if (extra.help) question.help = extra.help;
+  if (extra.default != null) question.default = extra.default;
   return question;
 }
 
@@ -89,19 +90,23 @@ export const steps = [
     id: 'projectDetails',
     title: 'Project Details',
     questions: [
-      text('contractorName', 'Contractor Name'),
-      email('contractorEmail', 'Contractor Email', {
+      text('contractorName', 'Your Name'),
+      email('contractorEmail', 'Your Email', {
         help: 'Please enter a valid email below and a proposal will be emailed to you.'
       }),
-      text('projectClientName', 'Project Client Name', { required: false }),
+      text('projectClientName', 'Project Client Name', {
+        required: false,
+        default: 'Private Client'
+      }),
       text('projectPoName', 'Project PO Name', {
         help: 'Include this for invoicing.'
       }),
-      text('projectAddress', 'Project Address', {
-        help: 'Include this for location services, like weather. A city is fine.'
+      text('projectAddress', 'Project Location', {
+        default: 'Private Location',
+        help: 'A city is fine.'
       }),
       date('projectTimeline', 'Project Timeline', {
-        required: false,
+        required: true,
         help: 'Include expected install date.'
       })
     ]
@@ -159,7 +164,7 @@ export const steps = [
     title: 'Audio/Video Control',
     questions: [
       count('audioZones', 'Distributed Audio Zones'),
-      count('audioDiscreteSourceZones', 'Discrete Audio Sources', {
+      count('audioDiscreteSourceZones', 'Audio Sources', {
         max: REPEAT_GROUP_MAX,
         help: 'Include any streamers, turntables or other audio only sources (distributed and local).'
       }),
@@ -168,14 +173,11 @@ export const steps = [
         itemLabel: (index) => `Audio Source ${index + 1}`,
         fields: [
           text('name', 'Source name', { required: false, maxLength: 80 }),
-          select('type', 'Type', ['Streamer', 'Tuner', 'Turntable', 'Custom'])
+          select('type', 'Type', ['Streamer', 'Tuner', 'Turntable', 'Custom'], { required: true })
         ]
       }),
-      count('audioClonedSourceZones', 'Cloned Audio Sources', {
-        help: 'Include any duplicate streamers, turntables or other audio only sources (distributed and local).'
-      }),
       count('videoZones', 'Distributed Video Zones'),
-      count('videoDiscreteSourceZones', 'Discrete Video Sources', {
+      count('videoDiscreteSourceZones', 'Video Sources', {
         max: REPEAT_GROUP_MAX,
         help: 'Include any media players, cable/sat boxes or other video sources (distributed and local).'
       }),
@@ -184,20 +186,14 @@ export const steps = [
         itemLabel: (index) => `Video Source ${index + 1}`,
         fields: [
           text('name', 'Source name', { required: false, maxLength: 80 }),
-          select('type', 'Type', ['Media Player', 'Cable or Satellite', 'Games Console', 'Custom'])
+          select('type', 'Type', ['Media Player', 'Cable or Satellite', 'Games Console', 'Custom'], { required: true })
         ]
       }),
-      count('videoClonedSourceZones', 'Cloned Video Sources', {
-        help: 'Include any duplicate media players, cable/sat boxes or other video sources (distributed and local).'
-      }),
-      count('avReceiverDiscreteZones', 'Discrete AV Receiver Zones', {
+      count('avReceiverDiscreteZones', 'AV Receiver Zones', {
         max: REPEAT_GROUP_MAX,
         help: 'Include theatres, cinemas and other rooms with a surround sound receiver.'
       }),
-      count('avReceiverClonedZones', 'Cloned AV Receiver Zones', {
-        help: 'Include theatres, cinemas and other rooms with a duplicate surround sound receiver.'
-      }),
-      count('displayDiscreteZones', 'Discrete Display Zones', {
+      count('displayDiscreteZones', 'Display Zones', {
         max: REPEAT_GROUP_MAX,
         help: 'Include any TVs or projectors to be controlled.'
       }),
@@ -206,11 +202,8 @@ export const steps = [
         itemLabel: (index) => `Display ${index + 1}`,
         fields: [
           text('name', 'Display name', { required: false, maxLength: 80 }),
-          select('type', 'Type', ['TV', 'Projector'])
+          select('type', 'Type', ['TV', 'Projector'], { required: true })
         ]
-      }),
-      count('displayClonedZones', 'Cloned Display Zones', {
-        help: 'Include any duplicate TVs or projectors to be controlled.'
       }),
     ]
   },
@@ -280,7 +273,7 @@ export const steps = [
     id: 'controllers',
     title: 'Controllers',
     questions: [
-      count('globalControllerCount', 'Discrete Global Controllers', {
+      count('globalControllerCount', 'Global Controllers', {
         max: REPEAT_GROUP_MAX,
         help: 'iPhone, iPad, Touchscreens (controls all rooms, all sources)'
       }),
@@ -288,7 +281,7 @@ export const steps = [
         repeatFor: 'globalControllerCount',
         itemLabel: (index) => `Global Controller ${index + 1}`,
         fields: [
-          select('type', 'Type', ['iPhone', 'iPad', 'Touchscreen'])
+          select('type', 'Type', ['iPhone', 'iPad', 'Touchscreen'], { required: true })
         ]
       }),
       count('floorplanAddOnCount', 'Floorplan Add On for Global Controllers', {

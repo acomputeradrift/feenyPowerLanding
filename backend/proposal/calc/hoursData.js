@@ -55,7 +55,9 @@ function controllerLines(systemData, rates) {
   const safeRooms = Number(systemData.rooms) > 0 ? Number(systemData.rooms) : 1;
   const totalProjectRooms = Number(systemData.totalProjectRooms) || 0;
   const floors = Number(systemData.floors) || 0;
-  const globalControllerCount = systemData.globalControllerCount;
+  const globalControllerCount = Object.hasOwn(systemData, 'globalControllerDiscreteCount')
+    ? Number(systemData.globalControllerDiscreteCount) || 0
+    : Number(systemData.globalControllerCount) || 0;
   const floorplanAddOnCount = systemData.floorplanAddOnCount;
   const roomControllerCount = systemData.roomControllerCount;
 

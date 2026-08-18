@@ -2,6 +2,55 @@ function asCount(value) {
   return Number(value) || 0;
 }
 
+export function splitByType(items) {
+  const seen = new Set();
+  let discrete = 0;
+  let cloned = 0;
+  if (!Array.isArray(items)) return { discrete, cloned };
+  for (const item of items) {
+    const type = item && typeof item.type === 'string' ? item.type.trim() : '';
+    if (!type) continue;
+    if (type === 'Custom') {
+      discrete += 1;
+      continue;
+    }
+    if (seen.has(type)) cloned += 1;
+    else {
+      seen.add(type);
+      discrete += 1;
+    }
+  }
+  return { discrete, cloned };
+}
+
+export function splitUniformCount(total) {
+  const n = asCount(total);
+  if (n <= 0) return { discrete: 0, cloned: 0 };
+  return { discrete: 1, cloned: n - 1 };
+}
+
+function resolveTypedPair(answers, countKey, clonedKey, detailsKey) {
+  if (Object.hasOwn(answers, clonedKey)) {
+    return {
+      discrete: asCount(answers[countKey]),
+      cloned: asCount(answers[clonedKey])
+    };
+  }
+  const split = splitByType(answers[detailsKey]);
+  if (split.discrete + split.cloned > 0) return split;
+  return { discrete: asCount(answers[countKey]), cloned: 0 };
+}
+
+function resolveUniformPair(answers, countKey, clonedKey) {
+  if (Object.hasOwn(answers, clonedKey)) {
+    return {
+      discrete: asCount(answers[countKey]),
+      cloned: asCount(answers[clonedKey])
+    };
+  }
+  return splitUniformCount(answers[countKey]);
+}
+
 export function calculateSystemData(answers = {}) {
   const rooms = asCount(answers.rooms);
   const floors = asCount(answers.floors);
@@ -10,15 +59,38 @@ export function calculateSystemData(answers = {}) {
   const shadingZones = asCount(answers.shadingZones);
   const keypadZones = asCount(answers.keypadZones);
   const audioZones = asCount(answers.audioZones);
-  const audioDiscreteSourceZones = asCount(answers.audioDiscreteSourceZones);
-  const audioClonedSourceZones = asCount(answers.audioClonedSourceZones);
+  const audioSplit = resolveTypedPair(
+    answers,
+    'audioDiscreteSourceZones',
+    'audioClonedSourceZones',
+    'audioSourceDetails'
+  );
+  const audioDiscreteSourceZones = audioSplit.discrete;
+  const audioClonedSourceZones = audioSplit.cloned;
   const videoZones = asCount(answers.videoZones);
-  const videoDiscreteSourceZones = asCount(answers.videoDiscreteSourceZones);
-  const videoClonedSourceZones = asCount(answers.videoClonedSourceZones);
-  const displayDiscreteZones = asCount(answers.displayDiscreteZones);
-  const displayClonedZones = asCount(answers.displayClonedZones);
-  const avReceiverDiscreteZones = asCount(answers.avReceiverDiscreteZones);
-  const avReceiverClonedZones = asCount(answers.avReceiverClonedZones);
+  const videoSplit = resolveTypedPair(
+    answers,
+    'videoDiscreteSourceZones',
+    'videoClonedSourceZones',
+    'videoSourceDetails'
+  );
+  const videoDiscreteSourceZones = videoSplit.discrete;
+  const videoClonedSourceZones = videoSplit.cloned;
+  const displaySplit = resolveTypedPair(
+    answers,
+    'displayDiscreteZones',
+    'displayClonedZones',
+    'displayDetails'
+  );
+  const displayDiscreteZones = displaySplit.discrete;
+  const displayClonedZones = displaySplit.cloned;
+  const avSplit = resolveUniformPair(
+    answers,
+    'avReceiverDiscreteZones',
+    'avReceiverClonedZones'
+  );
+  const avReceiverDiscreteZones = avSplit.discrete;
+  const avReceiverClonedZones = avSplit.cloned;
   const thermostatZones = asCount(answers.thermostatZones);
   const heaterZones = asCount(answers.heaterZones);
   const fanZones = asCount(answers.fanZones);
@@ -30,6 +102,7 @@ export function calculateSystemData(answers = {}) {
   const outputRelayZones = asCount(answers.outputRelayZones);
   const inputSenseZones = asCount(answers.inputSenseZones);
   const globalControllerCount = asCount(answers.globalControllerCount);
+  const globalTypeSplit = splitByType(answers.globalControllerDetails);
   const floorplanAddOnCount = asCount(answers.floorplanAddOnCount);
   const roomControllerCount = asCount(answers.roomControllerCount);
 
@@ -82,7 +155,7 @@ export function calculateSystemData(answers = {}) {
   const auxProcessorCount = Math.max(Math.ceil(rawProcessorCount) - 1, 0);
   const expansionModuleCount = Math.ceil(rawProcessorCount);
 
-  return {
+  const systemData = {
     rooms,
     floors,
     exteriorZones,
@@ -127,4 +200,11 @@ export function calculateSystemData(answers = {}) {
     auxProcessorCount,
     expansionModuleCount
   };
+
+  if (globalTypeSplit.discrete + globalTypeSplit.cloned > 0) {
+    systemData.globalControllerDiscreteCount = globalTypeSplit.discrete;
+    systemData.globalControllerClonedCount = globalTypeSplit.cloned;
+  }
+
+  return systemData;
 }

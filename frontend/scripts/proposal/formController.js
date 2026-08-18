@@ -83,9 +83,11 @@ export function createFormController(options) {
   let answers = syncRepeatGroups(
     steps,
     Object.fromEntries(
-      allQuestions(steps)
-        .filter((question) => question.kind === 'count')
-        .map((question) => [question.id, question.min ?? 0])
+      allQuestions(steps).flatMap((question) => {
+        if (question.kind === 'count') return [[question.id, question.min ?? 0]];
+        if (question.default != null) return [[question.id, question.default]];
+        return [];
+      })
     )
   );
   let stepIndex = 0;
