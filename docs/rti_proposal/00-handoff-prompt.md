@@ -133,10 +133,8 @@ Do not add React, a bundler, or a second test framework.
 
 ## Open items still unresolved
 
-- **Email.** Resend is wired. Sending stays off until the domain DNS records
-  are added in Namecheap and verified. Then set `PROPOSAL_EMAIL_ENABLED=true`
-  on the server.
-- **Form header copy is invented** and may still be changed.
+- **Email.** Resend is live. Reply-To and BCC are Jamie's Gmail.
+- **Form header copy is invented** and may still be changed. See CONTINUITY.md.
 - **Backup and retention deliberately deferred.** [05-data-model.md](05-data-model.md).
 
 ## How to verify before starting

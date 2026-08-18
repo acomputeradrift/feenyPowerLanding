@@ -22,8 +22,14 @@ recent-changes entries - are written during implementation, not here.
 
 ## Reading order
 
-Read `01` and `02` first. They establish what is being built and why the
-technology choices are what they are. Everything else can be read on demand.
+For look or copy work, start at **[CONTINUITY.md](CONTINUITY.md)** and stop
+there unless the task needs a specific spec.
+
+For behaviour or architecture, read `01` and `02` first. They establish what
+is being built and why the technology choices are what they are. Everything
+else can be read on demand.
+
+- **[CONTINUITY.md](CONTINUITY.md)** - short agent catch-up for ongoing work.
 
 - **[00-handoff-prompt.md](00-handoff-prompt.md)** - the prompt used to start
   implementation, plus the list of open items still to resolve.
