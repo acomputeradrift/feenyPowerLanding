@@ -118,11 +118,12 @@ describe('FR-2 FR-3 schema catalogue', () => {
       repeats.map((question) => [question.id, question.repeatFor]),
       [
         ['roomDetails', 'rooms'],
+        ['exteriorZoneDetails', 'exteriorZones'],
         ['audioSourceDetails', 'audioDiscreteSourceZones'],
         ['videoSourceDetails', 'videoDiscreteSourceZones'],
         ['displayDetails', 'displayDiscreteZones'],
-        ['avReceiverDetails', 'avReceiverDiscreteZones'],
-        ['cameraDetails', 'cameraZones']
+        ['cameraDetails', 'cameraZones'],
+        ['globalControllerDetails', 'globalControllerCount']
       ]
     );
     for (const question of repeats) {
@@ -130,9 +131,17 @@ describe('FR-2 FR-3 schema catalogue', () => {
     }
   });
 
-  it('places room name fields immediately after the rooms count', () => {
-    const ids = steps.find((step) => step.id === 'siteDetails').questions.map((question) => question.id);
-    assert.deepEqual(ids.slice(0, 2), ['rooms', 'roomDetails']);
+  it('places every repeat group immediately after its driving count', () => {
+    for (const step of steps) {
+      step.questions.forEach((question, index) => {
+        if (question.kind !== 'repeat') return;
+        assert.equal(
+          step.questions[index - 1]?.id,
+          question.repeatFor,
+          `${question.id} must sit directly under ${question.repeatFor}`
+        );
+      });
+    }
   });
 });
 
@@ -195,7 +204,7 @@ describe('FR-8 validation', () => {
       contractorEmail: 'not-an-email',
       projectPoName: 'LAKE HOUSE',
       projectAddress: '123 Main St',
-      rooms: 0,
+      rooms: 1,
       floors: 1,
       exteriorZones: 0,
       lightingZones: 0,
@@ -222,7 +231,7 @@ describe('FR-8 validation', () => {
       inputSenseZones: 0,
       outputRelayZones: 0,
       globalControllerCount: 0,
-      roomControllerCount: 0
+      roomControllerCount: 1
     });
     assert.equal(errors.contractorName, 'Contractor Name is required');
     assert.equal(errors.contractorEmail, 'A valid email address is required');
@@ -249,6 +258,43 @@ describe('FR-8 validation', () => {
     );
   });
 
+  it('rejects zero rooms', () => {
+    const answers = answersFromFixture();
+    answers.rooms = 0;
+    answers.roomDetails = [];
+    assert.equal(validate(steps, answers).rooms, 'Number of Rooms must be at least 1');
+  });
+
+  it('rejects zero floors', () => {
+    const answers = answersFromFixture();
+    answers.floors = 0;
+    assert.equal(validate(steps, answers).floors, 'Number of Floors must be at least 1');
+  });
+
+  it('requires at least one global or room controller, but allows either to be zero', () => {
+    const bothZero = answersFromFixture();
+    bothZero.globalControllerCount = 0;
+    bothZero.roomControllerCount = 0;
+    bothZero.globalControllerDetails = [];
+    delete bothZero.floorplanAddOnCount;
+    assert.equal(
+      validate(steps, bothZero).globalControllerCount,
+      'Enter at least one global controller or one room controller'
+    );
+    assert.equal(
+      validate(steps, bothZero).roomControllerCount,
+      'Enter at least one global controller or one room controller'
+    );
+
+    const roomOnly = { ...bothZero, roomControllerCount: 1 };
+    assert.equal(validate(steps, roomOnly).globalControllerCount, undefined);
+    assert.equal(validate(steps, roomOnly).roomControllerCount, undefined);
+
+    const globalOnly = { ...bothZero, globalControllerCount: 1, globalControllerDetails: [{}] };
+    assert.equal(validate(steps, globalOnly).globalControllerCount, undefined);
+    assert.equal(validate(steps, globalOnly).roomControllerCount, undefined);
+  });
+
   it('rejects unknown keys instead of ignoring them', () => {
     const errors = validate(steps, { ...answersFromFixture(), extraField: 1 });
     assert.equal(errors.extraField, 'Unknown field');
@@ -267,7 +313,7 @@ describe('FR-8 validation', () => {
     answers.audioSourceDetails = [{ type: 'Not A Type' }];
     assert.equal(
       validate(steps, answers)['audioSourceDetails[0].type'],
-      'Type must be one of: Streamer, Tuner, Turntable, Other'
+      'Type must be one of: Streamer, Tuner, Turntable, Custom'
     );
   });
 });

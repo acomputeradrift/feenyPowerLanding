@@ -103,14 +103,17 @@ describe('FR-4 conditional visibility', () => {
 });
 
 describe('default answers', () => {
-  it('starts every count field at 0', () => {
+  it('starts count fields at their minimum, with rooms at 1', () => {
     const form = controller();
     const { answers } = form.getState();
-    assert.equal(answers.rooms, 0);
+    assert.equal(answers.rooms, 1);
+    assert.deepEqual(answers.roomDetails, [{ name: 'Room 1' }]);
+    assert.equal(answers.floors, 1);
     assert.equal(answers.lightingZones, 0);
     assert.equal(answers.audioDiscreteSourceZones, 0);
     assert.equal(answers.cameraZones, 0);
-    assert.deepEqual(answers.roomDetails, []);
+    assert.equal(answers.globalControllerCount, 0);
+    assert.equal(answers.roomControllerCount, 0);
   });
 });
 
@@ -133,6 +136,15 @@ describe('FR-5 FR-6 count-driven repeats', () => {
       { name: 'Room 1' },
       { name: 'Room 2' },
       { name: 'Room 3' }
+    ]);
+  });
+
+  it('fills exterior zone names immediately below the exterior count', () => {
+    const form = controller();
+    form.setAnswer('exteriorZones', 2);
+    assert.deepEqual(form.getState().answers.exteriorZoneDetails, [
+      { name: 'Exterior Zone 1' },
+      { name: 'Exterior Zone 2' }
     ]);
   });
 
@@ -280,6 +292,7 @@ describe('submission client flow', () => {
       }
     });
     fillProjectDetails(form);
+    form.setAnswer('roomControllerCount', 1);
     const zeroCounts = [
       'rooms', 'floors', 'exteriorZones', 'lightingZones', 'shadingZones', 'keypadZones',
       'audioZones', 'audioDiscreteSourceZones', 'audioClonedSourceZones', 'videoZones',

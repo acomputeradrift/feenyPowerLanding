@@ -89,6 +89,17 @@ function validateCount(question, value, answers, errors) {
   }
 }
 
+function validateControllerPair(answers, errors) {
+  const global = answers.globalControllerCount;
+  const room = answers.roomControllerCount;
+  if (!Number.isInteger(global) || !Number.isInteger(room)) return;
+  if (global < 0 || room < 0) return;
+  if (global + room >= 1) return;
+  const message = 'Enter at least one global controller or one room controller';
+  if (!errors.globalControllerCount) errors.globalControllerCount = message;
+  if (!errors.roomControllerCount) errors.roomControllerCount = message;
+}
+
 function validateRepeat(question, answers, errors) {
   const count = answers[question.repeatFor];
   if (!Number.isInteger(count) || count <= 0) return;
@@ -149,5 +160,6 @@ export function validate(schema, answers) {
     validateField(question, payload[question.id], question.id, errors);
   }
 
+  validateControllerPair(payload, errors);
   return errors;
 }

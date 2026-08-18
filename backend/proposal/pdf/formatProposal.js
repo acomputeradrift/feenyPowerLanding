@@ -121,8 +121,7 @@ export function buildProposalContent(submission, systemData, hoursData, options 
             {
               count: systemData.totalAvReceiverZones,
               singular: 'AV Receiver Zone',
-              plural: 'AV Receiver Zones',
-              names: trimmedNames(answers.avReceiverDetails)
+              plural: 'AV Receiver Zones'
             },
             { count: systemData.videoZones, singular: 'Video Zone', plural: 'Video Zones' },
             {
@@ -181,7 +180,12 @@ export function buildProposalContent(submission, systemData, hoursData, options 
         {
           title: heading('Controllers', sectionHours.controllers),
           lines: sectionLines([
-            { count: systemData.globalControllerCount, singular: 'Global Controller', plural: 'Global Controllers' },
+            {
+              count: systemData.globalControllerCount,
+              singular: 'Global Controller',
+              plural: 'Global Controllers',
+              names: trimmedNames(answers.globalControllerDetails, 'type')
+            },
             { count: systemData.floorplanAddOnCount, singular: 'Floorplan Add-On', plural: 'Floorplan Add-Ons' },
             { count: systemData.roomControllerCount, singular: 'Room Controller', plural: 'Room Controllers' }
           ])
@@ -198,6 +202,7 @@ export function buildProposalContent(submission, systemData, hoursData, options 
     additional: {
       siteSummary: projectSiteSummary(systemData),
       roomNames: trimmedNames(answers.roomDetails),
+      exteriorNames: trimmedNames(answers.exteriorZoneDetails),
       extra: additionalInfoText(answers)
     }
   };

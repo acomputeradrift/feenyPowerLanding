@@ -62,8 +62,10 @@ Built and live. Do not reimplement.
 
 - Form, persist, pdfmake PDF, Resend email, audit route, `MONGO_URI` fail-fast.
   The public form does not show a live hours estimate; hours remain on the PDF
-  and audit view. Count fields default to 0. Repeat names default to the item
-  label (Room 1, Audio Source 1, …).
+  and audit view. Count fields default to their minimum (rooms and floors start at 1; most
+  others at 0). Repeat names default to the item label (Room 1, Exterior Zone 1,
+  Audio Source 1, …). Zero rooms or zero floors is invalid. At least one global or room
+  controller is required.
 - Reply-To is `Feeny.jamie@gmail.com`. BCC is the same inbox. Sending is on in production.
 - Audit route is disabled until `PROPOSAL_AUDIT_TOKEN` is set on the **server** `.env`.
 - FAQ still links the old Google Form. Cutover (point dealers here, retire the Form) is not done.

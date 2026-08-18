@@ -101,7 +101,7 @@ describe('proposal wording (legacy formatters)', () => {
     ]);
     assert.deepEqual(content.systems.sections[1].lines, [
       '1 AV Receiver Zone',
-      '1 Display Zone'
+      'Display 1'
     ]);
     assert.deepEqual(content.systems.sections[2].lines, ['1 Thermostat Zone']);
     assert.deepEqual(content.systems.sections[3].lines, ['None Included.']);

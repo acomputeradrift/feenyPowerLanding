@@ -13,6 +13,9 @@ import { ProposalSubmission } from '../models/ProposalSubmission.js';
 import { SCHEMA_VERSION } from './shared/schema.js';
 import { RATE_CARD_VERSION } from './calc/rates.js';
 import { validAnswers } from './fixtures/validAnswers.js';
+import { calculateSystemData } from './calc/systemData.js';
+import { calculateHoursData } from './calc/hoursData.js';
+import { rates } from './calc/rates.js';
 
 function memoryStore() {
   const docs = new Map();
@@ -48,8 +51,9 @@ function depsFor(store, extra = {}) {
 describe('FR-11 FR-15 submit pipeline', () => {
   it('persists with emailStatus pending before PDF or email run', async () => {
     const store = memoryStore();
+    const answers = validAnswers({ lightingZones: 10 });
     const result = await processSubmission(
-      { answers: validAnswers({ lightingZones: 10 }), honeypot: '' },
+      { answers, honeypot: '' },
       { ip: '203.0.113.8', userAgent: 'test-agent' },
       depsFor(store, {
         async generatePdf() {
@@ -68,7 +72,10 @@ describe('FR-11 FR-15 submit pipeline', () => {
     assert.equal(result.body.reference, 'RTI-20260817-K3M9QP');
     assert.equal(result.body.emailedTo, 'john@example.com');
     assert.equal(result.body.delivery, 'pending');
-    assert.equal(result.body.totalProjectHours, 4.4);
+    assert.equal(
+      result.body.totalProjectHours,
+      calculateHoursData(calculateSystemData(answers), rates).totalProjectHours
+    );
 
     const saved = store.docs.get('RTI-20260817-K3M9QP');
     assert.equal(saved.emailStatus, 'failed');

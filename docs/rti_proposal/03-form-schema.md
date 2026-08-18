@@ -126,7 +126,7 @@ The feature that motivated the whole project (FR-5).
   fields: [
     { kind: "text", id: "name", label: "Source name", required: false },
     { kind: "select", id: "type", label: "Type",
-      options: ["Streamer", "Tuner", "Turntable", "Other"] }
+      options: ["Streamer", "Tuner", "Turntable", "Custom"] }
   ]
 }
 ```
@@ -149,13 +149,14 @@ Rules:
 
 ### Which counts get repeat groups
 
-Named detail is collected where a name is useful in the proposal, and is
+Named detail is collected where a name or type is useful in the proposal, and is
 **optional to fill in** - a dealer in a hurry can leave names blank and still
-submit. Attach groups to: audio sources, video sources, displays, AV receivers,
-rooms, and cameras.
+submit. Attach groups to: audio sources, video sources, displays, rooms,
+exterior zones, cameras, and discrete global controllers. Each group renders
+immediately below its driving count.
 
 Do not attach groups to abstract quantities where a per-item name carries no
-meaning, such as relay outputs, sense inputs or timer counts.
+meaning, such as relay outputs, sense inputs, timer counts, or AV receivers.
 
 ## Validation
 
@@ -181,7 +182,10 @@ The server runs this same function on submission and does not trust the client
 Captured from the published Google Form on 2026-08-17. Help text is quoted exactly
 and must be preserved.
 
-Every count question below is `kind: "count"` with `min: 0`.
+Every count question below is `kind: "count"` with `min: 0`, except `rooms` and
+`floors` (`min: 1`). Zero rooms or zero floors is invalid. Zero global controllers
+is allowed and zero room controllers is allowed, but the two together must be
+at least 1.
 
 ### Step 1 - Project Details
 
@@ -207,19 +211,25 @@ Help text:
 
 All required.
 
-- `rooms` - Number of Rooms. "Include all interior rooms that have some sort of
+- `rooms` - Number of Rooms, **min 1**. "Include all interior rooms that have some sort of
   control. Usually audio zones or lighting zones are the determining factor for
   inclusion. Exterior areas are entered later."
-- `floors` - Number of Floors. "Include this for calculating the cost of a floor
+
+Repeat group: `roomDetails` over `rooms`, item label `Room {n}`, one optional
+`name` text field. These name fields render immediately below the rooms count
+and default to "Room 1" through "Room N". Real names remain optional.
+
+- `floors` - Number of Floors, **min 1**. "Include this for calculating the cost of a floor
   plan based UI."
 - `exteriorZones` - Number of Exterior Zones. "Include all exterior areas that
   have some sort of control. Usually audio zones or lighting zones are the
   determining factor for inclusion. Examples would be front yard, back yard, side
   yard etc."
 
-Repeat group: `roomDetails` over `rooms`, item label `Room {n}`, one optional
-`name` text field. These name fields render immediately below the rooms count
-and default to "Room 1" through "Room N". Real names remain optional.
+Repeat group: `exteriorZoneDetails` over `exteriorZones`, item label
+`Exterior Zone {n}`, one optional `name` text field. Defaults to
+"Exterior Zone 1" through "Exterior Zone N". Renders immediately below the
+exterior count.
 
 ### Step 3 - Lighting/Shading Control
 
@@ -257,18 +267,19 @@ devices are charged at half the discrete rate. See
 - `displayClonedZones` - Cloned Display Zones. "Include any duplicate TVs or
   projectors to be controlled."
 
-Repeat groups, each over its discrete count. New name fields default to the item
-label (`Audio Source 1`, `Video Source 1`, `Display 1`, `AV Receiver 1`):
+Repeat groups, each immediately below its discrete count. New name fields default
+to the item label (`Audio Source 1`, `Video Source 1`, `Display 1`). Source type
+`Other` is `Custom`.
 
 - `audioSourceDetails` over `audioDiscreteSourceZones` - name, type
-  (Streamer / Tuner / Turntable / Other)
+  (Streamer / Tuner / Turntable / Custom)
 - `videoSourceDetails` over `videoDiscreteSourceZones` - name, type
-  (Media Player / Cable or Satellite / Games Console / Other)
+  (Media Player / Cable or Satellite / Games Console / Custom)
 - `displayDetails` over `displayDiscreteZones` - name, type (TV / Projector)
-- `avReceiverDetails` over `avReceiverDiscreteZones` - name
 
-Groups attach to the discrete counts only. Cloned items are by definition
-duplicates of a discrete device and need no separate name.
+AV receivers have a count only — no name fields. Groups attach to the discrete
+counts only. Cloned items are by definition duplicates of a discrete device and
+need no separate name.
 
 ### Step 5 - Climate Control
 
@@ -314,16 +325,20 @@ All required. No repeat groups.
 
 - `globalControllerCount` - Discrete Global Controllers, required. "iPhone, iPad,
   Touchscreens (controls all rooms, all sources)"
+
+Repeat group: `globalControllerDetails` over `globalControllerCount`, immediately
+below the count. Type select: iPhone / iPad / Touchscreen.
+
 - `floorplanAddOnCount` - Floorplan Add On for Global Controllers, optional.
   "Include this for each Global Controller (iPad, Touchscreens) that you would
   like a floorplan interface."
 - `roomControllerCount` - Single Room Controllers, required. "Handheld Remotes,
   Touchscreens (controls single room, local sources)"
 
-Note that `floorplanAddOnCount` is logically bounded by `globalControllerCount`,
-since a floorplan is an add-on to a global controller. The legacy form did not
-enforce this. Add `visibleIf: (a) => a.globalControllerCount > 0` and validate that
-it does not exceed the global controller count.
+Either controller count may be 0, but not both. `floorplanAddOnCount` is
+logically bounded by `globalControllerCount`. Add
+`visibleIf: (a) => a.globalControllerCount > 0` and validate that it does not
+exceed the global controller count.
 
 ### Step 10 - Final Submit
 

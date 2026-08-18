@@ -1,3 +1,6 @@
+import { steps } from '../shared/schema.js';
+import { syncRepeatGroups } from '../shared/repeatGroups.js';
+
 const COUNT_IDS = [
   'rooms', 'floors', 'exteriorZones', 'lightingZones', 'shadingZones', 'keypadZones',
   'audioZones', 'audioDiscreteSourceZones', 'audioClonedSourceZones', 'videoZones',
@@ -18,5 +21,7 @@ export function validAnswers(overrides = {}) {
   };
   for (const id of COUNT_IDS) answers[id] = 0;
   answers.floors = 1;
-  return { ...answers, ...overrides };
+  answers.rooms = 1;
+  answers.roomControllerCount = 1;
+  return syncRepeatGroups(steps, { ...answers, ...overrides });
 }

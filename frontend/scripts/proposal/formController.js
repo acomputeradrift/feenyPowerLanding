@@ -85,7 +85,7 @@ export function createFormController(options) {
     Object.fromEntries(
       allQuestions(steps)
         .filter((question) => question.kind === 'count')
-        .map((question) => [question.id, 0])
+        .map((question) => [question.id, question.min ?? 0])
     )
   );
   let stepIndex = 0;

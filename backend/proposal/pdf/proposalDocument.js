@@ -141,6 +141,11 @@ export function buildDocDefinition(submission, systemData, hoursData, options = 
         alignment: 'center',
         margin: [0, 1, 0, 1]
       })),
+      ...(content.additional.exteriorNames || []).map((name) => ({
+        text: name,
+        alignment: 'center',
+        margin: [0, 1, 0, 1]
+      })),
       { text: content.additional.extra, alignment: 'center', margin: [12, 8, 12, 0] }
     ]
   };
