@@ -102,13 +102,38 @@ describe('FR-4 conditional visibility', () => {
   });
 });
 
+describe('default answers', () => {
+  it('starts every count field at 0', () => {
+    const form = controller();
+    const { answers } = form.getState();
+    assert.equal(answers.rooms, 0);
+    assert.equal(answers.lightingZones, 0);
+    assert.equal(answers.audioDiscreteSourceZones, 0);
+    assert.equal(answers.cameraZones, 0);
+    assert.deepEqual(answers.roomDetails, []);
+  });
+});
+
 describe('FR-5 FR-6 count-driven repeats', () => {
   it('renders N instances for a count and none at zero', () => {
     const form = controller();
     form.setAnswer('audioDiscreteSourceZones', 2);
-    assert.equal(form.getState().answers.audioSourceDetails.length, 2);
+    assert.deepEqual(form.getState().answers.audioSourceDetails, [
+      { name: 'Audio Source 1' },
+      { name: 'Audio Source 2' }
+    ]);
     form.setAnswer('audioDiscreteSourceZones', 0);
     assert.deepEqual(form.getState().answers.audioSourceDetails, []);
+  });
+
+  it('fills new room names immediately as Room 1, Room 2, Room 3', () => {
+    const form = controller();
+    form.setAnswer('rooms', 3);
+    assert.deepEqual(form.getState().answers.roomDetails, [
+      { name: 'Room 1' },
+      { name: 'Room 2' },
+      { name: 'Room 3' }
+    ]);
   });
 
   it('truncates from the end and preserves surviving instances', () => {
@@ -345,5 +370,11 @@ describe('FR-1 page contract', () => {
     );
     assert.match(css, /--proposal-label:\s*#e8e8e8/);
     assert.match(css, /--proposal-action:\s*#fcb040/);
+  });
+
+  it('does not show a live hours estimate on the public form', () => {
+    assert.equal(html.includes('Estimated hours'), false);
+    assert.equal(html.includes('proposal-hours-value'), false);
+    assert.equal(renderer.includes('renderEstimate'), false);
   });
 });

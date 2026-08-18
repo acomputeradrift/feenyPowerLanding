@@ -224,32 +224,6 @@
     background: var(--proposal-footer-hover);
 }
 
-.proposal-estimate {
-    margin-top: 24px;
-    padding: 16px 20px;
-    border: 1px solid var(--proposal-border);
-    border-radius: 8px;
-    background: var(--proposal-card);
-    color: var(--proposal-label);
-}
-
-.proposal-estimate-label {
-    margin: 0;
-    color: var(--proposal-border);
-}
-
-.proposal-estimate-value {
-    margin: 4px 0 0;
-    font-size: 1.8rem;
-    color: var(--proposal-action);
-}
-
-.proposal-estimate-pending {
-    margin: 4px 0 0;
-    color: var(--proposal-border);
-    font-size: 0.9rem;
-}
-
 .proposal-success {
     color: var(--proposal-label);
 }
@@ -277,38 +251,6 @@
 
 .proposal-form {
     position: relative;
-}
-
-@media only screen and (max-width: 899px) {
-    .proposal-main {
-        padding-bottom: 96px;
-    }
-
-    .proposal-estimate {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: 0;
-        border-radius: 8px 8px 0 0;
-        z-index: 5;
-    }
-}
-
-@media only screen and (min-width: 900px) {
-    .proposal-layout {
-        display: grid;
-        grid-template-columns: minmax(0, 720px) 220px;
-        gap: 24px;
-        max-width: 980px;
-        align-items: start;
-    }
-
-    .proposal-estimate {
-        position: sticky;
-        top: 16px;
-        margin-top: 0;
-    }
 }
 
 @media only screen and (max-width: 600px) {

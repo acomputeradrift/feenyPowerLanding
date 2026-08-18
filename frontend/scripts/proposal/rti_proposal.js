@@ -5,21 +5,10 @@ import {
   createFormController,
   fieldDomId,
   errorDomId,
-  helpDomId,
-  ESTIMATE_DEBOUNCE_MS
+  helpDomId
 } from './formController.js';
 
 const els = {};
-
-async function requestEstimate(answers) {
-  const response = await fetch('/api/proposal/estimate', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ answers })
-  });
-  if (!response.ok) throw new Error('estimate_failed');
-  return response.json();
-}
 
 async function submitProposal(payload) {
   const response = await fetch('/api/proposal', {
@@ -44,9 +33,7 @@ const controller = createFormController({
   validate,
   syncRepeatGroups,
   isVisible,
-  requestEstimate,
-  submitProposal,
-  debounceMs: ESTIMATE_DEBOUNCE_MS
+  submitProposal
 });
 
 function selectionOf(element) {
@@ -309,15 +296,6 @@ function render(state) {
   restoreFocus(state);
 }
 
-function renderEstimate(state) {
-  if (state.estimate.totalProjectHours == null || state.estimate.totalProjectHours === undefined) {
-    els.hours.textContent = '—';
-  } else {
-    els.hours.textContent = Number(state.estimate.totalProjectHours).toFixed(1);
-  }
-  els.pending.hidden = !state.estimatePending;
-}
-
 function mount() {
   els.intro = document.getElementById('proposal-intro');
   els.progressText = document.getElementById('proposal-progress-text');
@@ -329,8 +307,6 @@ function mount() {
   els.back = document.getElementById('proposal-back');
   els.primary = document.getElementById('proposal-primary');
   els.success = document.getElementById('proposal-success');
-  els.hours = document.getElementById('proposal-hours-value');
-  els.pending = document.getElementById('proposal-estimate-pending');
   els.honeypot = document.getElementById('proposal-honeypot');
 
   els.form.addEventListener('submit', (event) => {
@@ -349,8 +325,6 @@ function mount() {
   });
 
   controller.subscribe(render);
-  controller.subscribeEstimate(renderEstimate);
-  controller.refreshEstimate();
 }
 
 mount();

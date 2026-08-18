@@ -129,6 +129,11 @@ describe('FR-2 FR-3 schema catalogue', () => {
       assert.equal(question.max, REPEAT_GROUP_MAX);
     }
   });
+
+  it('places room name fields immediately after the rooms count', () => {
+    const ids = steps.find((step) => step.id === 'siteDetails').questions.map((question) => question.id);
+    assert.deepEqual(ids.slice(0, 2), ['rooms', 'roomDetails']);
+  });
 });
 
 describe('FR-4 conditional visibility', () => {
@@ -159,7 +164,7 @@ describe('FR-6 repeat group resize', () => {
     ]);
   });
 
-  it('appends empty instances when the count grows', () => {
+  it('appends labelled name fields when the count grows', () => {
     const started = syncRepeatGroups(steps, {
       rooms: 1,
       roomDetails: [{ name: 'Kitchen' }]
@@ -167,8 +172,8 @@ describe('FR-6 repeat group resize', () => {
     const grown = syncRepeatGroups(steps, { ...started, rooms: 3 });
     assert.deepEqual(grown.roomDetails, [
       { name: 'Kitchen' },
-      {},
-      {}
+      { name: 'Room 2' },
+      { name: 'Room 3' }
     ]);
   });
 
@@ -252,7 +257,8 @@ describe('FR-8 validation', () => {
   it('does not require names inside repeat groups', () => {
     const answers = answersFromFixture();
     assert.equal(answers.audioSourceDetails.length, 1);
-    assert.deepEqual(answers.audioSourceDetails[0], {});
+    assert.equal(answers.audioSourceDetails[0].name, 'Audio Source 1');
+    answers.audioSourceDetails = [{}];
     assert.equal(validate(steps, answers)['audioSourceDetails[0].name'], undefined);
   });
 

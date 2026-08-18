@@ -80,7 +80,14 @@ export function createFormController(options) {
     debounceMs = ESTIMATE_DEBOUNCE_MS
   } = options;
 
-  let answers = {};
+  let answers = syncRepeatGroups(
+    steps,
+    Object.fromEntries(
+      allQuestions(steps)
+        .filter((question) => question.kind === 'count')
+        .map((question) => [question.id, 0])
+    )
+  );
   let stepIndex = 0;
   let fieldErrors = {};
   let announcement = '';

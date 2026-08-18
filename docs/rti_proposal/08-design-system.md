@@ -107,17 +107,14 @@ completed steps are marked with green, the current step with orange.
 **Conditional questions.** Appear and disappear in place without layout jumping.
 Do not animate; on a form this dense, motion is noise.
 
-**Repeat groups.** Changing a count adds or removes cards immediately. Reducing a
-count truncates from the end and preserves surviving values (FR-6). Each card is
-headed by its item label, for example "Audio Source 2". Because names are optional,
-never present an empty name as an error.
+**Repeat groups.** Changing a count adds or removes cards immediately, directly
+under the driving count. Reducing a count truncates from the end and preserves
+surviving values (FR-6). Each card is headed by its item label, for example
+"Audio Source 2", and new name fields default to that label. Because names are
+optional, never present an empty name as an error.
 
-**Live estimate.** Show the running hours total persistently — sticky at the bottom
-on mobile, alongside the form on wider screens. Debounce the request by roughly
-400ms. Never block input while it is in flight, and never show a spinner over the
-form; a stale number briefly is better than a jumping layout. On request failure,
-keep the last known value rather than showing an error, since the estimate is
-informational.
+**Hours.** The public form does not show a live hours estimate. Hours still appear
+on the emailed PDF and the audit view only.
 
 **Submission.** Disable the submit button while in flight and show clear progress —
 generating a PDF and sending mail is not instant. On success, show the reference and

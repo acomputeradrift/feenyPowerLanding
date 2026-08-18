@@ -114,19 +114,19 @@ export const steps = [
         max: REPEAT_GROUP_MAX,
         help: 'Include all interior rooms that have some sort of control. Usually audio zones or lighting zones are the determining factor for inclusion. Exterior areas are entered later.'
       }),
-      count('floors', 'Number of Floors', {
-        help: 'Include this for calculating the cost of a floor plan based UI.'
-      }),
-      count('exteriorZones', 'Number of Exterior Zones', {
-        help: 'Include all exterior areas that have some sort of control. Usually audio zones or lighting zones are the determining factor for inclusion. Examples would be front yard, back yard, side yard etc.'
-      }),
       repeat('roomDetails', 'Rooms', {
         repeatFor: 'rooms',
         itemLabel: (index) => `Room ${index + 1}`,
         fields: [
           text('name', 'Room name', { required: false, maxLength: 80 })
         ]
-      })
+      }),
+      count('floors', 'Number of Floors', {
+        help: 'Include this for calculating the cost of a floor plan based UI.'
+      }),
+      count('exteriorZones', 'Number of Exterior Zones', {
+        help: 'Include all exterior areas that have some sort of control. Usually audio zones or lighting zones are the determining factor for inclusion. Examples would be front yard, back yard, side yard etc.'
+      }),
     ]
   },
   {

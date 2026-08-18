@@ -218,8 +218,8 @@ All required.
   yard etc."
 
 Repeat group: `roomDetails` over `rooms`, item label `Room {n}`, one optional
-`name` text field. The legacy workbook auto-named these "Room 1" through "Room N";
-real names are a direct improvement to the proposal.
+`name` text field. These name fields render immediately below the rooms count
+and default to "Room 1" through "Room N". Real names remain optional.
 
 ### Step 3 - Lighting/Shading Control
 
@@ -257,7 +257,8 @@ devices are charged at half the discrete rate. See
 - `displayClonedZones` - Cloned Display Zones. "Include any duplicate TVs or
   projectors to be controlled."
 
-Repeat groups, each over its discrete count:
+Repeat groups, each over its discrete count. New name fields default to the item
+label (`Audio Source 1`, `Video Source 1`, `Display 1`, `AV Receiver 1`):
 
 - `audioSourceDetails` over `audioDiscreteSourceZones` - name, type
   (Streamer / Tuner / Turntable / Other)
@@ -290,6 +291,7 @@ All required.
 - `cameraZones` - Camera Zones
 
 Repeat group: `cameraDetails` over `cameraZones`, optional `name` and `location`.
+New camera names default to `Camera 1`, `Camera 2`, and so on.
 
 ### Step 7 - Pool and Pump Control
 
