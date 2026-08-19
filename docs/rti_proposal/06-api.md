@@ -61,7 +61,7 @@ Local design preview of the real pdfmake PDF. Defaults to **v2** (HIGH RD
 sample). `?v=1` renders the original emailed layout. Returns `application/pdf`
 with `Cache-Control: no-store` when the request Host is `localhost`, `127.0.0.1`,
 or `::1`. Any other Host gets 404. Do not link this from the public form. Live
-email still sends v1 until Jamie switches it.
+email sends v2.
 
 ---
 

@@ -179,19 +179,20 @@ directly traceable to its stored submission.
 - Deterministic apart from the copyright year, so it can be snapshot tested.
 - Must not require a headless browser or any system-level dependency (NFR-8).
 
-## v2 (preview only)
+## v2 (live email)
 
-While v2 is in testing, emailed submissions still use the three-page v1 document
-above. Local preview (`GET /rti_proposal/preview.pdf`) renders v2 from
-`proposalDocumentV2.js`. `?v=1` on that URL still shows v1.
+Emailed submissions use the five-page v2 document from `proposalDocumentV2.js`.
+The three-page v1 document above remains in `proposalDocument.js` for
+`GET /rti_proposal/preview.pdf?v=1`. Local preview defaults to v2.
 
 v2 pages:
 
 1. Cover — white top unchanged. Orange band (`#fcb040`) is sized to its three
    identification lines, with the copy vertically centered in the band and the
    band vertically centered on the page (`absolutePosition`, `y = (792 - height) / 2`).
-   Slight overlap with the RTI logo is accepted. Project PO, Project Client Name,
-   and Project Location, 16pt. No timeline or hours on the cover.
+   The RTI logo is larger (480×76) and centered in the white space below the
+   orange band. Project PO, Project Client Name, and Project Location, 16pt.
+   No timeline or hours on the cover.
 2. Project Overview — title stays at the top. Dark grey band (`#575759`) is
    sized to the generated paragraph, copy vertically centered in the band, band
    vertically centered on the page. Body text is left-aligned: rooms and names,
@@ -204,15 +205,18 @@ v2 pages:
    sized to the `N x` iPhone/iPad/Touchscreen Global Controller and
    `N x ISR-4 Room Controller` lines.
 5. Project Time Budget — title at the top. Orange band again (color cycle
-   repeats) contains only `Total Programming Hours: N`. Acceptance, client
-   signature, print name, and date sit centered in the white space below the
-   band, with underlines at the baseline of each label.
+   repeats) contains only `Total Programming Hours: N`. Acceptance copy is
+   left-aligned: "I approve this budget and understand that work will commence
+   when Feeny Power and Control Ltd has received a 50% deposit." Client
+   signature, print name, and date sit below in a centered 516pt block
+   (48pt side margins) with left-aligned labels and a shared line start and end.
 
 Band colors follow the Feeny logo: orange, dark grey, green, light grey, then
 repeat. Band body text is the same 16pt Roboto as the cover Project PO lines.
 Every band is full-bleed, padded equally above and below its copy, and centered
-on the page without covering the page title. Colour is the table `fillColor` only
+on the page without covering the page title. Band height is the painted table
+height (measured), then `y = (792 - height) / 2`. Colour is the table `fillColor` only
 — do not add a pdfmake `background` canvas (it overdraws page 3). Category titles
-are underlined. Signature underlines sit at the label baseline.
+are underlined. Signature lines are cell bottom borders only (no text underline).
 
 Do not put per-zone rates in v2 either.

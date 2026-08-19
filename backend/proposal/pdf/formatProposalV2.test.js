@@ -5,6 +5,8 @@ import { calculateHoursData } from '../calc/hoursData.js';
 import { rates } from '../calc/rates.js';
 import { calculateSystemData } from '../calc/systemData.js';
 import { validAnswers } from '../fixtures/validAnswers.js';
+import pdfMake from 'pdfmake';
+
 import {
   buildProposalContentV2,
   formatCommissioningDate,
@@ -12,6 +14,12 @@ import {
   qtyLine
 } from './formatProposalV2.js';
 import { buildDocDefinitionV2, layoutBand } from './proposalDocumentV2.js';
+
+function fullBleedBands(pdfBuffer) {
+  return [...pdfBuffer.toString('latin1').matchAll(/0(?:\.0+)? ([\d.]+) 612(?:\.0+)? ([\d.]+) re/g)]
+    .map((match) => ({ y: Number(match[1]), height: Number(match[2]) }))
+    .filter((band) => band.height > 20 && band.height < 780);
+}
 
 function highRdAnswers() {
   const answers = validAnswers({
@@ -131,7 +139,10 @@ describe('proposal v2 wording', () => {
       content.totals.hoursLine,
       `Total Programming Hours: ${Math.ceil(hoursData.totalProjectHours)}`
     );
-    assert.equal(content.totals.acceptance, 'I accept this RTI programming budget.');
+    assert.equal(
+      content.totals.acceptance,
+      'I approve this budget and understand that work will commence when Feeny Power and Control Ltd has received a\u00A050% deposit.'
+    );
     assert.equal(JSON.stringify(content).includes('minutesPerUnit'), false);
   });
 
@@ -167,9 +178,9 @@ describe('proposal v2 wording', () => {
     );
   });
 
-  it('does not include v1 page titles', () => {
+  it('does not include v1 page titles', async () => {
     const answers = highRdAnswers();
-    const def = JSON.stringify(buildDocDefinitionV2(
+    const def = JSON.stringify(await buildDocDefinitionV2(
       { answers, ...answers },
       calculateSystemData(answers),
       calculateHoursData(calculateSystemData(answers), rates),
@@ -201,7 +212,7 @@ describe('proposal v2 wording', () => {
     assert.match(def, /"decoration":"underline"/);
   });
 
-  it('sizes each band to its copy and keeps signatures out of the hours band', () => {
+  it('sizes each band to its copy and keeps signatures out of the hours band', async () => {
     const hours = layoutBand([{ text: 'Total Programming Hours: 12', margin: [0, 4, 0, 4] }]);
     const threeLines = layoutBand([
       { text: '1 x A', margin: [0, 6, 0, 6] },
@@ -214,7 +225,7 @@ describe('proposal v2 wording', () => {
     assert.equal(layoutBand([{ text: 'x' }]).y, (792 - layoutBand([{ text: 'x' }]).height) / 2);
 
     const answers = highRdAnswers();
-    const doc = buildDocDefinitionV2(
+    const doc = await buildDocDefinitionV2(
       { answers, ...answers },
       calculateSystemData(answers),
       calculateHoursData(calculateSystemData(answers), rates),
@@ -223,7 +234,7 @@ describe('proposal v2 wording', () => {
     const def = JSON.stringify(doc.content);
     const hoursToAccept = def.slice(
       def.indexOf('Total Programming Hours'),
-      def.indexOf('I accept this RTI programming budget.')
+      def.indexOf('I approve this budget')
     );
     assert.match(def, /Project PO: HIGH RD/);
     assert.match(def, /Project Client Name: Private Client/);
@@ -233,18 +244,54 @@ describe('proposal v2 wording', () => {
     assert.match(def, /Client signature/);
     assert.equal(JSON.stringify(doc).includes('"background"'), false);
 
-    const hoursBox = layoutBand([{
-      text: `Total Programming Hours: ${Math.ceil(calculateHoursData(calculateSystemData(answers), rates).totalProjectHours)}`,
-      margin: [0, 4, 0, 4]
-    }]);
-    const sigNode = doc.content.find((node) => (
-      node.stack && JSON.stringify(node).includes('I accept this RTI programming budget.')
+    const hoursNode = doc.content.find((node) => (
+      node.table && JSON.stringify(node).includes('Total Programming Hours')
     ));
-    const sigHeight = 18 + 4 + 3 * (14 + 16);
-    const whiteTop = hoursBox.y + hoursBox.height;
-    const leftover = 792 - 56 - whiteTop;
-    assert.equal(sigNode.absolutePosition.y, whiteTop + (leftover - sigHeight) / 2);
-    assert.ok(sigNode.absolutePosition.y > whiteTop);
-    assert.ok(sigNode.absolutePosition.y + sigHeight < 792 - 56);
+    const sigNode = doc.content.find((node) => (
+      node.absolutePosition && JSON.stringify(node).includes('I approve this budget')
+    ));
+    assert.ok(sigNode.absolutePosition.y > hoursNode.absolutePosition.y);
+    assert.ok(sigNode.absolutePosition.y + 130 < 792 - 56);
+    assert.equal(sigNode.columns[1].width, 516);
+    const sigTable = sigNode.columns[1].stack.find((node) => node.table);
+    assert.deepEqual(sigTable.table.widths, [130, 386]);
+    assert.equal(sigTable.table.body.length, 3);
+    for (const row of sigTable.table.body) {
+      assert.equal(JSON.stringify(row[0]).includes('"alignment":"left"'), true);
+      assert.equal(JSON.stringify(row[1]).includes('decoration'), false);
+      assert.equal(JSON.stringify(row[1]).includes('"type":"line"'), true);
+    }
+
+    const coverBand = doc.content.find((node) => (
+      node.table && JSON.stringify(node).includes('Project PO: HIGH RD')
+    ));
+    const rtiNode = doc.content.find((node) => (
+      node.absolutePosition && JSON.stringify(node).includes('"fit":[480,76]')
+    ));
+    assert.equal(Boolean(rtiNode), true);
+    assert.ok(rtiNode.absolutePosition.y > coverBand.absolutePosition.y);
+    assert.ok(rtiNode.absolutePosition.y + 76 < 792 - 56);
+    const inFlowImages = doc.content.filter((node) => node.image && !node.absolutePosition);
+    assert.equal(inFlowImages.length, 1);
+  });
+
+  it('centers every full-bleed band on the page', async () => {
+    const answers = highRdAnswers();
+    const doc = await buildDocDefinitionV2(
+      { answers, ...answers },
+      calculateSystemData(answers),
+      calculateHoursData(calculateSystemData(answers), rates),
+      { year: 2026 }
+    );
+    doc.compress = false;
+    const pdf = await pdfMake.createPdf(doc).getBuffer();
+    const bands = fullBleedBands(pdf);
+    assert.equal(bands.length, 5);
+    for (const band of bands) {
+      assert.ok(
+        Math.abs(band.y + band.height / 2 - 396) < 0.75,
+        `band at y=${band.y} h=${band.height} center=${band.y + band.height / 2}`
+      );
+    }
   });
 });

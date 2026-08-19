@@ -37,7 +37,12 @@ const PAGE_MARGIN_TOP = 48;
 const PAGE_MARGIN_BOTTOM = 56;
 const BAND_PAD_X = 48;
 const BAND_PAD_Y = 24;
-const LINE_HEIGHT = 18;
+const SIGNATURE_BLOCK_WIDTH = PAGE_WIDTH - BAND_PAD_X * 2;
+const SIGNATURE_LABEL_WIDTH = 130;
+const SIGNATURE_LINE_WIDTH = SIGNATURE_BLOCK_WIDTH - SIGNATURE_LABEL_WIDTH;
+// Roboto Regular: font.lineHeight(16) === 18.75, times the band's lineHeight 1.25.
+const LINE_HEIGHT = 18.75 * 1.25;
+const MEASURE_SLOT = 800;
 const CONTENT_WIDTH = PAGE_WIDTH - BAND_PAD_X * 2;
 const CHARS_PER_LINE = Math.floor(CONTENT_WIDTH / (BAND_FONT_SIZE * 0.52));
 
@@ -48,6 +53,7 @@ function imageDataUrl(filename) {
 
 const feenyLogo = imageDataUrl('feeny-logo-white.png');
 const rtiLogo = imageDataUrl('rti-logo-bigger.png');
+const RTI_LOGO_FIT = [480, 76];
 
 function bandInk(fillColor) {
   return fillColor === COLORS.charcoal ? COLORS.white : COLORS.black;
@@ -111,38 +117,86 @@ export function layoutBand(children) {
   return { contentHeight, height, y, padY: BAND_PAD_Y };
 }
 
-function bleedBand(fillColor, children, alignment = 'center') {
-  const box = layoutBand(children);
+function bandTable(fillColor, children, alignment = 'center') {
   const ink = bandInk(fillColor);
   return {
-    box,
-    color: fillColor,
-    node: {
-      absolutePosition: { x: 0, y: box.y },
-      table: {
-        widths: ['*'],
-        body: [[{
-          border: [false, false, false, false],
-          fillColor,
-          margin: [BAND_PAD_X, BAND_PAD_Y, BAND_PAD_X, BAND_PAD_Y],
-          alignment,
-          color: ink,
-          fontSize: BAND_FONT_SIZE,
-          lineHeight: 1.25,
-          stack: withBandStyle(children, fillColor, alignment)
-        }]]
-      },
-      layout: {
-        defaultBorder: false,
-        hLineWidth: () => 0,
-        vLineWidth: () => 0,
-        paddingLeft: () => 0,
-        paddingRight: () => 0,
-        paddingTop: () => 0,
-        paddingBottom: () => 0
-      }
+    table: {
+      widths: ['*'],
+      body: [[{
+        border: [false, false, false, false],
+        fillColor,
+        margin: [BAND_PAD_X, BAND_PAD_Y, BAND_PAD_X, BAND_PAD_Y],
+        alignment,
+        color: ink,
+        fontSize: BAND_FONT_SIZE,
+        lineHeight: 1.25,
+        stack: withBandStyle(children, fillColor, alignment)
+      }]]
+    },
+    layout: {
+      defaultBorder: false,
+      hLineWidth: () => 0,
+      vLineWidth: () => 0,
+      paddingLeft: () => 0,
+      paddingRight: () => 0,
+      paddingTop: () => 0,
+      paddingBottom: () => 0
     }
   };
+}
+
+function parseFullBleedHeights(pdfBuffer, origins) {
+  const rects = [...pdfBuffer.toString('latin1').matchAll(/0(?:\.0+)? ([\d.]+) 612(?:\.0+)? ([\d.]+) re/g)]
+    .map((match) => ({ y: Number(match[1]), height: Number(match[2]) }))
+    .filter((rect) => rect.height > 10 && rect.height < MEASURE_SLOT);
+  return origins.map((origin) => {
+    const rect = rects.find((item) => Math.abs(item.y - origin) < 0.5);
+    if (!rect) {
+      throw new Error(`Unable to measure proposal band height at y=${origin}`);
+    }
+    return rect.height;
+  });
+}
+
+async function measureBandHeights(tables) {
+  const origins = tables.map((_, index) => index * MEASURE_SLOT);
+  const probe = {
+    pageSize: { width: PAGE_WIDTH, height: MEASURE_SLOT * tables.length + 200 },
+    pageMargins: 0,
+    defaultStyle: {
+      font: 'Roboto',
+      fontSize: 11,
+      lineHeight: 1.25
+    },
+    compress: false,
+    content: tables.map((table, index) => ({
+      ...table,
+      absolutePosition: { x: 0, y: origins[index] }
+    }))
+  };
+  const pdf = await pdfMake.createPdf(probe).getBuffer();
+  return parseFullBleedHeights(pdf, origins);
+}
+
+async function bleedBands(specs) {
+  const tables = specs.map((spec) => bandTable(spec.fillColor, spec.children, spec.alignment));
+  const heights = await measureBandHeights(tables);
+  return tables.map((table, index) => {
+    const height = heights[index];
+    const y = (PAGE_HEIGHT - height) / 2;
+    return {
+      box: {
+        contentHeight: height - BAND_PAD_Y * 2,
+        height,
+        y,
+        padY: BAND_PAD_Y
+      },
+      node: {
+        absolutePosition: { x: 0, y },
+        ...table
+      }
+    };
+  });
 }
 
 function pageTitle(text) {
@@ -179,7 +233,7 @@ function systemSectionRows(sections) {
 }
 
 function signatureBlockHeight() {
-  return 18 + 4 + 3 * (14 + 16);
+  return 28 + 8 + 3 * (12 + 14 + 4);
 }
 
 function belowBandCenterY(box, blockHeight) {
@@ -190,73 +244,87 @@ function belowBandCenterY(box, blockHeight) {
   return whiteTop + (leftover - blockHeight) / 2;
 }
 
-function signatureLine(label) {
+function signatureTable(labels) {
   return {
-    margin: [0, 14, 0, 0],
-    columns: [
-      { width: '*', text: '' },
-      {
-        width: 'auto',
-        table: {
-          widths: ['auto', 220],
-          body: [[
-            {
-              text: `${label}:`,
-              border: [false, false, false, false],
-              margin: [0, 0, 8, 0]
-            },
-            {
-              text: ' ',
-              decoration: 'underline',
-              border: [false, false, false, true],
-              margin: [0, 0, 0, 0]
-            }
-          ]]
+    table: {
+      widths: [SIGNATURE_LABEL_WIDTH, SIGNATURE_LINE_WIDTH],
+      body: labels.map((label) => [
+        {
+          text: `${label}:`,
+          border: [false, false, false, false],
+          alignment: 'left'
         },
-        layout: {
-          hLineWidth: (i) => (i === 1 ? 0.75 : 0),
-          vLineWidth: () => 0,
-          hLineColor: () => COLORS.black,
-          paddingLeft: () => 0,
-          paddingRight: () => 0,
-          paddingTop: () => 0,
-          paddingBottom: () => 1
+        {
+          border: [false, false, false, false],
+          canvas: [{
+            type: 'line',
+            x1: 0,
+            y1: 12,
+            x2: SIGNATURE_LINE_WIDTH,
+            y2: 12,
+            lineWidth: 0.75,
+            lineColor: COLORS.black
+          }]
         }
-      },
-      { width: '*', text: '' }
-    ]
+      ])
+    },
+    layout: {
+      defaultBorder: false,
+      hLineWidth: () => 0,
+      vLineWidth: () => 0,
+      paddingLeft: () => 0,
+      paddingRight: () => 0,
+      paddingTop: () => 10,
+      paddingBottom: () => 10
+    }
   };
 }
 
-export function buildDocDefinitionV2(submission, systemData, hoursData, options = {}) {
+export async function buildDocDefinitionV2(submission, systemData, hoursData, options = {}) {
   const content = buildProposalContentV2(submission, systemData, hoursData, options);
   const { cover, overview, systems, controllers, totals } = content;
-  const coverBand = bleedBand(COLORS.orange, [
-    { text: cover.poLine, margin: [0, 8, 0, 8] },
-    { text: cover.clientLine, margin: [0, 8, 0, 8] },
-    { text: cover.locationLine, margin: [0, 8, 0, 8] }
-  ], 'center');
-  const overviewBand = bleedBand(COLORS.charcoal, [
-    { text: overview.roomsAndSystems, margin: [8, 4, 8, 8] },
-    { text: overview.controllers, margin: [8, 4, 8, 8] },
-    { text: overview.additional, margin: [8, 4, 8, 8] },
-    { text: overview.commissioning, margin: [8, 4, 8, 4] }
-  ], 'left');
-  const systemsBand = bleedBand(
-    COLORS.green,
-    systemSectionRows(systems.sections),
-    'center'
-  );
-  const controllersBand = bleedBand(
-    COLORS.steel,
-    qtyRows(controllers.lines),
-    'center'
-  );
-  const hoursBand = bleedBand(
-    COLORS.orange,
-    [{ text: totals.hoursLine, margin: [0, 4, 0, 4] }],
-    'center'
-  );
+  const [
+    coverBand,
+    overviewBand,
+    systemsBand,
+    controllersBand,
+    hoursBand
+  ] = await bleedBands([
+    {
+      fillColor: COLORS.orange,
+      children: [
+        { text: cover.poLine, margin: [0, 8, 0, 8] },
+        { text: cover.clientLine, margin: [0, 8, 0, 8] },
+        { text: cover.locationLine, margin: [0, 8, 0, 8] }
+      ],
+      alignment: 'center'
+    },
+    {
+      fillColor: COLORS.charcoal,
+      children: [
+        { text: overview.roomsAndSystems, margin: [8, 4, 8, 8] },
+        { text: overview.controllers, margin: [8, 4, 8, 8] },
+        { text: overview.additional, margin: [8, 4, 8, 8] },
+        { text: overview.commissioning, margin: [8, 4, 8, 4] }
+      ],
+      alignment: 'left'
+    },
+    {
+      fillColor: COLORS.green,
+      children: systemSectionRows(systems.sections),
+      alignment: 'center'
+    },
+    {
+      fillColor: COLORS.steel,
+      children: qtyRows(controllers.lines),
+      alignment: 'center'
+    },
+    {
+      fillColor: COLORS.orange,
+      children: [{ text: totals.hoursLine, margin: [0, 4, 0, 4] }],
+      alignment: 'center'
+    }
+  ]);
 
   return {
     pageSize: 'LETTER',
@@ -289,8 +357,22 @@ export function buildDocDefinitionV2(submission, systemData, hoursData, options 
       { text: 'Prepared for:', alignment: 'center', color: COLORS.label, margin: [0, 0, 0, 4] },
       { text: cover.contractorName, alignment: 'center', bold: true, fontSize: 14, margin: [0, 0, 0, 2] },
       { text: cover.contractorEmail, alignment: 'center', color: COLORS.label, margin: [0, 0, 0, 20] },
-      { image: rtiLogo, fit: [140, 56], alignment: 'center', margin: [0, 8, 0, 16] },
       coverBand.node,
+      {
+        absolutePosition: {
+          x: 0,
+          y: belowBandCenterY(coverBand.box, RTI_LOGO_FIT[1])
+        },
+        columns: [
+          { width: '*', text: '' },
+          {
+            width: RTI_LOGO_FIT[0],
+            image: rtiLogo,
+            fit: RTI_LOGO_FIT
+          },
+          { width: '*', text: '' }
+        ]
+      },
 
       { text: '', pageBreak: 'before' },
       pageTitle(overview.title),
@@ -312,12 +394,24 @@ export function buildDocDefinitionV2(submission, systemData, hoursData, options 
           x: 0,
           y: belowBandCenterY(hoursBand.box, signatureBlockHeight())
         },
-        alignment: 'center',
-        stack: [
-          { text: totals.acceptance, alignment: 'center', margin: [0, 0, 0, 4] },
-          signatureLine(totals.signatureLabel),
-          signatureLine(totals.printNameLabel),
-          signatureLine(totals.dateLabel)
+        columns: [
+          { width: '*', text: '' },
+          {
+            width: SIGNATURE_BLOCK_WIDTH,
+            stack: [
+              {
+                text: totals.acceptance,
+                alignment: 'left',
+                margin: [0, 0, 0, 8]
+              },
+              signatureTable([
+                totals.signatureLabel,
+                totals.printNameLabel,
+                totals.dateLabel
+              ])
+            ]
+          },
+          { width: '*', text: '' }
         ]
       }
     ]
@@ -325,7 +419,7 @@ export function buildDocDefinitionV2(submission, systemData, hoursData, options 
 }
 
 export async function generateProposalPdfV2(submission, systemData, hoursData, options = {}) {
-  const docDefinition = buildDocDefinitionV2(submission, systemData, hoursData, options);
+  const docDefinition = await buildDocDefinitionV2(submission, systemData, hoursData, options);
   const pdf = pdfMake.createPdf(docDefinition);
   return pdf.getBuffer();
 }

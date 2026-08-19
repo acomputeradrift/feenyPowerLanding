@@ -44,7 +44,7 @@ Vanilla HTML/CSS/JS. No React, no bundler, no second test framework. Deploy is `
 - Do not commit or push unless asked. Never commit `.env`.
 - Do not re-add a live hours estimate on the public form.
 - Do not put Discrete/Cloned labels or cloned-count questions back on the public form.
-- Do not switch emailed PDFs to v2 until Jamie says so. Keep v1 in `proposalDocument.js` / `formatProposal.js`.
+- Do not switch emailed PDFs back to v1. Live mail uses v2 (`proposalDocumentV2.js` / `formatProposalV2.js`). Keep v1 in `proposalDocument.js` / `formatProposal.js` for `?v=1` preview.
 - Do not re-add a pdfmake `background` canvas behind the colour bands. That made page 3 a giant green slab with the copy sitting high in it.
 
 ## Where the look and form live
@@ -127,23 +127,23 @@ Built and live. Do not reimplement.
 - Backup/retention was deferred on purpose.
 - `SCHEMA_VERSION` is `2026.3`.
 
-Last production deploy: `7475f2d` (source-heavy theaters use the original zone double-count; email shows whole hours). **Live email still sends the three-page v1 PDF.**
+**Live email sends the five-page v2 PDF.**
 
-### v2 PDF (preview only, not live)
+### v2 PDF (live email)
 
-Five-page layout under review at http://localhost:3000/rti_proposal/preview.pdf (HIGH RD sample). `?v=1` still shows v1. 404 unless Host is localhost / 127.0.0.1 / ::1. Do not link it from the public form.
+Five-page layout. Local preview: http://localhost:3000/rti_proposal/preview.pdf (HIGH RD sample). `?v=1` still shows v1. 404 unless Host is localhost / 127.0.0.1 / ::1. Do not link it from the public form.
 
 Files: `backend/proposal/pdf/formatProposalV2.js`, `proposalDocumentV2.js`, `preview.js`, plus their tests. Route is `GET /rti_proposal/preview.pdf` in `fpc_server.js`. Spec notes: [07-pdf-document.md](07-pdf-document.md).
 
-Pages: cover (ID only — PO, client, location; no timeline/hours) → Project Overview (generated paragraph, left-aligned) → Controlled Systems Overview (all six categories, underlined titles, `None Included` when empty; no intro blurb) → Controller Overview (`N x` globals and `N x ISR-4 Room Controller`; no intro) → Project Time Budget (orange band is only `Total Programming Hours: N`; acceptance + signature / print name / date in the white space below).
+Pages: cover (ID only — PO, client, location; no timeline/hours; RTI logo below the orange band) → Project Overview (generated paragraph, left-aligned) → Controlled Systems Overview (all six categories, underlined titles, `None Included` when empty; no intro blurb) → Controller Overview (`N x` globals and `N x ISR-4 Room Controller`; no intro) → Project Time Budget (orange band is only `Total Programming Hours: N`; acceptance + signature / print name / date in the white space below).
 
 Colour bands cycle Feeny logo colours: orange `#fcb040`, dark grey `#575759`, green `#39b54a`, light grey `#a7a9ac`. Dark grey uses white text; others black. Band body is 16pt Roboto, full-bleed table `fillColor`.
 
-**Band placement:** each band is `absolutePosition` at `y = (792 - height) / 2` so it is geometrically centered on US Letter, independent of the page title. Titles stay in normal flow at the top. Cover may overlap the RTI logo slightly; that is accepted. Do not go back to flow spacers under titles.
+**Band placement:** each band is `absolutePosition` at `y = (792 - renderedHeight) / 2` so it is geometrically centered on US Letter, independent of the page title. Height is measured from a real pdfmake table, not a line-count guess (16pt Roboto at `lineHeight` 1.25 is 23.4375pt, not 18). Titles stay in normal flow at the top. The RTI logo sits below the cover orange band, centered in the leftover white above the footer, at 480×76. Do not go back to flow spacers under titles.
 
 **Do not** paint a matching `background()` canvas. Height estimates run long on page 3 (six categories), so the canvas was taller than the table and looked like a huge green bar with copy at the top. Colour comes from the table only.
 
-**Signatures** are a second `absolutePosition` stack, vertically centered in the leftover white between the hours band bottom and the footer (`PAGE_MARGIN_BOTTOM` 56), not parked immediately under the band.
+**Signatures** are a second `absolutePosition` stack, vertically centered in the leftover white between the hours band bottom and the footer (`PAGE_MARGIN_BOTTOM` 56), not parked immediately under the band. The block is 516pt wide (48pt side margins) and centered as a group; copy and labels stay left-aligned inside it. Lines are canvas strokes in a fixed second column so they share a start and end. Do not use `decoration: 'underline'` on the line cells. Copy is *I approve this budget and understand that work will commence when Feeny Power and Control Ltd has received a 50% deposit* (`a` and `50%` stay on the same line).
 
 Node does **not** hot-reload. After PDF code changes, kill the listener on port 3000 and restart `node fpc_server.js`, then hard-refresh the preview URL. Restarts often hit `EADDRINUSE` if the old process is still up.
 
@@ -155,7 +155,7 @@ cd backend && npm test
 
 Then open http://localhost:3000/rti_proposal/ — and confirm `/consultation` and `/faq` still look the same.
 
-PDF preview (localhost only; 404 on the public host): http://localhost:3000/rti_proposal/preview.pdf is **v2** (HIGH RD sample). Append `?v=1` for the original emailed layout. Hard-refresh after PDF code changes. Live email still sends v1.
+PDF preview (localhost only; 404 on the public host): http://localhost:3000/rti_proposal/preview.pdf is **v2** (HIGH RD sample). Append `?v=1` for the original three-page layout. Hard-refresh after PDF code changes. Live email sends v2.
 
 ## Spec index (on demand)
 

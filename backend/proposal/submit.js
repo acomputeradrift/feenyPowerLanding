@@ -6,7 +6,8 @@ import { calculateHoursData } from './calc/hoursData.js';
 import { rates, RATE_CARD_VERSION } from './calc/rates.js';
 import { generateReference } from './reference.js';
 import { hashClientIp } from './ipHash.js';
-import { generateProposalPdf, proposalPdfFilename } from './pdf/proposalDocument.js';
+import { generateProposalPdfV2 } from './pdf/proposalDocumentV2.js';
+import { proposalPdfFilename } from './pdf/proposalDocument.js';
 import { sendProposalEmail } from './email/sendProposal.js';
 import { ProposalSubmission } from '../models/ProposalSubmission.js';
 
@@ -71,7 +72,7 @@ export async function processSubmission(body, meta = {}, deps = {}) {
     makeReference = generateReference,
     saveSubmission = saveSubmissionToMongo,
     updateDelivery = updateSubmissionDelivery,
-    generatePdf = generateProposalPdf,
+    generatePdf = generateProposalPdfV2,
     sendEmail = sendProposalEmail,
     ipHashSalt = process.env.PROPOSAL_IP_HASH_SALT
   } = deps;

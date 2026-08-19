@@ -320,7 +320,7 @@ export function buildProposalContentV2(submission, systemData, hoursData, option
     totals: {
       title: 'Project Time Budget',
       hoursLine: `Total Programming Hours: ${billedHours}`,
-      acceptance: 'I accept this RTI programming budget.',
+      acceptance: 'I approve this budget and understand that work will commence when Feeny Power and Control Ltd has received a\u00A050% deposit.',
       signatureLabel: 'Client signature',
       printNameLabel: 'Print name',
       dateLabel: 'Date'
