@@ -30,6 +30,7 @@ app.get('/rti_proposal/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/rti_proposal.html'));
 });
 
+app.get('/rti_proposal/preview.pdf', handleProposalPdfPreview);
 app.get('/rti_proposal/audit/:reference', handleProposalAudit);
 ```
 
@@ -51,6 +52,16 @@ is off), so a naive `app.get('/rti_proposal')` redirect would also match
 `/rti_proposal/` and loop. Redirect only when `req.originalUrl` (query stripped)
 is exactly `/rti_proposal`, then `next()` so the trailing-slash handler can
 serve the page.
+
+---
+
+## GET /rti_proposal/preview.pdf
+
+Local design preview of the real pdfmake PDF. Defaults to **v2** (HIGH RD
+sample). `?v=1` renders the original emailed layout. Returns `application/pdf`
+with `Cache-Control: no-store` when the request Host is `localhost`, `127.0.0.1`,
+or `::1`. Any other Host gets 404. Do not link this from the public form. Live
+email still sends v1 until Jamie switches it.
 
 ---
 

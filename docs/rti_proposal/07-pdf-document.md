@@ -178,3 +178,41 @@ directly traceable to its stored submission.
   stream. No database access, no email sending, no filesystem writes.
 - Deterministic apart from the copyright year, so it can be snapshot tested.
 - Must not require a headless browser or any system-level dependency (NFR-8).
+
+## v2 (preview only)
+
+While v2 is in testing, emailed submissions still use the three-page v1 document
+above. Local preview (`GET /rti_proposal/preview.pdf`) renders v2 from
+`proposalDocumentV2.js`. `?v=1` on that URL still shows v1.
+
+v2 pages:
+
+1. Cover — white top unchanged. Orange band (`#fcb040`) is sized to its three
+   identification lines, with the copy vertically centered in the band and the
+   band vertically centered on the page (`absolutePosition`, `y = (792 - height) / 2`).
+   Slight overlap with the RTI logo is accepted. Project PO, Project Client Name,
+   and Project Location, 16pt. No timeline or hours on the cover.
+2. Project Overview — title stays at the top. Dark grey band (`#575759`) is
+   sized to the generated paragraph, copy vertically centered in the band, band
+   vertically centered on the page. Body text is left-aligned: rooms and names,
+   included systems, controller summary, additional info, commissioning date.
+3. Controlled Systems Overview — title stays at the top. Green band (`#39b54a`)
+   lists every category (Lighting/Shading, Audio/Video, Climate, Security,
+   Pool/Pumps, Inputs/Outputs) with `N x` zone and device lines inside each.
+   Empty categories print `None Included`.
+4. Controller Overview — title stays at the top. Light grey band (`#a7a9ac`)
+   sized to the `N x` iPhone/iPad/Touchscreen Global Controller and
+   `N x ISR-4 Room Controller` lines.
+5. Project Time Budget — title at the top. Orange band again (color cycle
+   repeats) contains only `Total Programming Hours: N`. Acceptance, client
+   signature, print name, and date sit centered in the white space below the
+   band, with underlines at the baseline of each label.
+
+Band colors follow the Feeny logo: orange, dark grey, green, light grey, then
+repeat. Band body text is the same 16pt Roboto as the cover Project PO lines.
+Every band is full-bleed, padded equally above and below its copy, and centered
+on the page without covering the page title. Colour is the table `fillColor` only
+— do not add a pdfmake `background` canvas (it overdraws page 3). Category titles
+are underlined. Signature underlines sit at the label baseline.
+
+Do not put per-zone rates in v2 either.

@@ -8,6 +8,7 @@ import uploadRoutes from './routes/upload.js';
 import processRoute from './routes/process.js';
 import retrieveRoute from './routes/retrieve.js';
 import proposalRoutes, { handleProposalAudit } from './routes/proposal.js';
+import { handleProposalPdfPreview } from './proposal/pdf/preview.js';
 import { requireMongoUri } from './requireMongoUri.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -69,6 +70,7 @@ app.get('/rti_proposal/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/rti_proposal.html'));
 });
 
+app.get('/rti_proposal/preview.pdf', handleProposalPdfPreview);
 app.get('/rti_proposal/audit/:reference', handleProposalAudit);
 
 // ✅ Redirect `/rti_diagnostics/` to `/rti_diagnostics/upload_files/`

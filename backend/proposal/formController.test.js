@@ -377,6 +377,7 @@ describe('FR-1 page contract', () => {
     assert.match(serverSrc, /app\.get\('\/rti_proposal\/'/);
     assert.match(serverSrc, /app\.get\('\/rti_proposal'/);
     assert.match(serverSrc, /frontend\/rti_proposal\.html/);
+    assert.match(serverSrc, /\/rti_proposal\/preview\.pdf/);
   });
 
   it('preserves the legacy intro text and uses label-contrast tokens', () => {

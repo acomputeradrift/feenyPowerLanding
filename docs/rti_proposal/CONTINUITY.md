@@ -40,10 +40,12 @@ Vanilla HTML/CSS/JS. No React, no bundler, no second test framework. Deploy is `
 - Do not serve `backend/proposal/calc/` or any per-zone rate to the browser. Rates appear only on the audit view.
 - Do not “fix” hour oddities: per-line rounding, timer double counting, AV devices counted twice in `totalProjectZones` (feeds controller hours only), section-vs-total mismatch, excluded processor hours.
 - Do not send real mail unless `PROPOSAL_EMAIL_ENABLED` is the string `true`.
-- Do not link `/rti_proposal/audit/` from any public page.
+- Do not link `/rti_proposal/audit/` or `/rti_proposal/preview.pdf` from any public page.
 - Do not commit or push unless asked. Never commit `.env`.
 - Do not re-add a live hours estimate on the public form.
 - Do not put Discrete/Cloned labels or cloned-count questions back on the public form.
+- Do not switch emailed PDFs to v2 until Jamie says so. Keep v1 in `proposalDocument.js` / `formatProposal.js`.
+- Do not re-add a pdfmake `background` canvas behind the colour bands. That made page 3 a giant green slab with the copy sitting high in it.
 
 ## Where the look and form live
 
@@ -113,7 +115,7 @@ Leaving a type on “Select…” must block Next/Submit with *Type is required*
 
 Help text in the schema is domain knowledge. Do not rewrite it for tone.
 
-## Implementation snapshot (2026-08-18)
+## Implementation snapshot (2026-08-19)
 
 Built and live. Do not reimplement.
 
@@ -125,7 +127,25 @@ Built and live. Do not reimplement.
 - Backup/retention was deferred on purpose.
 - `SCHEMA_VERSION` is `2026.3`.
 
-Last production deploy: `fa59dc0` (discrete/clone inferred from types; dealer-facing project-detail copy; faded unedited defaults). Local/master also restores AV-device double-count in `totalProjectZones` and ceils hours in the email subject and body; that is not live until the server pull.
+Last production deploy: `7475f2d` (source-heavy theaters use the original zone double-count; email shows whole hours). **Live email still sends the three-page v1 PDF.**
+
+### v2 PDF (preview only, not live)
+
+Five-page layout under review at http://localhost:3000/rti_proposal/preview.pdf (HIGH RD sample). `?v=1` still shows v1. 404 unless Host is localhost / 127.0.0.1 / ::1. Do not link it from the public form.
+
+Files: `backend/proposal/pdf/formatProposalV2.js`, `proposalDocumentV2.js`, `preview.js`, plus their tests. Route is `GET /rti_proposal/preview.pdf` in `fpc_server.js`. Spec notes: [07-pdf-document.md](07-pdf-document.md).
+
+Pages: cover (ID only — PO, client, location; no timeline/hours) → Project Overview (generated paragraph, left-aligned) → Controlled Systems Overview (all six categories, underlined titles, `None Included` when empty; no intro blurb) → Controller Overview (`N x` globals and `N x ISR-4 Room Controller`; no intro) → Project Time Budget (orange band is only `Total Programming Hours: N`; acceptance + signature / print name / date in the white space below).
+
+Colour bands cycle Feeny logo colours: orange `#fcb040`, dark grey `#575759`, green `#39b54a`, light grey `#a7a9ac`. Dark grey uses white text; others black. Band body is 16pt Roboto, full-bleed table `fillColor`.
+
+**Band placement:** each band is `absolutePosition` at `y = (792 - height) / 2` so it is geometrically centered on US Letter, independent of the page title. Titles stay in normal flow at the top. Cover may overlap the RTI logo slightly; that is accepted. Do not go back to flow spacers under titles.
+
+**Do not** paint a matching `background()` canvas. Height estimates run long on page 3 (six categories), so the canvas was taller than the table and looked like a huge green bar with copy at the top. Colour comes from the table only.
+
+**Signatures** are a second `absolutePosition` stack, vertically centered in the leftover white between the hours band bottom and the footer (`PAGE_MARGIN_BOTTOM` 56), not parked immediately under the band.
+
+Node does **not** hot-reload. After PDF code changes, kill the listener on port 3000 and restart `node fpc_server.js`, then hard-refresh the preview URL. Restarts often hit `EADDRINUSE` if the old process is still up.
 
 ## Verify a look or form change
 
@@ -134,6 +154,8 @@ cd backend && npm test
 ```
 
 Then open http://localhost:3000/rti_proposal/ — and confirm `/consultation` and `/faq` still look the same.
+
+PDF preview (localhost only; 404 on the public host): http://localhost:3000/rti_proposal/preview.pdf is **v2** (HIGH RD sample). Append `?v=1` for the original emailed layout. Hard-refresh after PDF code changes. Live email still sends v1.
 
 ## Spec index (on demand)
 
