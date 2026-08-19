@@ -112,7 +112,11 @@ Drives controller hours and processor counts.
 ```
 totalProjectZones = sum of:
     lightingZones, shadingZones, keypadZones,
-    audioZones, videoZones, totalDeviceZones,
+    audioZones, audioDiscreteSourceZones, audioClonedSourceZones,
+    videoZones, videoDiscreteSourceZones, videoClonedSourceZones,
+    avReceiverDiscreteZones, avReceiverClonedZones,
+    displayDiscreteZones, displayClonedZones,
+    totalDeviceZones,
     thermostatZones, heaterZones, fanZones, climateTimerZones,
     alarmZones, accessZones, cameraZones,
     poolZones, pumpZones, poolAndPumpsTimerZones,
@@ -126,19 +130,19 @@ fanZones`, and heaters and fans also appear individually in the list. The same
 applies to pools and pumps. A project with 1 heater and 2 fans contributes 3 for
 the individual counts plus 3 more for the timer rollup, totalling 6. This inflates
 `totalProjectZones`, which in turn inflates controller hours and processor counts.
-This is preserved for parity, but it is a candidate for a deliberate business
-decision later.
+
+**AV devices are double counted in `totalProjectZones`.** Each discrete and cloned
+source, display, and AVR is included individually *and* again as `totalDeviceZones`.
+The AV line still bills those devices once (22 min discrete / 11 min cloned). The
+extra copy only feeds controller hours. That is intentional: a one-room theater is
+source-heavy and zone-light, and without the extra weight the room-controller
+formula underprices it. A theater of 1 audio source, 1 AVR, 2 video sources, 1
+display, and 1 room controller must print **6 hours**.
 
 **The zero filter is decorative.** The legacy implementation filters out values
 greater than zero before summing. Since zero contributes nothing to a sum and
 validation forbids negatives, the filter cannot affect the result. Do not treat it
 as load-bearing logic.
-
-Note also that distributed audio and video **zones** are counted here, while audio
-and video **sources** reach the total only through `totalDeviceZones`. An earlier
-version of the legacy code included source counts both ways, double counting them;
-that was fixed in commit `df0afbc` of the legacy repository. The corrected
-behaviour is what the golden fixture must capture.
 
 ### Processor counts
 
@@ -307,9 +311,10 @@ Once parity is proven:
 
 - Any change to a rate or formula requires a deliberate fixture update in the same
   commit, with the business reason in the message.
-- The preserved oddities - per-line rounding, timer double counting, the
-  section-versus-total display mismatch, excluded processor hours - are **not**
-  defects to fix during the port. Each is a separate business decision.
+- The preserved oddities - per-line rounding, timer double counting, AV devices
+  counted twice in `totalProjectZones`, the section-versus-total display mismatch,
+  excluded processor hours - are **not** defects to fix. Each is a separate
+  business decision.
 
 Do not proceed to build the form UI until parity tests pass. A form that collects
 answers beautifully and prices them differently than yesterday is worse than no

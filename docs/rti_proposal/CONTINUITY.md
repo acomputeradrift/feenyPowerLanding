@@ -38,11 +38,12 @@ Vanilla HTML/CSS/JS. No React, no bundler, no second test framework. Deploy is `
 - Do not edit `frontend/styles/global.css` or `frontend/styles/consultation.css`.
 - Do not change existing routes or pages (`/consultation`, `/faq`, RTI diagnostics).
 - Do not serve `backend/proposal/calc/` or any per-zone rate to the browser. Rates appear only on the audit view.
-- Do not “fix” hour oddities: per-line rounding, timer double counting, section-vs-total mismatch, excluded processor hours.
+- Do not “fix” hour oddities: per-line rounding, timer double counting, AV devices counted twice in `totalProjectZones` (feeds controller hours only), section-vs-total mismatch, excluded processor hours.
 - Do not send real mail unless `PROPOSAL_EMAIL_ENABLED` is the string `true`.
 - Do not link `/rti_proposal/audit/` from any public page.
 - Do not commit or push unless asked. Never commit `.env`.
 - Do not re-add a live hours estimate on the public form.
+- Do not put Discrete/Cloned labels or cloned-count questions back on the public form.
 
 ## Where the look and form live
 
@@ -51,7 +52,7 @@ Vanilla HTML/CSS/JS. No React, no bundler, no second test framework. Deploy is `
 | `frontend/rti_proposal.html` | Page shell, header, partners, footer. Header line is invented and may change. No hours aside. |
 | `frontend/styles/rti_proposal.css` | **Only** stylesheet you should edit for this page. Palette is CSS variables at the top. Single centered column (`max-width: 720px`). |
 | `frontend/scripts/proposal/rti_proposal.js` | DOM: steps, inputs, submit. Does not call the estimate API. |
-| `frontend/scripts/proposal/formController.js` | Answers object is the source of truth. Re-render from it. Count defaults use `question.min ?? 0`. |
+| `frontend/scripts/proposal/formController.js` | Answers object is the source of truth. Re-render from it. Count defaults use `question.min ?? 0`. Text `default` values are prefilled the same way. |
 | `backend/proposal/shared/schema.js` | Questions, help text (preserve verbatim unless Jamie asks to change it), `visibleIf`, repeats. |
 | `backend/proposal/shared/repeatGroups.js` | Resize arrays to the driving count. New items get `name` from `itemLabel` (Room 1, …). |
 | `backend/proposal/shared/validate.js` | Shared client/server validation, including the controller-pair rule. |
@@ -72,6 +73,14 @@ These are current product rules, not a backlog.
 - Other counts default to 0.
 - Exterior zones may be 0.
 - Global controllers may be 0, and room controllers may be 0, but **not both**. Error: *Enter at least one global controller or one room controller*.
+- `projectTimeline` is **required**.
+
+**Defaults (unedited look faded)**
+
+- `projectClientName` prefills `Private Client`. `projectAddress` prefills `Private Location`.
+- Repeat names prefill from `itemLabel` (Room 1, Audio Source 1, …).
+- Unedited default text uses class `proposal-value-default` (hint colour `#a7a9ac`). As soon as the dealer types something else, it goes full contrast.
+- Do **not** fade Type selects or `Select…`.
 
 **Repeat groups** render **immediately under** the count that drives them. Do not park them at the end of the step.
 
@@ -85,7 +94,13 @@ These are current product rules, not a backlog.
 | `cameraZones` | `cameraDetails` | Name default Camera 1, …; location optional |
 | `globalControllerCount` | `globalControllerDetails` | **Type required**: iPhone / iPad / Touchscreen |
 
-No name fields on AV receivers (count only). Discrete versus cloned is derived from types (first of each type is discrete; AV receivers are one type), not collected on the form. `Custom` is never cloned.
+No name fields on AV receivers (count only). Do **not** put Discrete/Cloned labels back on the form. Those counts are derived in `systemData.js`:
+
+- First of each type is discrete; later of the same type are cloned (half rate).
+- `Custom` is **never** cloned — each Custom is discrete.
+- AV receivers have no type: first unit discrete, rest cloned.
+- Global controllers: extra units of a type already counted do not add to the hours multiplier. Legacy answers without types still bill the total count.
+- Form field ids such as `audioDiscreteSourceZones` are the **total** count the dealer entered. Live answers do not include `*Cloned*` keys. Those keys still exist on the calculator output and on old submissions for golden-master parity.
 
 Leaving a type on “Select…” must block Next/Submit with *Type is required*. Names may stay as the auto-filled label.
 
@@ -94,6 +109,7 @@ Leaving a type on “Select…” must block Next/Submit with *Type is required*
 - Header under the H1: *Describe the project scope and I will email you a programming budget.*
 - From-name on mail (`proposals` today). Address stays `proposals@feenypowerandcontrol.com`.
 - Page title / meta description.
+- Step 1 labels now: *Your Name*, *Your Email*, *Project Location* (id is still `projectAddress`). Location help is *A city is fine.*
 
 Help text in the schema is domain knowledge. Do not rewrite it for tone.
 
@@ -107,8 +123,9 @@ Built and live. Do not reimplement.
 - Audit route is disabled until `PROPOSAL_AUDIT_TOKEN` is set on the **server** `.env`.
 - FAQ still links the old Google Form. Cutover (point dealers here, retire the Form) is not done.
 - Backup/retention was deferred on purpose.
+- `SCHEMA_VERSION` is `2026.3`.
 
-Last production deploy (as of this snapshot): `e7de53f` plus earlier look changes. If *Type is required* is still only in the local working tree, do not assume it is live until Jamie asks to commit, push, and pull.
+Last production deploy: `fa59dc0` (discrete/clone inferred from types; dealer-facing project-detail copy; faded unedited defaults). Local/master also restores AV-device double-count in `totalProjectZones` and ceils hours in the email subject and body; that is not live until the server pull.
 
 ## Verify a look or form change
 

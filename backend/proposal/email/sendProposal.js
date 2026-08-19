@@ -9,15 +9,32 @@ export function isProposalEmailEnabled(env = process.env) {
   return env.PROPOSAL_EMAIL_ENABLED === 'true';
 }
 
+function billedProjectHours(hours) {
+  return Math.ceil(Number(hours) || 0);
+}
+
+function billedHoursLabel(hours) {
+  const n = billedProjectHours(hours);
+  return n === 1 ? '1 hour' : `${n} hours`;
+}
+
+function proposalEmailCopy(submission) {
+  const hours = billedHoursLabel(submission.totalProjectHours);
+  return {
+    subject: `RTI Proposal ${submission.reference} (${hours})`,
+    text: `Your RTI programming budget is attached (${hours}). Reference ${submission.reference}.`
+  };
+}
+
 function buildMessage({ submission, pdfBuffer, pdfFilename }, env) {
   const from = env.PROPOSAL_EMAIL_FROM;
   const bcc = env.PROPOSAL_EMAIL_BCC;
-  const hours = submission.totalProjectHours;
+  const { subject, text } = proposalEmailCopy(submission);
   const message = {
     from,
     to: [submission.contractorEmail],
-    subject: `RTI Proposal ${submission.reference}`,
-    text: `Your RTI programming budget is attached (${hours} hours). Reference ${submission.reference}.`
+    subject,
+    text
   };
   if (bcc) {
     message.bcc = [bcc];
@@ -65,11 +82,12 @@ export async function sendProposalEmail({ submission, pdfBuffer, pdfFilename }, 
 
   await mkdir(outboxDir, { recursive: true });
   const jsonPath = path.join(outboxDir, `${submission.reference}.json`);
+  const { subject } = proposalEmailCopy(submission);
   const payload = {
     to: submission.contractorEmail,
     bcc: env.PROPOSAL_EMAIL_BCC || null,
     from: env.PROPOSAL_EMAIL_FROM || null,
-    subject: `RTI Proposal ${submission.reference}`,
+    subject,
     reference: submission.reference,
     pdfFilename,
     totalProjectHours: submission.totalProjectHours,

@@ -57,7 +57,7 @@ describe('FR-9 ADR-005 live estimate', () => {
     const expected = calculateHoursData(calculateSystemData(countAnswersFromFixture()), rates);
     assert.deepEqual(result.sectionHours, expected.sectionHours);
     assert.equal(result.totalProjectHours, fixture.hoursData.totalProjectHours);
-    assert.equal(result.totalProjectHours, 62.3);
+    assert.equal(result.totalProjectHours, 67.8);
   });
 
   it('treats missing fields as zero and accepts partial answers', () => {

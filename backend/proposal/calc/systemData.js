@@ -123,14 +123,24 @@ export function calculateSystemData(answers = {}) {
     + videoClonedSourceZones;
   const totalDeviceZones = totalDiscreteDeviceZones + totalClonedDeviceZones;
 
-  // Timer rollups are included alongside the individual counts (legacy double count).
-  // The > 0 filter is decorative: zeros do not change the sum.
+  // Timer rollups and AV device counts are included alongside their rollups
+  // (legacy double count). Devices are billed once on the AV line; the extra
+  // copy in totalProjectZones only inflates controller hours so source-heavy
+  // one-room theaters still price correctly.
   const totalProjectZones = [
     lightingZones,
     shadingZones,
     keypadZones,
     audioZones,
+    audioDiscreteSourceZones,
+    audioClonedSourceZones,
     videoZones,
+    videoDiscreteSourceZones,
+    videoClonedSourceZones,
+    avReceiverDiscreteZones,
+    avReceiverClonedZones,
+    displayDiscreteZones,
+    displayClonedZones,
     totalDeviceZones,
     thermostatZones,
     heaterZones,

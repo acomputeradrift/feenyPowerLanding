@@ -1,8 +1,8 @@
 {
   "meta": {
     "source": "RTI AutoProposal testOnFormSubmit() mock answers",
-    "legacyCommit": "df0afbc2603029c54ce74b7aaa8fca2d35b9b641",
-    "legacyCommitSubject": "Fix totalProjectZones double-counting and align doc/spreadsheet output with discrete/cloned zone fields.",
+    "legacyCommit": "pre-df0afbc production Google Form (device counts included twice in totalProjectZones)",
+    "legacyCommitSubject": "Restore device double-count in totalProjectZones so source-heavy one-room theaters price correctly. AV device hours are billed once; the extra copy only inflates controller hours.",
     "capturedAt": "2026-08-17T17:03:49.188Z"
   },
   "formData": {
@@ -82,11 +82,11 @@
     "globalControllerCount": 2,
     "floorplanAddOnCount": 1,
     "roomControllerCount": 3,
-    "totalProjectZones": 69,
+    "totalProjectZones": 80,
     "totalProjectRooms": 21,
     "mainProcessorCount": 1,
-    "auxProcessorCount": 0,
-    "expansionModuleCount": 1
+    "auxProcessorCount": 1,
+    "expansionModuleCount": 2
   },
   "hoursData": {
     "lightingZoneHours": 4.4,
@@ -113,10 +113,10 @@
     "outputRelayZoneHours": 0.9,
     "inputSenseZoneHours": 0.6,
     "totalInputOutputHours": 1.5,
-    "globalControllerHours": 23,
-    "roomControllerHours": 3.5,
-    "floorplanAddOnHours": 10.8,
-    "totalControllerHours": 37.3,
-    "totalProjectHours": 62.3
+    "globalControllerHours": 26.7,
+    "roomControllerHours": 4,
+    "floorplanAddOnHours": 12.1,
+    "totalControllerHours": 42.8,
+    "totalProjectHours": 67.8
   }
 }

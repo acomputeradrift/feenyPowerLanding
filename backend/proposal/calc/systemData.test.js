@@ -109,4 +109,27 @@ describe('first-of-type discrete, later same type cloned', () => {
     };
     assert.ok(lineHours(ipadAndIphone, 'globalController') > lineHours(twoIpads, 'globalController'));
   });
+
+  it('counts AV devices twice in project zones so a one-room theater prints 6 hours', () => {
+    const answers = {
+      rooms: 1,
+      floors: 1,
+      roomControllerCount: 1,
+      audioDiscreteSourceZones: 1,
+      audioSourceDetails: [{ type: 'Streamer', name: 'Sonos' }],
+      avReceiverDiscreteZones: 1,
+      videoDiscreteSourceZones: 2,
+      videoSourceDetails: [{ type: 'Media Player' }, { type: 'Cable or Satellite' }],
+      displayDiscreteZones: 1,
+      displayDetails: [{ type: 'TV' }]
+    };
+    const systemData = calculateSystemData(answers);
+    const hours = calculateHoursData(systemData, rates);
+    assert.equal(systemData.totalDeviceZones, 5);
+    assert.equal(systemData.totalProjectZones, 10);
+    assert.equal(hours.sectionHours.audioVideo, 1.9);
+    assert.equal(hours.sectionHours.controllers, 3.4);
+    assert.equal(hours.totalProjectHours, 5.3);
+    assert.equal(Math.ceil(hours.totalProjectHours), 6);
+  });
 });
