@@ -109,7 +109,7 @@ Leaving a type on “Select…” must block Next/Submit with *Type is required*
 ## Copy that is fair game
 
 - Header under the H1: *Describe the project scope and I will email you a programming budget.*
-- From-name on mail (`proposals` today). Address stays `proposals@feenypowerandcontrol.com`.
+- From-name on mail is `RTI Proposals`. Address stays `proposals@feenypowerandcontrol.com`.
 - Page title / meta description.
 - Step 1 labels now: *Your Name*, *Your Email*, *Project Location* (id is still `projectAddress`). Location help is *A city is fine.*
 
@@ -135,11 +135,11 @@ Five-page layout. Local preview: http://localhost:3000/rti_proposal/preview.pdf 
 
 Files: `backend/proposal/pdf/formatProposalV2.js`, `proposalDocumentV2.js`, `preview.js`, plus their tests. Route is `GET /rti_proposal/preview.pdf` in `fpc_server.js`. Spec notes: [07-pdf-document.md](07-pdf-document.md).
 
-Pages: cover (no tagline; Feeny logo 200×150; ID only — PO, client, location; no timeline/hours; RTI logo below the orange band with black *An* above and *Proposal* below) → Project Overview (generated paragraph, left-aligned) → Controlled Systems Overview (all six categories, underlined titles, `None Included` when empty; no intro blurb) → Controller Overview (`N x` globals and `N x ISR-4 Room Controller`; no intro) → Project Time Budget (orange band is only `Total Programming Hours: N`; acceptance + signature / print name / date in the white space below).
+Pages: cover (no tagline; Feeny logo 200×150; ID only — PO, client, location; no timeline/hours; RTI logo below the orange band with light-grey *An* above and *Proposal* below) → Project Overview (*Your project covers N rooms (…)*; controllers *every room / system*; Additional Info heading plus notes if present) → Controlled Systems Overview (sources as `N x Type (Name)`; displays as `N x Display (TV)`; count-only rows stay `N x`; `None Included` when empty) → Controller Overview (`N x Global Controller (iPhone)`, `N x Room Controller`; no intro) → Project Summary (orange band is only `Total Programming Hours: N`; acceptance + signature / print name / date in the white space below). Page titles are 22pt.
 
 Colour bands cycle Feeny logo colours: orange `#fcb040`, dark grey `#575759`, green `#39b54a`, light grey `#a7a9ac`. Dark grey uses white text; others black. Band body is 16pt Roboto, full-bleed table `fillColor`.
 
-**Band placement:** each band is `absolutePosition` at `y = (792 - renderedHeight) / 2` so it is geometrically centered on US Letter, independent of the page title. Height is measured from a real pdfmake table, not a line-count guess (16pt Roboto at `lineHeight` 1.25 is 23.4375pt, not 18). Titles stay in normal flow at the top. The RTI logo sits below the cover orange band, centered in the leftover white above the footer, at 480×76, with *An* above and *Proposal* below in black. Do not go back to flow spacers under titles.
+**Band placement:** each band is `absolutePosition` at `y = (792 - renderedHeight) / 2` so it is geometrically centered on US Letter, independent of the page title. Height is measured from a real pdfmake table, not a line-count guess (16pt Roboto at `lineHeight` 1.25 is 23.4375pt, not 18). Titles stay in normal flow at the top at 22pt. The RTI logo sits below the cover orange band, centered in the leftover white above the footer, at 480×76, with *An* above and *Proposal* below in light grey `#a7a9ac` at the same 11pt as *Prepared for:*. Contractor name on the cover is 16pt. Do not go back to flow spacers under titles.
 
 **Do not** paint a matching `background()` canvas. Height estimates run long on page 3 (six categories), so the canvas was taller than the table and looked like a huge green bar with copy at the top. Colour comes from the table only.
 

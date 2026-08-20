@@ -88,17 +88,17 @@ describe('proposal v2 wording', () => {
     assert.equal(content.cover.timelineLine, undefined);
     assert.equal(content.cover.totalHoursLine, undefined);
 
-    assert.match(
+    assert.equal(
       content.overview.roomsAndSystems,
-      /This project has 4 rooms, currently labelled as Room 1, Room 2, Room 3 and Room 4 and includes integration with lighting, shading and audio\/video systems\./
+      'Your project covers 4 rooms (Room 1, Room 2, Room 3, Room 4) and includes integration with lighting, shading and audio/video systems.'
     );
-    assert.match(
+    assert.equal(
       content.overview.controllers,
-      /For controllers, there are 2 iPhones that control every system, 2 touchscreens that control every system and a handheld controller that controls a single room\./
+      'For controllers, there are 2 iPhones that control every room / system, 2 touchscreens that control every room / system and a handheld controller that controls a single room.'
     );
     assert.equal(
       content.overview.additional,
-      'There is some additional info provided here: “Owner wants scenes labelled by time of day.”'
+      'Owner wants scenes labelled by time of day.'
     );
     assert.equal(
       content.overview.commissioning,
@@ -114,9 +114,9 @@ describe('proposal v2 wording', () => {
       '2 x Shading Zones'
     ]);
     assert.deepEqual(content.systems.sections[1].lines, [
-      '1 x Sonos Port Streamer',
-      '1 x Apple TV Media Player',
-      '1 x Living Room TV'
+      '1 x Streamer (Sonos Port)',
+      '1 x Media Player (Apple TV)',
+      '1 x Display (TV)'
     ]);
     assert.deepEqual(content.systems.sections[2].lines, ['None Included']);
     assert.deepEqual(content.systems.sections[3].lines, ['None Included']);
@@ -128,13 +128,13 @@ describe('proposal v2 wording', () => {
     assert.equal(content.systems.intro, undefined);
 
     assert.deepEqual(content.controllers.lines, [
-      '2 x iPhone Global Controller',
-      '2 x Touchscreen Global Controller',
-      '1 x ISR-4 Room Controller'
+      '2 x Global Controller (iPhone)',
+      '2 x Global Controller (Touchscreen)',
+      '1 x Room Controller'
     ]);
     assert.equal(content.controllers.intro, undefined);
 
-    assert.equal(content.totals.title, 'Project Time Budget');
+    assert.equal(content.totals.title, 'Project Summary');
     assert.equal(
       content.totals.hoursLine,
       `Total Programming Hours: ${Math.ceil(hoursData.totalProjectHours)}`
@@ -146,7 +146,7 @@ describe('proposal v2 wording', () => {
     assert.equal(JSON.stringify(content).includes('minutesPerUnit'), false);
   });
 
-  it('uses the empty additional-info fallback and omits unused systems', () => {
+  it('omits additional info when blank', async () => {
     const answers = validAnswers({
       rooms: 1,
       roomControllerCount: 1,
@@ -155,12 +155,9 @@ describe('proposal v2 wording', () => {
     const systemData = calculateSystemData(answers);
     const hoursData = calculateHoursData(systemData, rates);
     const content = buildProposalContentV2({ answers }, systemData, hoursData);
-    assert.match(content.overview.roomsAndSystems, /This project has 1 room, currently labelled as Room 1\./);
+    assert.match(content.overview.roomsAndSystems, /Your project covers 1 room \(Room 1\)\./);
     assert.equal(content.overview.roomsAndSystems.includes('lighting'), false);
-    assert.equal(
-      content.overview.additional,
-      'No additional information was provided.'
-    );
+    assert.equal(content.overview.additional, undefined);
     assert.equal(
       content.overview.controllers,
       'For controllers, there is a handheld controller that controls a single room.'
@@ -176,6 +173,35 @@ describe('proposal v2 wording', () => {
         ['None Included']
       ]
     );
+    const def = JSON.stringify(await buildDocDefinitionV2(
+      { answers },
+      systemData,
+      hoursData
+    ));
+    assert.equal(def.includes('Additional Info:'), false);
+    assert.equal(def.includes('No additional information'), false);
+  });
+
+  it('lists displays as N x Display (type), grouped by type', () => {
+    const answers = validAnswers({
+      rooms: 1,
+      roomControllerCount: 1,
+      displayDiscreteZones: 3
+    });
+    answers.displayDetails = [
+      { type: 'TV', name: 'Living Room' },
+      { type: 'TV', name: 'Bedroom' },
+      { type: 'Projector', name: 'Theater' }
+    ];
+    const content = buildProposalContentV2(
+      { answers },
+      calculateSystemData(answers),
+      calculateHoursData(calculateSystemData(answers), rates)
+    );
+    assert.deepEqual(content.systems.sections[1].lines, [
+      '2 x Display (TV)',
+      '1 x Display (Projector)'
+    ]);
   });
 
   it('does not include v1 page titles', async () => {
@@ -189,7 +215,12 @@ describe('proposal v2 wording', () => {
     assert.match(def, /Project Overview/);
     assert.match(def, /Controlled Systems Overview/);
     assert.match(def, /Controller Overview/);
-    assert.match(def, /Project Time Budget/);
+    assert.match(def, /Project Summary/);
+    assert.equal(def.includes('Project Time Budget'), false);
+    assert.match(def, /"text":"Project Overview"[^}]*"fontSize":22/);
+    assert.match(def, /"text":"Controlled Systems Overview"[^}]*"fontSize":22/);
+    assert.match(def, /"text":"Controller Overview"[^}]*"fontSize":22/);
+    assert.match(def, /"text":"Project Summary"[^}]*"fontSize":22/);
     assert.equal(def.includes('System Integration Scope'), false);
     assert.equal(def.includes('RTI Equipment Scope'), false);
     assert.equal(def.includes('Project Timeline'), false);
@@ -204,10 +235,15 @@ describe('proposal v2 wording', () => {
     assert.match(def, /"absolutePosition":\{"x":0,"y":/);
     assert.equal(def.includes('"h":280'), false);
     assert.match(def, /"fillColor":"#fcb040"/);
-    assert.match(def, /currently labelled as Room 1[\s\S]{0,160}"alignment":"left"/);
+    assert.match(def, /Your project covers 4 rooms \(Room 1, Room 2, Room 3, Room 4\)[\s\S]{0,160}"alignment":"left"/);
+    assert.match(def, /"text":"Additional Info:"/);
     assert.match(def, /Project PO: HIGH RD[\s\S]{0,160}"alignment":"center"/);
     assert.match(def, /"text":"Lighting\/Shading"[^}]*"decoration":"underline"/);
     assert.match(def, /4 x Lighting Zones/);
+    assert.match(def, /1 x Streamer \(Sonos Port\)/);
+    assert.match(def, /2 x Global Controller \(iPhone\)/);
+    assert.match(def, /1 x Room Controller/);
+    assert.equal(def.includes('ISR-4'), false);
     assert.match(def, /None Included/);
     assert.match(def, /"decoration":"underline"/);
   });
@@ -280,7 +316,7 @@ describe('proposal v2 wording', () => {
     assert.deepEqual(inFlowImages[0].fit, [200, 150]);
   });
 
-  it('cover drops the tagline and captions the RTI logo in black', async () => {
+  it('cover drops the tagline and captions the RTI logo in light grey', async () => {
     const answers = highRdAnswers();
     const doc = await buildDocDefinitionV2(
       { answers, ...answers },
@@ -299,10 +335,15 @@ describe('proposal v2 wording', () => {
     const rtiNode = doc.content.find((node) => (
       node.absolutePosition && JSON.stringify(node).includes('"fit":[480,76]')
     ));
+    const nameNode = doc.content.find((node) => node.text === 'Jamie Feeny');
+    assert.equal(nameNode.fontSize, 16);
+    const preparedFor = doc.content.find((node) => node.text === 'Prepared for:');
     assert.equal(rtiNode.stack[0].text, 'An');
-    assert.equal(rtiNode.stack[0].color, '#000000');
+    assert.equal(rtiNode.stack[0].color, '#a7a9ac');
+    assert.equal(rtiNode.stack[0].fontSize, preparedFor.fontSize);
     assert.equal(rtiNode.stack[2].text, 'Proposal');
-    assert.equal(rtiNode.stack[2].color, '#000000');
+    assert.equal(rtiNode.stack[2].color, '#a7a9ac');
+    assert.equal(rtiNode.stack[2].fontSize, preparedFor.fontSize);
     assert.deepEqual(
       rtiNode.stack[1].columns[1].fit,
       [480, 76]

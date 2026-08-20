@@ -23,6 +23,7 @@ describe('FR-17 proposal email', () => {
     assert.equal(result.method, 'outbox');
     const written = JSON.parse(await readFile(path.join(outboxDir, 'RTI-20260817-K3M9QP.json'), 'utf8'));
     assert.equal(written.to, 'john@example.com');
+    assert.equal(written.from, null);
     assert.equal(written.subject, 'RTI Proposal RTI-20260817-K3M9QP (9 hours)');
     assert.equal(written.totalProjectHours, 8.5);
   });
@@ -60,7 +61,7 @@ describe('FR-17 proposal email', () => {
     assert.deepEqual(body.to, ['john@example.com']);
     assert.deepEqual(body.bcc, ['Feeny.jamie@gmail.com']);
     assert.equal(body.reply_to, 'Feeny.jamie@gmail.com');
-    assert.equal(body.from, 'proposals@feenypowerandcontrol.com');
+    assert.equal(body.from, 'RTI Proposals <proposals@feenypowerandcontrol.com>');
     assert.equal(body.attachments[0].filename, 'proposal.pdf');
     assert.equal(body.attachments[0].content, Buffer.from('pdf-bytes').toString('base64'));
     assert.equal(body.subject, 'RTI Proposal RTI-20260817-K3M9QP (9 hours)');

@@ -26,8 +26,16 @@ function proposalEmailCopy(submission) {
   };
 }
 
+function formatFromAddress(from) {
+  if (!from) return from || null;
+  const address = String(from).trim();
+  if (!address) return null;
+  if (/<[^>]+@[^>]+>/.test(address)) return address;
+  return `RTI Proposals <${address}>`;
+}
+
 function buildMessage({ submission, pdfBuffer, pdfFilename }, env) {
-  const from = env.PROPOSAL_EMAIL_FROM;
+  const from = formatFromAddress(env.PROPOSAL_EMAIL_FROM);
   const bcc = env.PROPOSAL_EMAIL_BCC;
   const { subject, text } = proposalEmailCopy(submission);
   const message = {
@@ -86,7 +94,7 @@ export async function sendProposalEmail({ submission, pdfBuffer, pdfFilename }, 
   const payload = {
     to: submission.contractorEmail,
     bcc: env.PROPOSAL_EMAIL_BCC || null,
-    from: env.PROPOSAL_EMAIL_FROM || null,
+    from: formatFromAddress(env.PROPOSAL_EMAIL_FROM),
     subject,
     reference: submission.reference,
     pdfFilename,

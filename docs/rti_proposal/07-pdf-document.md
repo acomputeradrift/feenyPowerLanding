@@ -191,21 +191,25 @@ v2 pages:
    the visible RTI mark). Orange band (`#fcb040`) is sized to its three
    identification lines, with the copy vertically centered in the band and the
    band vertically centered on the page (`absolutePosition`, `y = (792 - height) / 2`).
-   The RTI logo stays below the orange band at 480×76, with black *An* above it
-   and black *Proposal* below it. Project PO, Project Client Name, and Project Location, 16pt.
+   The RTI logo stays below the orange band at 480×76, with light-grey *An* above it
+   and light-grey *Proposal* below it at 11pt (same as *Prepared for:*). Contractor
+   name is 16pt. Project PO, Project Client Name, and Project Location, 16pt.
    No timeline or hours on the cover.
-2. Project Overview — title stays at the top. Dark grey band (`#575759`) is
+2. Project Overview — title stays at the top at 22pt. Dark grey band (`#575759`) is
    sized to the generated paragraph, copy vertically centered in the band, band
-   vertically centered on the page. Body text is left-aligned: rooms and names,
-   included systems, controller summary, additional info, commissioning date.
+   vertically centered on the page. Body text is left-aligned: *Your project covers
+   N rooms (Room 1, …)* and included systems; controllers *control every room / system*;
+   *Additional Info:* on its own line then the dealer notes (omitted if blank);
+   commissioning date.
 3. Controlled Systems Overview — title stays at the top. Green band (`#39b54a`)
    lists every category (Lighting/Shading, Audio/Video, Climate, Security,
-   Pool/Pumps, Inputs/Outputs) with `N x` zone and device lines inside each.
-   Empty categories print `None Included`.
+   Pool/Pumps, Inputs/Outputs). Typed devices print `N x Type (Name)` (e.g. `1 x
+   Streamer (Sonos Port)`, `1 x Display (TV)`). Count-only rows stay `N x`
+   (lighting zones, AV receivers, I/O). Empty categories print `None Included`.
 4. Controller Overview — title stays at the top. Light grey band (`#a7a9ac`)
-   sized to the `N x` iPhone/iPad/Touchscreen Global Controller and
-   `N x ISR-4 Room Controller` lines.
-5. Project Time Budget — title at the top. Orange band again (color cycle
+   lists each present global type as `N x Global Controller (iPhone)` and
+   `N x Room Controller`.
+5. Project Summary — title at the top (22pt, same as the other page titles). Orange band again (color cycle
    repeats) contains only `Total Programming Hours: N`. Acceptance copy is
    left-aligned: "I approve this budget and understand that work will commence
    when Feeny Power and Control Ltd has received a 50% deposit." Client

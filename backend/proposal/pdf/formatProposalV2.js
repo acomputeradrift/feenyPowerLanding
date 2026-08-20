@@ -42,9 +42,9 @@ function namedItems(items) {
 function deviceLine(item, fallbackType) {
   const name = trimmed(item?.name);
   const type = trimmed(item?.type) || fallbackType;
-  if (name && type) return qtyLine(1, `${name} ${type}`);
-  if (name) return qtyLine(1, name);
+  if (type && name) return qtyLine(1, `${type} (${name})`);
   if (type) return qtyLine(1, type);
+  if (name) return qtyLine(1, name);
   return null;
 }
 
@@ -95,18 +95,22 @@ function includedSystems(systemData) {
   return systems;
 }
 
+function commaList(items) {
+  return (items || []).filter(Boolean).join(', ');
+}
+
 function roomsAndSystemsSentence(answers, systemData) {
   const rooms = asCount(systemData.rooms);
   const roomWord = rooms === 1 ? 'room' : 'rooms';
   const names = namedItems(answers.roomDetails)
     .map((item) => trimmed(item.name))
     .filter(Boolean);
-  const labelled = names.length > 0 ? `, currently labelled as ${joinList(names)}` : '';
+  const labelled = names.length > 0 ? ` (${commaList(names)})` : '';
   const systems = includedSystems(systemData);
   const integration = systems.length > 0
     ? ` and includes integration with ${joinList(systems)} systems`
     : '';
-  return `This project has ${rooms} ${roomWord}${labelled}${integration}.`;
+  return `Your project covers ${rooms} ${roomWord}${labelled}${integration}.`;
 }
 
 function globalTypePhrase(type, count) {
@@ -118,7 +122,7 @@ function globalTypePhrase(type, count) {
   };
   const noun = nouns[type] || (n === 1 ? type : `${type}s`);
   const verb = n === 1 ? 'controls' : 'control';
-  return `${n} ${noun} that ${verb} every system`;
+  return `${n} ${noun} that ${verb} every room / system`;
 }
 
 function handheldPhrase(count) {
@@ -157,10 +161,9 @@ function controllersSentence(answers, systemData) {
   return `For controllers, ${opener} ${joined}.`;
 }
 
-function additionalSentence(answers) {
+function additionalInfo(answers) {
   const value = trimmed(answers?.additionalInfo);
-  if (!value) return 'No additional information was provided.';
-  return `There is some additional info provided here: “${value}”`;
+  return value || undefined;
 }
 
 function commissioningSentence(answers) {
@@ -178,6 +181,27 @@ function collectLines(builders) {
 function namedDeviceLines(lines, items, fallbackType) {
   for (const item of namedItems(items)) {
     const line = deviceLine(item, fallbackType);
+    if (line) lines.push(line);
+  }
+}
+
+function categoryByTypeLines(lines, items, category, typeOrder = []) {
+  const counts = new Map();
+  for (const item of namedItems(items)) {
+    const type = trimmed(item.type);
+    if (!type) continue;
+    counts.set(type, (counts.get(type) || 0) + 1);
+  }
+  const seen = new Set();
+  for (const type of typeOrder) {
+    if (!counts.has(type)) continue;
+    const line = qtyLine(counts.get(type), `${category} (${type})`);
+    if (line) lines.push(line);
+    seen.add(type);
+  }
+  for (const [type, n] of counts) {
+    if (seen.has(type)) continue;
+    const line = qtyLine(n, `${category} (${type})`);
     if (line) lines.push(line);
   }
 }
@@ -216,7 +240,7 @@ function systemSections(answers, systemData) {
           if (extra) lines.push(extra);
         },
         (lines) => pushCount(lines, systemData.totalAvReceiverZones, 'AV Receiver'),
-        (lines) => namedDeviceLines(lines, answers.displayDetails, 'Display'),
+        (lines) => categoryByTypeLines(lines, answers.displayDetails, 'Display', ['TV', 'Projector']),
         (lines) => {
           const extra = leftoverCountLine(
             systemData.totalDisplayZones,
@@ -273,7 +297,7 @@ function controllerLines(answers, systemData) {
   const lines = [];
   const typeCounts = countGlobalTypes(answers.globalControllerDetails);
   for (const type of ['iPhone', 'iPad', 'Touchscreen']) {
-    const line = qtyLine(typeCounts[type], `${type} Global Controller`);
+    const line = qtyLine(typeCounts[type], `Global Controller (${type})`);
     if (line) lines.push(line);
   }
   const untyped = asCount(systemData.globalControllerCount)
@@ -282,8 +306,7 @@ function controllerLines(answers, systemData) {
   if (untypedLine) lines.push(untypedLine);
   const floorplan = qtyLine(systemData.floorplanAddOnCount, 'Floorplan Add-On');
   if (floorplan) lines.push(floorplan);
-  const nRooms = asCount(systemData.roomControllerCount);
-  const rooms = qtyLine(nRooms, nRooms === 1 ? 'ISR-4 Room Controller' : 'ISR-4 Room Controllers');
+  const rooms = qtyLine(systemData.roomControllerCount, 'Room Controller');
   if (rooms) lines.push(rooms);
   return lines;
 }
@@ -306,7 +329,7 @@ export function buildProposalContentV2(submission, systemData, hoursData, option
       title: 'Project Overview',
       roomsAndSystems: roomsAndSystemsSentence(answers, systemData),
       controllers: controllersSentence(answers, systemData),
-      additional: additionalSentence(answers),
+      additional: additionalInfo(answers),
       commissioning: commissioningSentence(answers)
     },
     systems: {
@@ -318,7 +341,7 @@ export function buildProposalContentV2(submission, systemData, hoursData, option
       lines: controllerLines(answers, systemData)
     },
     totals: {
-      title: 'Project Time Budget',
+      title: 'Project Summary',
       hoursLine: `Total Programming Hours: ${billedHours}`,
       acceptance: 'I approve this budget and understand that work will commence when Feeny Power and Control Ltd has received a\u00A050% deposit.',
       signatureLabel: 'Client signature',

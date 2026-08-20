@@ -57,7 +57,7 @@ const RTI_LOGO_FIT = [480, 76];
 // Feeny is 4:3 and fills its box; the RTI PNG is padded, so the purple mark
 // is ~152×69 inside 480×76. Size Feeny just larger than that visible mark.
 const FEENY_LOGO_FIT = [200, 150];
-const RTI_CAPTION_SIZE = 18;
+const RTI_CAPTION_SIZE = 11;
 const RTI_CAPTION_GAP = 8;
 const RTI_CAPTION_LINE = RTI_CAPTION_SIZE * 1.25;
 
@@ -210,7 +210,7 @@ function pageTitle(text) {
     text,
     alignment: 'center',
     bold: true,
-    fontSize: 20,
+    fontSize: 22,
     margin: [0, 0, 0, 8]
   };
 }
@@ -310,7 +310,12 @@ export async function buildDocDefinitionV2(submission, systemData, hoursData, op
       children: [
         { text: overview.roomsAndSystems, margin: [8, 4, 8, 8] },
         { text: overview.controllers, margin: [8, 4, 8, 8] },
-        { text: overview.additional, margin: [8, 4, 8, 8] },
+        ...(overview.additional
+          ? [
+            { text: 'Additional Info:', margin: [8, 4, 8, 2] },
+            { text: overview.additional, margin: [8, 0, 8, 8] }
+          ]
+          : []),
         { text: overview.commissioning, margin: [8, 4, 8, 4] }
       ],
       alignment: 'left'
@@ -349,8 +354,8 @@ export async function buildDocDefinitionV2(submission, systemData, hoursData, op
     }),
     content: [
       { image: feenyLogo, fit: FEENY_LOGO_FIT, alignment: 'center', margin: [0, 0, 0, 16] },
-      { text: 'Prepared for:', alignment: 'center', color: COLORS.label, margin: [0, 0, 0, 4] },
-      { text: cover.contractorName, alignment: 'center', bold: true, fontSize: 14, margin: [0, 0, 0, 2] },
+      { text: 'Prepared for:', alignment: 'center', color: COLORS.label, fontSize: RTI_CAPTION_SIZE, margin: [0, 0, 0, 4] },
+      { text: cover.contractorName, alignment: 'center', bold: true, fontSize: 16, margin: [0, 0, 0, 2] },
       { text: cover.contractorEmail, alignment: 'center', color: COLORS.label, margin: [0, 0, 0, 20] },
       coverBand.node,
       {
@@ -362,7 +367,7 @@ export async function buildDocDefinitionV2(submission, systemData, hoursData, op
           {
             text: 'An',
             alignment: 'center',
-            color: COLORS.black,
+            color: COLORS.label,
             fontSize: RTI_CAPTION_SIZE
           },
           {
@@ -380,7 +385,7 @@ export async function buildDocDefinitionV2(submission, systemData, hoursData, op
           {
             text: 'Proposal',
             alignment: 'center',
-            color: COLORS.black,
+            color: COLORS.label,
             fontSize: RTI_CAPTION_SIZE
           }
         ]

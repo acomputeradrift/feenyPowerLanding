@@ -272,3 +272,6 @@ Details and step-by-step deploy commands are in `deployment.md`. Quick facts:
 | 2026-08-18 | Live `fa59dc0`: Discrete/Clone removed from the form; first-of-type (and first AVR) is discrete, rest cloned; Custom never cloned; extra same-type global controllers do not add hours. Project details: Your Name / Your Email, Private Client, Project Location + Private Location, required timeline. Unedited default names are faded. |
 | 2026-08-19 | Restore AV-device double-count in `totalProjectZones` so a one-room theater prints 6 hours. Email subject and body use `ceil(totalProjectHours)`, never the unrounded total. |
 | 2026-08-20 | Cover PDF (v2): drop the tagline, enlarge the Feeny logo to 200×150, keep the RTI logo in place with black *An* / *Proposal* captions. |
+| 2026-08-20 | v2 PDF: *An* / *Proposal* in light grey `#a7a9ac`; page titles 22pt; last page titled Project Summary. |
+| 2026-08-20 | Overview copy: *Your project covers N rooms (…)*; controllers *every room / system*; Additional Info as a heading plus notes. Mail from-name `RTI Proposals`. |
+| 2026-08-20 | v2 lists: typed devices as `N x Type (Name)`; controllers as `N x Global Controller (iPhone)` and `N x Room Controller`. |
