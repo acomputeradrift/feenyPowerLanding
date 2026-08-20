@@ -145,7 +145,7 @@ Files: `backend/proposal/pdf/formatProposalV2.js`, `proposalDocumentV2.js`, `pre
 
 1. **Cover** — no tagline. Feeny logo `200×150` (just larger than the visible RTI mark; the RTI PNG is padded). Contractor name 16pt. *Prepared for:* and *An* / *Proposal* are light grey `#a7a9ac` at 11pt. Orange band is PO / client / location only (no timeline or hours). RTI logo stays below the band at `480×76`, with *An* above and *Proposal* below.
 2. **Project Overview** — 22pt title. Left-aligned dark grey band. *Your project covers N rooms (Room 1, Room 2, …) and includes integration with … systems.* Controllers *control every room / system*. *Additional Info:* on its own line, then the notes (omit the block if blank). Commissioning date last.
-3. **Controlled Systems Overview** — 22pt title. Sources `N x Type (Name)` (e.g. `1 x Streamer (Sonos Port)`). Displays grouped by type: `N x Display (TV)`, `N x Display (Projector)`. Count-only rows stay `N x` (lighting, AV receivers, I/O). Empty categories `None Included`.
+3. **Controlled Systems Overview** — 22pt title. Sources `N x Type (Name)` (e.g. `1 x Streamer (Sonos Port)`). Displays grouped by type: `N x Display (TV)`, `N x Display (Projector)`. Audio/video zone counts are `N x Distributed Audio Zones` / `N x Distributed Video Zones`. Count-only rows stay `N x` (lighting, AV receivers, I/O). Empty categories `None Included`.
 4. **Controller Overview** — 22pt title. `N x Global Controller (iPhone)` (and iPad / Touchscreen). `N x Room Controller`. No ISR-4. Keep the counts.
 5. **Project Summary** — 22pt title. Orange band is only `Total Programming Hours: N`. Acceptance + signature / print name / date in the white space below.
 

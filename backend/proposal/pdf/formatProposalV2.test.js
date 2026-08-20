@@ -146,6 +146,24 @@ describe('proposal v2 wording', () => {
     assert.equal(JSON.stringify(content).includes('minutesPerUnit'), false);
   });
 
+  it('labels audio and video zone counts as Distributed', () => {
+    const answers = validAnswers({
+      audioZones: 3,
+      videoZones: 1,
+      roomControllerCount: 1
+    });
+    const systemData = calculateSystemData(answers);
+    const hoursData = calculateHoursData(systemData, rates);
+    const content = buildProposalContentV2({ answers }, systemData, hoursData);
+    const av = content.systems.sections.find((section) => section.title === 'Audio/Video');
+    assert.deepEqual(av.lines, [
+      '3 x Distributed Audio Zones',
+      '1 x Distributed Video Zone'
+    ]);
+    assert.equal(JSON.stringify(av.lines).includes('3 x Audio Zones'), false);
+    assert.equal(JSON.stringify(av.lines).includes('1 x Video Zone'), false);
+  });
+
   it('omits additional info when blank', async () => {
     const answers = validAnswers({
       rooms: 1,

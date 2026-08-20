@@ -219,7 +219,7 @@ function systemSections(answers, systemData) {
     {
       title: 'Audio/Video',
       lines: collectLines([
-        (lines) => pushCount(lines, systemData.audioZones, 'Audio Zone'),
+        (lines) => pushCount(lines, systemData.audioZones, 'Distributed Audio Zone', 'Distributed Audio Zones'),
         (lines) => namedDeviceLines(lines, answers.audioSourceDetails, 'Audio Source'),
         (lines) => {
           const extra = leftoverCountLine(
@@ -229,7 +229,7 @@ function systemSections(answers, systemData) {
           );
           if (extra) lines.push(extra);
         },
-        (lines) => pushCount(lines, systemData.videoZones, 'Video Zone'),
+        (lines) => pushCount(lines, systemData.videoZones, 'Distributed Video Zone', 'Distributed Video Zones'),
         (lines) => namedDeviceLines(lines, answers.videoSourceDetails, 'Video Source'),
         (lines) => {
           const extra = leftoverCountLine(

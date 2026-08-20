@@ -204,8 +204,10 @@ v2 pages:
 3. Controlled Systems Overview — title stays at the top. Green band (`#39b54a`)
    lists every category (Lighting/Shading, Audio/Video, Climate, Security,
    Pool/Pumps, Inputs/Outputs). Typed devices print `N x Type (Name)` (e.g. `1 x
-   Streamer (Sonos Port)`, `1 x Display (TV)`). Count-only rows stay `N x`
-   (lighting zones, AV receivers, I/O). Empty categories print `None Included`.
+   Streamer (Sonos Port)`, `1 x Display (TV)`). Audio and video zone counts print
+   `N x Distributed Audio Zones` / `N x Distributed Video Zones`. Count-only
+   rows stay `N x` (lighting zones, AV receivers, I/O). Empty categories print
+   `None Included`.
 4. Controller Overview — title stays at the top. Light grey band (`#a7a9ac`)
    lists each present global type as `N x Global Controller (iPhone)` and
    `N x Room Controller`.
