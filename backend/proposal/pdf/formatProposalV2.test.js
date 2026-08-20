@@ -270,9 +270,43 @@ describe('proposal v2 wording', () => {
     ));
     assert.equal(Boolean(rtiNode), true);
     assert.ok(rtiNode.absolutePosition.y > coverBand.absolutePosition.y);
-    assert.ok(rtiNode.absolutePosition.y + 76 < 792 - 56);
+    const rtiDef = JSON.stringify(rtiNode);
+    assert.match(rtiDef, /"text":"An"/);
+    assert.match(rtiDef, /"text":"Proposal"/);
+    assert.equal(rtiDef.includes('Unlock Seamless'), false);
+    assert.ok(rtiNode.absolutePosition.y + 140 < 792 - 56);
     const inFlowImages = doc.content.filter((node) => node.image && !node.absolutePosition);
     assert.equal(inFlowImages.length, 1);
+    assert.deepEqual(inFlowImages[0].fit, [200, 150]);
+  });
+
+  it('cover drops the tagline and captions the RTI logo in black', async () => {
+    const answers = highRdAnswers();
+    const doc = await buildDocDefinitionV2(
+      { answers, ...answers },
+      calculateSystemData(answers),
+      calculateHoursData(calculateSystemData(answers), rates),
+      { year: 2026 }
+    );
+    const def = JSON.stringify(doc);
+    assert.equal(def.includes('Unlock Seamless'), false);
+    assert.equal(def.includes('Remote System Programming'), false);
+    assert.equal(def.includes('Smart Home Integration'), false);
+
+    const feeny = doc.content.find((node) => node.image && !node.absolutePosition);
+    assert.deepEqual(feeny.fit, [200, 150]);
+
+    const rtiNode = doc.content.find((node) => (
+      node.absolutePosition && JSON.stringify(node).includes('"fit":[480,76]')
+    ));
+    assert.equal(rtiNode.stack[0].text, 'An');
+    assert.equal(rtiNode.stack[0].color, '#000000');
+    assert.equal(rtiNode.stack[2].text, 'Proposal');
+    assert.equal(rtiNode.stack[2].color, '#000000');
+    assert.deepEqual(
+      rtiNode.stack[1].columns[1].fit,
+      [480, 76]
+    );
   });
 
   it('centers every full-bleed band on the page', async () => {

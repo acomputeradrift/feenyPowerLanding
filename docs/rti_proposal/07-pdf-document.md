@@ -187,11 +187,12 @@ The three-page v1 document above remains in `proposalDocument.js` for
 
 v2 pages:
 
-1. Cover — white top unchanged. Orange band (`#fcb040`) is sized to its three
+1. Cover — white top has no tagline. Feeny logo is 200×150 (just larger than
+   the visible RTI mark). Orange band (`#fcb040`) is sized to its three
    identification lines, with the copy vertically centered in the band and the
    band vertically centered on the page (`absolutePosition`, `y = (792 - height) / 2`).
-   The RTI logo is larger (480×76) and centered in the white space below the
-   orange band. Project PO, Project Client Name, and Project Location, 16pt.
+   The RTI logo stays below the orange band at 480×76, with black *An* above it
+   and black *Proposal* below it. Project PO, Project Client Name, and Project Location, 16pt.
    No timeline or hours on the cover.
 2. Project Overview — title stays at the top. Dark grey band (`#575759`) is
    sized to the generated paragraph, copy vertically centered in the band, band

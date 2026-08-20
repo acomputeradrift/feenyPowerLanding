@@ -54,6 +54,12 @@ function imageDataUrl(filename) {
 const feenyLogo = imageDataUrl('feeny-logo-white.png');
 const rtiLogo = imageDataUrl('rti-logo-bigger.png');
 const RTI_LOGO_FIT = [480, 76];
+// Feeny is 4:3 and fills its box; the RTI PNG is padded, so the purple mark
+// is ~152×69 inside 480×76. Size Feeny just larger than that visible mark.
+const FEENY_LOGO_FIT = [200, 150];
+const RTI_CAPTION_SIZE = 18;
+const RTI_CAPTION_GAP = 8;
+const RTI_CAPTION_LINE = RTI_CAPTION_SIZE * 1.25;
 
 function bandInk(fillColor) {
   return fillColor === COLORS.charcoal ? COLORS.white : COLORS.black;
@@ -342,18 +348,7 @@ export async function buildDocDefinitionV2(submission, systemData, hoursData, op
       margin: [40, 12, 40, 0]
     }),
     content: [
-      { image: feenyLogo, fit: [160, 72], alignment: 'center', margin: [0, 0, 0, 24] },
-      {
-        text: [
-          { text: 'Unlock ', color: COLORS.label },
-          { text: 'Seamless Smart Home Integration', bold: true, color: COLORS.black },
-          { text: ' With\n', color: COLORS.label },
-          { text: 'Remote System Programming', bold: true, color: COLORS.black }
-        ],
-        alignment: 'center',
-        fontSize: 16,
-        margin: [12, 0, 12, 28]
-      },
+      { image: feenyLogo, fit: FEENY_LOGO_FIT, alignment: 'center', margin: [0, 0, 0, 16] },
       { text: 'Prepared for:', alignment: 'center', color: COLORS.label, margin: [0, 0, 0, 4] },
       { text: cover.contractorName, alignment: 'center', bold: true, fontSize: 14, margin: [0, 0, 0, 2] },
       { text: cover.contractorEmail, alignment: 'center', color: COLORS.label, margin: [0, 0, 0, 20] },
@@ -361,16 +356,33 @@ export async function buildDocDefinitionV2(submission, systemData, hoursData, op
       {
         absolutePosition: {
           x: 0,
-          y: belowBandCenterY(coverBand.box, RTI_LOGO_FIT[1])
+          y: belowBandCenterY(coverBand.box, RTI_LOGO_FIT[1]) - RTI_CAPTION_LINE - RTI_CAPTION_GAP
         },
-        columns: [
-          { width: '*', text: '' },
+        stack: [
           {
-            width: RTI_LOGO_FIT[0],
-            image: rtiLogo,
-            fit: RTI_LOGO_FIT
+            text: 'An',
+            alignment: 'center',
+            color: COLORS.black,
+            fontSize: RTI_CAPTION_SIZE
           },
-          { width: '*', text: '' }
+          {
+            columns: [
+              { width: '*', text: '' },
+              {
+                width: RTI_LOGO_FIT[0],
+                image: rtiLogo,
+                fit: RTI_LOGO_FIT
+              },
+              { width: '*', text: '' }
+            ],
+            margin: [0, RTI_CAPTION_GAP, 0, RTI_CAPTION_GAP]
+          },
+          {
+            text: 'Proposal',
+            alignment: 'center',
+            color: COLORS.black,
+            fontSize: RTI_CAPTION_SIZE
+          }
         ]
       },
 
