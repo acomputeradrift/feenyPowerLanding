@@ -135,6 +135,9 @@ The real submission (FR-11).
 }
 ```
 
+`emailedTo` is the contractor address from the form. Mail is sent only to
+`feeny.jamie@gmail.com`, not to that address.
+
 When PDF generation or email delivery has not completed, the same 201 body
 includes `"delivery": "pending"`. That is an operational note, not a client error.
 
@@ -225,7 +228,7 @@ updating by hand.
 |---|---|
 | `PROPOSAL_EMAIL_API_KEY` | transactional email provider credential |
 | `PROPOSAL_EMAIL_FROM` | verified sending address |
-| `PROPOSAL_EMAIL_BCC` | business owner's copy of every proposal |
+| `PROPOSAL_EMAIL_BCC` | unused; mail To is always `feeny.jamie@gmail.com` |
 | `PROPOSAL_AUDIT_TOKEN` | secret for the audit route |
 | `PROPOSAL_EMAIL_ENABLED` | must be explicitly true to send real mail |
 | `PROPOSAL_IP_HASH_SALT` | salt for hashing client addresses |

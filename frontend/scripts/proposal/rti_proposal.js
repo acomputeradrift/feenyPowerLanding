@@ -248,14 +248,9 @@ function renderSuccess(state) {
   const reference = document.createElement('p');
   reference.textContent = `Reference ${result.reference}.`;
   const email = document.createElement('p');
-  const emailedTo = result.emailedTo || '';
   email.textContent = result.delivery === 'pending'
-    ? (emailedTo
-      ? `Your proposal has been received. Email to ${emailedTo} is pending.`
-      : 'Your proposal has been received. Email delivery is pending.')
-    : (emailedTo
-      ? `The proposal will be emailed to ${emailedTo}.`
-      : 'The proposal has been received.');
+    ? 'Your proposal has been received. Delivery is pending.'
+    : 'Your proposal has been received.';
   els.success.replaceChildren(heading, reference, email);
   heading.focus();
 }

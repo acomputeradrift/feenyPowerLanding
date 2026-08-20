@@ -74,7 +74,7 @@ export const ProposalSubmission =
 ## Field notes
 
 **`reference`** - a short human-quotable identifier, generated server-side, used in
-the PDF filename, the email subject and the audit URL. Format
+the PDF filename and the audit URL. Format
 `RTI-{yyyymmdd}-{6 random alphanumerics}`, for example `RTI-20260817-K3M9QP`. Do not
 expose the Mongo `_id` in URLs or filenames; a random suffix avoids leaking how many
 proposals have been submitted.

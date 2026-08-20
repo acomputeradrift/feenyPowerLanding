@@ -78,8 +78,8 @@ WHAT IS ALREADY DONE (do not redo)
    frontend/scripts/proposal/rti_proposal.js; answers/steps/repeats live in
    formController.js. Browser imports /scripts/proposal/shared/{schema,
    validate, repeatGroups}.js only — nothing from calc/. Header copy is
-   invented and may still be changed: "Describe the project scope and I will
-   email you a programming budget."
+   invented and may still be changed: "I will reach out to you with your
+   programming budget."
 7. Persistence + submit. ProposalSubmission model matches 05-data-model.md.
    POST /api/proposal via createProposalRouter: honeypot non-empty → 201
    plausible body and discard; unknown keys 400; persist first
@@ -133,7 +133,7 @@ Do not add React, a bundler, or a second test framework.
 
 ## Open items still unresolved
 
-- **Email.** Resend is live. Reply-To and BCC are Jamie's Gmail.
+- **Email.** Resend is live. To is always `feeny.jamie@gmail.com`. Reply-To is the dealer. No dealer copy.
 - **Form header copy is invented** and may still be changed. See CONTINUITY.md.
 - **Backup and retention deliberately deferred.** [05-data-model.md](05-data-model.md).
 

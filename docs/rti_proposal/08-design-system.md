@@ -123,7 +123,8 @@ on the emailed PDF and the audit view only.
 
 **Submission.** Disable the submit button while in flight and show clear progress —
 generating a PDF and sending mail is not instant. On success, show the reference and
-confirm which address the proposal was sent to. On validation failure, move focus to
+confirm that the proposal was received. Do not tell the dealer the owner’s address.
+On validation failure, move focus to
 the first offending field and, if it is on an earlier step, navigate there.
 
 ## Copy

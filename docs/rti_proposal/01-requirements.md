@@ -114,10 +114,10 @@ Explicitly out of scope. Do not implement these without a new decision.
 
 - **FR-16** The generated PDF reproduces the structure of the existing Doc
   template. See [07-pdf-document.md](07-pdf-document.md).
-- **FR-17** The PDF is emailed to both the submitting dealer and the business
-  owner. The legacy system built a recipient list including the dealer but then
-  overrode it with a single hardcoded address; the dealer must actually receive
-  the proposal.
+- **FR-17** The PDF is emailed only to the business owner
+  (`feeny.jamie@gmail.com`). The submitting dealer must not receive a copy.
+  Subject is `A new RTI proposal was created!`. Body is
+  `{contractorName} ({contractorEmail}) just submitted a new project ({projectPoName}).`
 - **FR-18** Where the dealer supplied names for items, the PDF lists those names
   instead of bare counts.
 - **FR-19** The PDF shows section totals only. It does not show per-zone rates or

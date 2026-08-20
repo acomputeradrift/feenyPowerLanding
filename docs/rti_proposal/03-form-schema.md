@@ -168,8 +168,8 @@ Rules:
 
 - Visible required questions must have a non-empty value.
 - `count` values must be integers, at least `min`, and at most `max` where set.
-- `email` must be structurally valid. The email address is the delivery mechanism
-  for the proposal, so an invalid one means the dealer gets nothing.
+- `email` must be structurally valid. The address is recorded on the submission
+  and used in the owner notification; an invalid one is rejected.
 - Hidden questions are skipped entirely.
 - Unknown keys in a submitted payload are rejected rather than ignored, so a
   schema mismatch surfaces immediately instead of silently dropping answers.

@@ -113,7 +113,7 @@ describe('FR-11 FR-15 submit pipeline', () => {
     const saved = store.docs.get('RTI-20260817-K3M9QP');
     assert.equal(saved.emailStatus, 'pending');
     const written = JSON.parse(await readFile(path.join(outboxDir, 'RTI-20260817-K3M9QP.json'), 'utf8'));
-    assert.equal(written.to, 'john@example.com');
+    assert.equal(written.to, 'feeny.jamie@gmail.com');
     assert.match(written.note, /not sent/i);
     assert.equal(written.note.includes('26.4'), false);
   });

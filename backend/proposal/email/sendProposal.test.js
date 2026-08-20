@@ -4,11 +4,13 @@ import os from 'node:os';
 import path from 'node:path';
 import { describe, it } from 'node:test';
 
-import { sendProposalEmail } from './sendProposal.js';
+import { PROPOSAL_NOTIFY_TO, sendProposalEmail } from './sendProposal.js';
 
 const submission = {
   reference: 'RTI-20260817-K3M9QP',
+  contractorName: 'John Smith',
   contractorEmail: 'john@example.com',
+  projectPoName: 'LAKE HOUSE',
   totalProjectHours: 8.5
 };
 
@@ -22,13 +24,13 @@ describe('FR-17 proposal email', () => {
     assert.equal(result.delivered, false);
     assert.equal(result.method, 'outbox');
     const written = JSON.parse(await readFile(path.join(outboxDir, 'RTI-20260817-K3M9QP.json'), 'utf8'));
-    assert.equal(written.to, 'john@example.com');
+    assert.equal(written.to, PROPOSAL_NOTIFY_TO);
     assert.equal(written.from, null);
-    assert.equal(written.subject, 'RTI Proposal RTI-20260817-K3M9QP (9 hours)');
+    assert.equal(written.subject, 'A new RTI proposal was created!');
     assert.equal(written.totalProjectHours, 8.5);
   });
 
-  it('sends through Resend when enabled, with PDF, to dealer and BCC', async () => {
+  it('sends through Resend when enabled, with PDF, only to the owner', async () => {
     const calls = [];
     const result = await sendProposalEmail(
       { submission, pdfBuffer: Buffer.from('pdf-bytes'), pdfFilename: 'proposal.pdf' },
@@ -37,7 +39,7 @@ describe('FR-17 proposal email', () => {
           PROPOSAL_EMAIL_ENABLED: 'true',
           PROPOSAL_EMAIL_API_KEY: 're_test',
           PROPOSAL_EMAIL_FROM: 'proposals@feenypowerandcontrol.com',
-          PROPOSAL_EMAIL_BCC: 'Feeny.jamie@gmail.com'
+          PROPOSAL_EMAIL_BCC: 'someone-else@example.com'
         },
         async fetchImpl(url, init) {
           calls.push({ url, init });
@@ -58,30 +60,26 @@ describe('FR-17 proposal email', () => {
     assert.equal(calls[0].url, 'https://api.resend.com/emails');
     assert.equal(calls[0].init.headers.Authorization, 'Bearer re_test');
     const body = JSON.parse(calls[0].init.body);
-    assert.deepEqual(body.to, ['john@example.com']);
-    assert.deepEqual(body.bcc, ['Feeny.jamie@gmail.com']);
-    assert.equal(body.reply_to, 'Feeny.jamie@gmail.com');
+    assert.deepEqual(body.to, ['feeny.jamie@gmail.com']);
+    assert.equal(body.bcc, undefined);
+    assert.equal(body.reply_to, 'john@example.com');
     assert.equal(body.from, 'RTI Proposals <proposals@feenypowerandcontrol.com>');
     assert.equal(body.attachments[0].filename, 'proposal.pdf');
     assert.equal(body.attachments[0].content, Buffer.from('pdf-bytes').toString('base64'));
-    assert.equal(body.subject, 'RTI Proposal RTI-20260817-K3M9QP (9 hours)');
+    assert.equal(body.subject, 'A new RTI proposal was created!');
     assert.equal(
       body.text,
-      'Your RTI programming budget is attached (9 hours). Reference RTI-20260817-K3M9QP.'
+      'John Smith (john@example.com) just submitted a new project (LAKE HOUSE).'
     );
+    assert.equal(JSON.stringify(body.to).includes('john@example.com'), false);
     assert.equal(JSON.stringify(body).includes('8.5'), false);
     assert.equal(JSON.stringify(body).includes('26.4'), false);
     assert.equal(JSON.stringify(body).includes('minutesPerUnit'), false);
   });
 
-  it('never puts the unrounded total in the subject or body', async () => {
-    const cases = [
-      { totalProjectHours: 5.3, billed: '6 hours' },
-      { totalProjectHours: 8.5, billed: '9 hours' },
-      { totalProjectHours: 1, billed: '1 hour' },
-      { totalProjectHours: 0.1, billed: '1 hour' }
-    ];
-    for (const { totalProjectHours, billed } of cases) {
+  it('never puts hours or rates in the subject or body', async () => {
+    const cases = [5.3, 8.5, 1, 0.1];
+    for (const totalProjectHours of cases) {
       const calls = [];
       await sendProposalEmail(
         { submission: { ...submission, totalProjectHours }, pdfBuffer: Buffer.from('pdf') },
@@ -98,14 +96,14 @@ describe('FR-17 proposal email', () => {
         }
       );
       const body = calls[0];
-      assert.equal(body.subject, `RTI Proposal RTI-20260817-K3M9QP (${billed})`);
-      assert.equal(body.text.includes(`(${billed})`), true);
-      assert.equal(body.subject.includes('5.3'), false);
-      assert.equal(body.subject.includes('8.5'), false);
-      assert.equal(body.subject.includes('0.1'), false);
-      assert.equal(body.text.includes('5.3'), false);
-      assert.equal(body.text.includes('8.5'), false);
-      assert.equal(body.text.includes('0.1'), false);
+      assert.equal(body.subject, 'A new RTI proposal was created!');
+      assert.equal(
+        body.text,
+        'John Smith (john@example.com) just submitted a new project (LAKE HOUSE).'
+      );
+      assert.equal(body.subject.includes(String(totalProjectHours)), false);
+      assert.equal(body.text.includes(String(totalProjectHours)), false);
+      assert.equal(body.text.includes('hour'), false);
     }
   });
 

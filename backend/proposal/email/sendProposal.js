@@ -5,24 +5,19 @@ import { fileURLToPath } from 'node:url';
 const defaultOutboxDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'outbox');
 const RESEND_EMAILS_URL = 'https://api.resend.com/emails';
 
+export const PROPOSAL_NOTIFY_TO = 'feeny.jamie@gmail.com';
+
 export function isProposalEmailEnabled(env = process.env) {
   return env.PROPOSAL_EMAIL_ENABLED === 'true';
 }
 
-function billedProjectHours(hours) {
-  return Math.ceil(Number(hours) || 0);
-}
-
-function billedHoursLabel(hours) {
-  const n = billedProjectHours(hours);
-  return n === 1 ? '1 hour' : `${n} hours`;
-}
-
 function proposalEmailCopy(submission) {
-  const hours = billedHoursLabel(submission.totalProjectHours);
+  const name = submission.contractorName || 'Unknown';
+  const email = submission.contractorEmail || 'unknown';
+  const po = submission.projectPoName || 'Unknown';
   return {
-    subject: `RTI Proposal ${submission.reference} (${hours})`,
-    text: `Your RTI programming budget is attached (${hours}). Reference ${submission.reference}.`
+    subject: 'A new RTI proposal was created!',
+    text: `${name} (${email}) just submitted a new project (${po}).`
   };
 }
 
@@ -36,17 +31,15 @@ function formatFromAddress(from) {
 
 function buildMessage({ submission, pdfBuffer, pdfFilename }, env) {
   const from = formatFromAddress(env.PROPOSAL_EMAIL_FROM);
-  const bcc = env.PROPOSAL_EMAIL_BCC;
   const { subject, text } = proposalEmailCopy(submission);
   const message = {
     from,
-    to: [submission.contractorEmail],
+    to: [PROPOSAL_NOTIFY_TO],
     subject,
     text
   };
-  if (bcc) {
-    message.bcc = [bcc];
-    message.reply_to = bcc;
+  if (submission.contractorEmail) {
+    message.reply_to = submission.contractorEmail;
   }
   if (pdfBuffer) {
     message.attachments = [{
@@ -92,8 +85,7 @@ export async function sendProposalEmail({ submission, pdfBuffer, pdfFilename }, 
   const jsonPath = path.join(outboxDir, `${submission.reference}.json`);
   const { subject } = proposalEmailCopy(submission);
   const payload = {
-    to: submission.contractorEmail,
-    bcc: env.PROPOSAL_EMAIL_BCC || null,
+    to: PROPOSAL_NOTIFY_TO,
     from: formatFromAddress(env.PROPOSAL_EMAIL_FROM),
     subject,
     reference: submission.reference,

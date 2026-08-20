@@ -20,10 +20,12 @@ Repo-wide rules: `development_continuity.md` and `deployment.md` at the repo roo
 ## Session workflow (Jamie’s preference)
 
 1. Keep local Node running: `cd backend && node fpc_server.js`
-2. Change code. Show/test at **localhost**, not the live site. Open the Cursor browser to http://localhost:3000/rti_proposal/ after a round. Hard-refresh (`Cmd+Shift+R`) if CSS/JS looks stale.
-3. Do **not** commit, push, or deploy until Jamie says the session is done.
-4. Then, in order: commit → `git push origin master` → SSH `my-do-server` and `cd /root/feenyPowerLanding && git pull origin master && pm2 restart "FPC Website"`. Tell Jamie at each step.
-5. Verify https://www.feenypowerandcontrol.com/rti_proposal/ with a hard refresh.
+2. Change code. Show/test at **localhost**, not the live site. For the form, open http://localhost:3000/rti_proposal/. Hard-refresh (`Cmd+Shift+R`) if CSS/JS looks stale.
+3. For PDF work, fetch http://localhost:3000/rti_proposal/preview.pdf and open it in **Preview** (or the default browser). Cursor’s built-in browser tab does **not** render PDFs (blank/black page). Do not substitute a single-page PNG.
+4. Node does **not** hot-reload. After PDF code changes, kill the listener on port 3000 and restart `node fpc_server.js`, then re-open the preview. Restarts often hit `EADDRINUSE` if the old process is still up.
+5. Do **not** commit, push, or deploy until Jamie says the session is done.
+6. Then, in order: commit → `git push origin master` → SSH `my-do-server` and `cd /root/feenyPowerLanding && git pull origin master && pm2 restart "FPC Website"`. Tell Jamie at each step.
+7. Verify https://www.feenypowerandcontrol.com/rti_proposal/ with a hard refresh. The public host 404s `/rti_proposal/preview.pdf`; emailed PDFs are how live layout is confirmed.
 
 Pushing to GitHub does not update the live site.
 
@@ -46,6 +48,11 @@ Vanilla HTML/CSS/JS. No React, no bundler, no second test framework. Deploy is `
 - Do not put Discrete/Cloned labels or cloned-count questions back on the public form.
 - Do not switch emailed PDFs back to v1. Live mail uses v2 (`proposalDocumentV2.js` / `formatProposalV2.js`). Keep v1 in `proposalDocument.js` / `formatProposal.js` for `?v=1` preview.
 - Do not re-add a pdfmake `background` canvas behind the colour bands. That made page 3 a giant green slab with the copy sitting high in it.
+- Do not put the cover tagline back (*Unlock Seamless Smart Home Integration…*).
+- Do not drop `N x` counts from systems or controller list lines.
+- Do not list displays as `TV (Living Room)`. They are `N x Display (TV)` / `N x Display (Projector)`, grouped by type.
+- Do not put ISR-4 back on the Controller Overview. Room controllers print `N x Room Controller`.
+- Do not preview PDFs in Cursor’s embedded browser. Use Preview or the system browser.
 
 ## Where the look and form live
 
@@ -108,20 +115,21 @@ Leaving a type on “Select…” must block Next/Submit with *Type is required*
 
 ## Copy that is fair game
 
-- Header under the H1: *Describe the project scope and I will email you a programming budget.*
+- Header under the H1: *I will reach out to you with your programming budget.*
 - From-name on mail is `RTI Proposals`. Address stays `proposals@feenypowerandcontrol.com`.
+- Mail goes **only** to `feeny.jamie@gmail.com`. Do not send to the dealer who submitted the form. Subject: *A new RTI proposal was created!* Body: `{contractorName} ({contractorEmail}) just submitted a new project ({projectPoName}).` Reply-To is the dealer. The v2 PDF is still attached.
 - Page title / meta description.
 - Step 1 labels now: *Your Name*, *Your Email*, *Project Location* (id is still `projectAddress`). Location help is *A city is fine.*
 
 Help text in the schema is domain knowledge. Do not rewrite it for tone.
 
-## Implementation snapshot (2026-08-19)
+## Implementation snapshot (2026-08-20)
 
-Built and live. Do not reimplement.
+Built and live (`8f19c20` on `master`). Do not reimplement.
 
 - Form, persist, pdfmake PDF, Resend email, audit route, `MONGO_URI` fail-fast.
 - Public form has **no** live hours estimate. Hours remain on the PDF and audit view. The estimate API may still exist; the page does not call it.
-- Reply-To is `Feeny.jamie@gmail.com`. BCC is the same inbox. Sending is on in production.
+- From-name is `RTI Proposals`; address stays `proposals@feenypowerandcontrol.com` (`sendProposal.js` wraps the env address). To is always `feeny.jamie@gmail.com`. Reply-To is the dealer. No dealer copy, no BCC. Sending is on in production.
 - Audit route is disabled until `PROPOSAL_AUDIT_TOKEN` is set on the **server** `.env`.
 - FAQ still links the old Google Form. Cutover (point dealers here, retire the Form) is not done.
 - Backup/retention was deferred on purpose.
@@ -131,21 +139,23 @@ Built and live. Do not reimplement.
 
 ### v2 PDF (live email)
 
-Five-page layout. Local preview: http://localhost:3000/rti_proposal/preview.pdf (HIGH RD sample). `?v=1` still shows v1. 404 unless Host is localhost / 127.0.0.1 / ::1. Do not link it from the public form.
+Five-page layout. Local preview: http://localhost:3000/rti_proposal/preview.pdf (HIGH RD sample). `?v=1` still shows v1. 404 unless Host is localhost / 127.0.0.1 / ::1. Do not link it from the public form. Open that URL in Preview, not Cursor’s browser tab.
 
 Files: `backend/proposal/pdf/formatProposalV2.js`, `proposalDocumentV2.js`, `preview.js`, plus their tests. Route is `GET /rti_proposal/preview.pdf` in `fpc_server.js`. Spec notes: [07-pdf-document.md](07-pdf-document.md).
 
-Pages: cover (no tagline; Feeny logo 200×150; ID only — PO, client, location; no timeline/hours; RTI logo below the orange band with light-grey *An* above and *Proposal* below) → Project Overview (*Your project covers N rooms (…)*; controllers *every room / system*; Additional Info heading plus notes if present) → Controlled Systems Overview (sources as `N x Type (Name)`; displays as `N x Display (TV)`; count-only rows stay `N x`; `None Included` when empty) → Controller Overview (`N x Global Controller (iPhone)`, `N x Room Controller`; no intro) → Project Summary (orange band is only `Total Programming Hours: N`; acceptance + signature / print name / date in the white space below). Page titles are 22pt.
+1. **Cover** — no tagline. Feeny logo `200×150` (just larger than the visible RTI mark; the RTI PNG is padded). Contractor name 16pt. *Prepared for:* and *An* / *Proposal* are light grey `#a7a9ac` at 11pt. Orange band is PO / client / location only (no timeline or hours). RTI logo stays below the band at `480×76`, with *An* above and *Proposal* below.
+2. **Project Overview** — 22pt title. Left-aligned dark grey band. *Your project covers N rooms (Room 1, Room 2, …) and includes integration with … systems.* Controllers *control every room / system*. *Additional Info:* on its own line, then the notes (omit the block if blank). Commissioning date last.
+3. **Controlled Systems Overview** — 22pt title. Sources `N x Type (Name)` (e.g. `1 x Streamer (Sonos Port)`). Displays grouped by type: `N x Display (TV)`, `N x Display (Projector)`. Count-only rows stay `N x` (lighting, AV receivers, I/O). Empty categories `None Included`.
+4. **Controller Overview** — 22pt title. `N x Global Controller (iPhone)` (and iPad / Touchscreen). `N x Room Controller`. No ISR-4. Keep the counts.
+5. **Project Summary** — 22pt title. Orange band is only `Total Programming Hours: N`. Acceptance + signature / print name / date in the white space below.
 
 Colour bands cycle Feeny logo colours: orange `#fcb040`, dark grey `#575759`, green `#39b54a`, light grey `#a7a9ac`. Dark grey uses white text; others black. Band body is 16pt Roboto, full-bleed table `fillColor`.
 
-**Band placement:** each band is `absolutePosition` at `y = (792 - renderedHeight) / 2` so it is geometrically centered on US Letter, independent of the page title. Height is measured from a real pdfmake table, not a line-count guess (16pt Roboto at `lineHeight` 1.25 is 23.4375pt, not 18). Titles stay in normal flow at the top at 22pt. The RTI logo sits below the cover orange band, centered in the leftover white above the footer, at 480×76, with *An* above and *Proposal* below in light grey `#a7a9ac` at the same 11pt as *Prepared for:*. Contractor name on the cover is 16pt. Do not go back to flow spacers under titles.
+**Band placement:** each band is `absolutePosition` at `y = (792 - renderedHeight) / 2` so it is geometrically centered on US Letter, independent of the page title. Height is measured from a real pdfmake table, not a line-count guess (16pt Roboto at `lineHeight` 1.25 is 23.4375pt, not 18). Titles stay in normal flow at the top at 22pt. Do not go back to flow spacers under titles.
 
 **Do not** paint a matching `background()` canvas. Height estimates run long on page 3 (six categories), so the canvas was taller than the table and looked like a huge green bar with copy at the top. Colour comes from the table only.
 
 **Signatures** are a second `absolutePosition` stack, vertically centered in the leftover white between the hours band bottom and the footer (`PAGE_MARGIN_BOTTOM` 56), not parked immediately under the band. The block is 516pt wide (48pt side margins) and centered as a group; copy and labels stay left-aligned inside it. Lines are canvas strokes in a fixed second column so they share a start and end. Do not use `decoration: 'underline'` on the line cells. Copy is *I approve this budget and understand that work will commence when Feeny Power and Control Ltd has received a 50% deposit* (`a` and `50%` stay on the same line).
-
-Node does **not** hot-reload. After PDF code changes, kill the listener on port 3000 and restart `node fpc_server.js`, then hard-refresh the preview URL. Restarts often hit `EADDRINUSE` if the old process is still up.
 
 ## Verify a look or form change
 
@@ -155,7 +165,7 @@ cd backend && npm test
 
 Then open http://localhost:3000/rti_proposal/ — and confirm `/consultation` and `/faq` still look the same.
 
-PDF preview (localhost only; 404 on the public host): http://localhost:3000/rti_proposal/preview.pdf is **v2** (HIGH RD sample). Append `?v=1` for the original three-page layout. Hard-refresh after PDF code changes. Live email sends v2.
+PDF preview (localhost only; 404 on the public host): http://localhost:3000/rti_proposal/preview.pdf is **v2** (HIGH RD sample). Append `?v=1` for the original three-page layout. Open in Preview or the default browser — not Cursor’s embedded tab. Live email sends v2.
 
 ## Spec index (on demand)
 

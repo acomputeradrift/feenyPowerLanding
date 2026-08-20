@@ -136,7 +136,7 @@ feenyPowerLanding/
 - `MONGO_URI` — required. Process exits if unset. Local typical value: `mongodb://localhost:27017/testdb`. Production uses the server `.env` value.
 - `PORT` — defaults to `3000`
 - `PROPOSAL_EMAIL_ENABLED` — must be the string `true` to send real proposal mail; otherwise the payload is written to `backend/proposal/email/outbox/`
-- `PROPOSAL_EMAIL_API_KEY`, `PROPOSAL_EMAIL_FROM`, `PROPOSAL_EMAIL_BCC` — Resend. Real mail only if `PROPOSAL_EMAIL_ENABLED` is the string `true`.
+- `PROPOSAL_EMAIL_API_KEY`, `PROPOSAL_EMAIL_FROM`, `PROPOSAL_EMAIL_BCC` — Resend. Real mail only if `PROPOSAL_EMAIL_ENABLED` is the string `true`. Mail To is always `feeny.jamie@gmail.com`; BCC is unused.
 - `PROPOSAL_AUDIT_TOKEN` — shared secret for `GET /rti_proposal/audit/:reference`. If unset or empty the route is disabled (404). Supply as `?token=` or `X-Proposal-Audit-Token`.
 - `PROPOSAL_IP_HASH_SALT` — salt for hashing submitter IPs; if unset, no hash is stored
 
@@ -275,3 +275,5 @@ Details and step-by-step deploy commands are in `deployment.md`. Quick facts:
 | 2026-08-20 | v2 PDF: *An* / *Proposal* in light grey `#a7a9ac`; page titles 22pt; last page titled Project Summary. |
 | 2026-08-20 | Overview copy: *Your project covers N rooms (…)*; controllers *every room / system*; Additional Info as a heading plus notes. Mail from-name `RTI Proposals`. |
 | 2026-08-20 | v2 lists: typed devices as `N x Type (Name)`; controllers as `N x Global Controller (iPhone)` and `N x Room Controller`. |
+| 2026-08-20 | Live `8f19c20`: v2 PDF cover/overview/list copy as in `docs/rti_proposal/CONTINUITY.md`. Mail from-name `RTI Proposals`. |
+| 2026-08-20 | Proposal mail goes only to `feeny.jamie@gmail.com`. Subject *A new RTI proposal was created!*; body is contractor name, email, and PO. Dealer is Reply-To, not a recipient. |
