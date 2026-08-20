@@ -277,3 +277,4 @@ Details and step-by-step deploy commands are in `deployment.md`. Quick facts:
 | 2026-08-20 | v2 lists: typed devices as `N x Type (Name)`; controllers as `N x Global Controller (iPhone)` and `N x Room Controller`. |
 | 2026-08-20 | Live `8f19c20`: v2 PDF cover/overview/list copy as in `docs/rti_proposal/CONTINUITY.md`. Mail from-name `RTI Proposals`. |
 | 2026-08-20 | Proposal mail goes only to `feeny.jamie@gmail.com`. Subject *A new RTI proposal was created!*; body is contractor name, email, and PO. Dealer is Reply-To, not a recipient. |
+| 2026-08-20 | Proposal header copy: *Use this form to get some real numbers…*. FAQ “get started” links `/rti_proposal/` instead of the Google Form. |

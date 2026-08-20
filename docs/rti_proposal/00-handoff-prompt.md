@@ -78,8 +78,9 @@ WHAT IS ALREADY DONE (do not redo)
    frontend/scripts/proposal/rti_proposal.js; answers/steps/repeats live in
    formController.js. Browser imports /scripts/proposal/shared/{schema,
    validate, repeatGroups}.js only — nothing from calc/. Header copy is
-   invented and may still be changed: "I will reach out to you with your
-   programming budget."
+   invented and may still be changed: "Use this form to get some real numbers
+   on your projects. It will walk you through all of the steps needed to get
+   an accurate time budget."
 7. Persistence + submit. ProposalSubmission model matches 05-data-model.md.
    POST /api/proposal via createProposalRouter: honeypot non-empty → 201
    plausible body and discard; unknown keys 400; persist first

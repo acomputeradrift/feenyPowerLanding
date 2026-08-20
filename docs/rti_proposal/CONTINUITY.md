@@ -115,7 +115,7 @@ Leaving a type on “Select…” must block Next/Submit with *Type is required*
 
 ## Copy that is fair game
 
-- Header under the H1: *I will reach out to you with your programming budget.*
+- Header under the H1: *Use this form to get some real numbers on your projects. It will walk you through all of the steps needed to get an accurate time budget.*
 - From-name on mail is `RTI Proposals`. Address stays `proposals@feenypowerandcontrol.com`.
 - Mail goes **only** to `feeny.jamie@gmail.com`. Do not send to the dealer who submitted the form. Subject: *A new RTI proposal was created!* Body: `{contractorName} ({contractorEmail}) just submitted a new project ({projectPoName}).` Reply-To is the dealer. The v2 PDF is still attached.
 - Page title / meta description.
@@ -131,7 +131,7 @@ Built and live (`8f19c20` on `master`). Do not reimplement.
 - Public form has **no** live hours estimate. Hours remain on the PDF and audit view. The estimate API may still exist; the page does not call it.
 - From-name is `RTI Proposals`; address stays `proposals@feenypowerandcontrol.com` (`sendProposal.js` wraps the env address). To is always `feeny.jamie@gmail.com`. Reply-To is the dealer. No dealer copy, no BCC. Sending is on in production.
 - Audit route is disabled until `PROPOSAL_AUDIT_TOKEN` is set on the **server** `.env`.
-- FAQ still links the old Google Form. Cutover (point dealers here, retire the Form) is not done.
+- FAQ “get started” answer links `/rti_proposal/` (the Google Form is retired from the public site).
 - Backup/retention was deferred on purpose.
 - `SCHEMA_VERSION` is `2026.3`.
 
