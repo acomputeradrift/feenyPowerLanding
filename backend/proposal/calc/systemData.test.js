@@ -80,6 +80,28 @@ describe('first-of-type discrete, later same type cloned', () => {
     assert.equal(lineHours(twoAppleTvs, 'totalCustomDeviceZones'), 0);
   });
 
+  it('treats Box and Blu-ray Player as separate video source types', () => {
+    const mixed = {
+      videoDiscreteSourceZones: 2,
+      videoSourceDetails: [{ type: 'Box' }, { type: 'Blu-ray Player' }]
+    };
+    const twoBoxes = {
+      videoDiscreteSourceZones: 2,
+      videoSourceDetails: [{ type: 'Box' }, { type: 'Box' }]
+    };
+    const data = calculateSystemData(mixed);
+    assert.equal(data.videoDiscreteSourceZones, 2);
+    assert.equal(data.videoClonedSourceZones, 0);
+    assert.ok(
+      lineHours(mixed, 'totalDiscreteDeviceZones')
+        > lineHours(twoBoxes, 'totalDiscreteDeviceZones')
+    );
+    assert.equal(lineHours(mixed, 'totalDiscreteDeviceZones'), lineHours({
+      videoDiscreteSourceZones: 2,
+      videoSourceDetails: [{ type: 'Cable' }, { type: 'Satellite' }]
+    }, 'totalDiscreteDeviceZones'));
+  });
+
   it('treats Cable and Satellite as separate video source types', () => {
     const both = {
       videoDiscreteSourceZones: 2,

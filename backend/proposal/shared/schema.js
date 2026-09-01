@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = '2026.4';
+export const SCHEMA_VERSION = '2026.5';
 export const REPEAT_GROUP_MAX = 40;
 
 function text(id, label, extra = {}) {
@@ -190,7 +190,7 @@ export const steps = [
         itemLabel: (index) => `Video Source ${index + 1}`,
         fields: [
           text('name', 'Source name', { required: false, maxLength: 80 }),
-          select('type', 'Type', ['Media Player', 'Cable', 'Satellite', 'Games Console', 'Custom'], { required: true })
+          select('type', 'Type', ['Media Player', 'Cable', 'Satellite', 'Box', 'Blu-ray Player', 'Game Console', 'Custom'], { required: true })
         ]
       }),
       count('avReceiverDiscreteZones', 'AV Receiver Zones', {

@@ -278,7 +278,7 @@ to the item label (`Audio Source 1`, `Video Source 1`, `Display 1`). Source type
 - `audioSourceDetails` over `audioDiscreteSourceZones` - name (optional), type
   (required: Streamer / Turntable / Custom)
 - `videoSourceDetails` over `videoDiscreteSourceZones` - name (optional), type
-  (required: Media Player / Cable / Satellite / Games Console / Custom)
+  (required: Media Player / Cable / Satellite / Box / Blu-ray Player / Game Console / Custom)
 - `displayDetails` over `displayDiscreteZones` - name (optional), type (required:
   TV / Projector)
 

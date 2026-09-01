@@ -135,7 +135,7 @@ describe('FR-2 FR-3 schema catalogue', () => {
     );
     assert.deepEqual(
       findQuestion('videoSourceDetails').fields.find((field) => field.id === 'type').options,
-      ['Media Player', 'Cable', 'Satellite', 'Games Console', 'Custom']
+      ['Media Player', 'Cable', 'Satellite', 'Box', 'Blu-ray Player', 'Game Console', 'Custom']
     );
   });
 

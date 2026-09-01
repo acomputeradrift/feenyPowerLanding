@@ -63,7 +63,7 @@ WHAT IS ALREADY DONE (do not redo)
    2026.2, no logic), systemData.js, hoursData.js (rates injected, returns)
    lineItems + sectionHours + totalProjectHours). Parity tests pass.
 3. Shared schema + validation under backend/proposal/shared/: schema.js
-   (10 steps, SCHEMA_VERSION 2026.4), validate.js, repeatGroups.js (FR-6).
+   (10 steps, SCHEMA_VERSION 2026.5), validate.js, repeatGroups.js (FR-6).
    Repeat groups attach to discrete counts; names are optional. Floorplan
    add-on is hidden unless globalControllerCount > 0 and cannot exceed it.
 4. POST /api/proposal/estimate — section totals only, no rates, no persist,

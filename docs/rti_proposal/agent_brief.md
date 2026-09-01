@@ -105,7 +105,7 @@ These are current product rules, not a backlog.
 | `rooms` | `roomDetails` | Name: Room 1, Room 2, … (optional to edit) |
 | `exteriorZones` | `exteriorZoneDetails` | Name: Exterior Zone 1, … (optional to edit) |
 | `audioDiscreteSourceZones` | `audioSourceDetails` | Name default; **type required**: Streamer / Turntable / Custom |
-| `videoDiscreteSourceZones` | `videoSourceDetails` | Name default; **type required**: Media Player / Cable / Satellite / Games Console / Custom |
+| `videoDiscreteSourceZones` | `videoSourceDetails` | Name default; **type required**: Media Player / Cable / Satellite / Box / Blu-ray Player / Game Console / Custom |
 | `displayDiscreteZones` | `displayDetails` | Name default; **type required**: TV / Projector |
 | `cameraZones` | `cameraDetails` | Name default Camera 1, …; location optional |
 | `globalControllerCount` | `globalControllerDetails` | **Type required**: iPhone / iPad / Touchscreen |
@@ -128,11 +128,11 @@ Leaving a type on “Select…” must block Next/Submit with *Type is required*
 - Page title / meta description.
 - Step 1 labels now: *Your Name*, *Your Email*, *Project Location* (id is still `projectAddress`). Location help is *A city is fine.*
 
-Help text in the schema is domain knowledge. Do not rewrite it for tone.
+Help text in the schema is domain knowledge. Do not rewrite it for tone. Every help line ends with a period.
 
 ## Implementation snapshot (2026-09-01)
 
-Built and live (`e723f32` on `master`). Do not reimplement. The Google Form AutoProposal is retired; this repo is the only proposal system.
+Built and live on `master`. Do not reimplement. The Google Form AutoProposal is retired; this repo is the only proposal system.
 
 - Form, persist, pdfmake PDF, Resend email, audit route, `MONGO_URI` fail-fast.
 - Public form has **no** live hours estimate. Hours remain on the PDF and audit view. The estimate API may still exist; the page does not call it.
@@ -140,7 +140,8 @@ Built and live (`e723f32` on `master`). Do not reimplement. The Google Form Auto
 - Audit route is disabled until `PROPOSAL_AUDIT_TOKEN` is set on the **server** `.env`.
 - FAQ “get started” answer links `/rti_proposal/`. The Google Form is gone from the public site and is not coming back.
 - Backup/retention was deferred on purpose.
-- `SCHEMA_VERSION` is `2026.4`.
+- `SCHEMA_VERSION` is `2026.5`. `RATE_CARD_VERSION` is `2026.2`.
+- Custom audio/video is 33 minutes and never cloned. Video types include Box and Blu-ray Player. The console label is *Game Console*. Tuner is gone. Video zones require a video source. Motorized lifts sit under displays.
 
 **Live email sends the five-page v2 PDF.**
 
