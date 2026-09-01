@@ -2,6 +2,10 @@
 
 Catch-up for look, copy, and form-behavior work. Do not rebuild the feature.
 
+**This is the proposal system.** Repo: `feenyPowerLanding`. Live form: `/rti_proposal/`.
+
+The Google Form + Apps Script project (**RTI AutoProposal**) is **dead**. Do not open that folder, do not edit it, do not treat it as source of truth, and do not add it to this workspace. Hour math, PDF, and email live here under `backend/proposal/`.
+
 Live URL: https://www.feenypowerandcontrol.com/rti_proposal/  
 Local: http://localhost:3000/rti_proposal/
 
@@ -31,7 +35,7 @@ Pushing to GitHub does not update the live site.
 
 ## What this is
 
-A public branching form that emails an RTI programming-hour PDF. It exists because Google Forms cannot do count-driven repeat groups (N sources → N name fields).
+A public branching form that emails an RTI programming-hour PDF. It replaced the Google Form AutoProposal because Google Forms cannot do count-driven repeat groups (N sources → N name fields). That old pipeline is retired.
 
 Vanilla HTML/CSS/JS. No React, no bundler, no second test framework. Deploy is `git pull` + `pm2 restart "FPC Website"`.
 
@@ -53,6 +57,7 @@ Vanilla HTML/CSS/JS. No React, no bundler, no second test framework. Deploy is `
 - Do not list displays as `TV (Living Room)`. They are `N x Display (TV)` / `N x Display (Projector)`, grouped by type.
 - Do not put ISR-4 back on the Controller Overview. Room controllers print `N x Room Controller`.
 - Do not preview PDFs in Cursor’s embedded browser. Use Preview or the system browser.
+- Do not reopen or revive **RTI AutoProposal** (Google Form / Apps Script). That system is dead.
 
 ## Where the look and form live
 
@@ -123,15 +128,15 @@ Leaving a type on “Select…” must block Next/Submit with *Type is required*
 
 Help text in the schema is domain knowledge. Do not rewrite it for tone.
 
-## Implementation snapshot (2026-08-20)
+## Implementation snapshot (2026-09-01)
 
-Built and live (`8f19c20` on `master`). Do not reimplement.
+Built and live (`e723f32` on `master`). Do not reimplement. The Google Form AutoProposal is retired; this repo is the only proposal system.
 
 - Form, persist, pdfmake PDF, Resend email, audit route, `MONGO_URI` fail-fast.
 - Public form has **no** live hours estimate. Hours remain on the PDF and audit view. The estimate API may still exist; the page does not call it.
 - From-name is `RTI Proposals`; address stays `proposals@feenypowerandcontrol.com` (`sendProposal.js` wraps the env address). To is always `feeny.jamie@gmail.com`. Reply-To is the dealer. No dealer copy, no BCC. Sending is on in production.
 - Audit route is disabled until `PROPOSAL_AUDIT_TOKEN` is set on the **server** `.env`.
-- FAQ “get started” answer links `/rti_proposal/` (the Google Form is retired from the public site).
+- FAQ “get started” answer links `/rti_proposal/`. The Google Form is gone from the public site and is not coming back.
 - Backup/retention was deferred on purpose.
 - `SCHEMA_VERSION` is `2026.3`.
 
