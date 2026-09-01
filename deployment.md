@@ -171,7 +171,7 @@ pm2 restart "FPC Website"
 
 Every new HTML page needs **both** a file and a route before deploy:
 
-1. Add `frontend/your-page.html` (use site-root paths — see `development_continuity.md`).
+1. Add `frontend/your-page.html` (use site-root paths — see `continuity.md`).
 2. Add route in `backend/fpc_server.js`:
 
    ```javascript
@@ -256,4 +256,4 @@ Preferred rollback: revert the bad commit on `master` locally, push, then pull o
 - [ ] `npm install` (only if `package.json` changed)
 - [ ] `pm2 restart "FPC Website"`
 - [ ] `curl -I` or browser check on affected URLs
-- [ ] Update **Recent changes log** in `development_continuity.md` if significant
+- [ ] Update `continuity.md` if the site map or agent rules changed significantly

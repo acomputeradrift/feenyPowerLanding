@@ -100,6 +100,15 @@ function validateControllerPair(answers, errors) {
   if (!errors.roomControllerCount) errors.roomControllerCount = message;
 }
 
+function validateVideoDistributionPair(answers, errors) {
+  const videoZones = answers.videoZones;
+  const videoSources = answers.videoDiscreteSourceZones;
+  if (!Number.isInteger(videoZones) || videoZones <= 0) return;
+  if (Number.isInteger(videoSources) && videoSources >= 1) return;
+  const message = 'Enter at least one video source when there are distributed video zones';
+  if (!errors.videoDiscreteSourceZones) errors.videoDiscreteSourceZones = message;
+}
+
 function validateRepeat(question, answers, errors) {
   const count = answers[question.repeatFor];
   if (!Number.isInteger(count) || count <= 0) return;
@@ -161,5 +170,6 @@ export function validate(schema, answers) {
   }
 
   validateControllerPair(payload, errors);
+  validateVideoDistributionPair(payload, errors);
   return errors;
 }

@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = '2026.3';
+export const SCHEMA_VERSION = '2026.4';
 export const REPEAT_GROUP_MAX = 40;
 
 function text(id, label, extra = {}) {
@@ -163,7 +163,9 @@ export const steps = [
     id: 'audioVideo',
     title: 'Audio/Video Control',
     questions: [
-      count('audioZones', 'Distributed Audio Zones'),
+      count('audioZones', 'Distributed Audio Zones', {
+        help: 'Include any zones that use an audio distribution matrix system or amplifier.'
+      }),
       count('audioDiscreteSourceZones', 'Audio Sources', {
         max: REPEAT_GROUP_MAX,
         help: 'Include any streamers, turntables or other audio only sources (distributed and local).'
@@ -173,10 +175,12 @@ export const steps = [
         itemLabel: (index) => `Audio Source ${index + 1}`,
         fields: [
           text('name', 'Source name', { required: false, maxLength: 80 }),
-          select('type', 'Type', ['Streamer', 'Tuner', 'Turntable', 'Custom'], { required: true })
+          select('type', 'Type', ['Streamer', 'Turntable', 'Custom'], { required: true })
         ]
       }),
-      count('videoZones', 'Distributed Video Zones'),
+      count('videoZones', 'Distributed Video Zones', {
+        help: 'Include any zones that use a video distribution matrix system or HDBaseT transmitter and receivers.'
+      }),
       count('videoDiscreteSourceZones', 'Video Sources', {
         max: REPEAT_GROUP_MAX,
         help: 'Include any media players, cable/sat boxes or other video sources (distributed and local).'
@@ -186,7 +190,7 @@ export const steps = [
         itemLabel: (index) => `Video Source ${index + 1}`,
         fields: [
           text('name', 'Source name', { required: false, maxLength: 80 }),
-          select('type', 'Type', ['Media Player', 'Cable or Satellite', 'Games Console', 'Custom'], { required: true })
+          select('type', 'Type', ['Media Player', 'Cable', 'Satellite', 'Games Console', 'Custom'], { required: true })
         ]
       }),
       count('avReceiverDiscreteZones', 'AV Receiver Zones', {
@@ -204,6 +208,11 @@ export const steps = [
           text('name', 'Display name', { required: false, maxLength: 80 }),
           select('type', 'Type', ['TV', 'Projector'], { required: true })
         ]
+      }),
+      count('motorizedLiftZones', 'Motorized Lifts or Mounts', {
+        required: false,
+        visibleIf: (answers) => (Number(answers.displayDiscreteZones) || 0) > 0,
+        help: 'Include any motorized lifts or mounts controlled by RTI.'
       }),
     ]
   },
@@ -275,7 +284,7 @@ export const steps = [
     questions: [
       count('globalControllerCount', 'Global Controllers', {
         max: REPEAT_GROUP_MAX,
-        help: 'iPhone, iPad, Touchscreens (controls all rooms, all sources)'
+        help: 'iPhone, iPad, Touchscreens (controls all rooms, all sources).'
       }),
       repeat('globalControllerDetails', 'Global Controllers', {
         repeatFor: 'globalControllerCount',
@@ -290,7 +299,7 @@ export const steps = [
         help: 'Include this for each Global Controller (iPad, Touchscreens) that you would like a floorplan interface.'
       }),
       count('roomControllerCount', 'Single Room Controllers', {
-        help: 'Handheld Remotes, Touchscreens (controls single room, local sources)'
+        help: 'Handheld Remotes, Touchscreens (controls single room, local sources).'
       })
     ]
   },

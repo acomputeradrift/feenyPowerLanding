@@ -1,4 +1,4 @@
-export const RATE_CARD_VERSION = '2026.1';
+export const RATE_CARD_VERSION = '2026.2';
 
 export const rates = {
   lightingZone: 26.4,
@@ -8,6 +8,7 @@ export const rates = {
   videoZone: 22,
   deviceDiscreteZone: 22,
   deviceClonedZone: 11,
+  deviceCustomZone: 33,
   thermostatZone: 22,
   heaterZone: 13.2,
   fanZone: 13.2,

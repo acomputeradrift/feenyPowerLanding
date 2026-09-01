@@ -34,6 +34,7 @@ reproduced exactly.
 | `videoZone` | 22 | each distributed video zone |
 | `deviceDiscreteZone` | 22 | each discrete device zone |
 | `deviceClonedZone` | 11 | each cloned device zone |
+| `deviceCustomZone` | 33 | each Custom audio or video source |
 | `thermostatZone` | 22 | each thermostat |
 | `heaterZone` | 13.2 | each heater |
 | `fanZone` | 13.2 | each fan |
@@ -51,9 +52,11 @@ reproduced exactly.
 
 Cloned devices are charged at exactly half the discrete rate. The live form does
 not collect those counts: `systemData` derives them from types (first of each
-type is discrete, later units of the same type are cloned). `Custom` is never
-cloned: each Custom item is discrete. AV receivers have no type, so the first
-unit is discrete and the rest are cloned. Answers that still
+type is discrete, later units of the same type are cloned). `Custom` audio and
+video sources are never cloned and are billed at `deviceCustomZone` (33 minutes)
+instead of the discrete device rate. AV receivers have no type, so the first
+unit is discrete and the rest are cloned. Motorized lifts and mounts use the
+same untyped split and the same device rates. Answers that still
 include `*Cloned*` count fields are used as-is so golden-master parity holds.
 
 ### Unused rates
@@ -79,8 +82,8 @@ Computed from answers before any rate is applied.
 ```
 climateTimerZones        = heaterZones + fanZones
 poolAndPumpsTimerZones   = poolZones + pumpZones
-totalAudioSourceZones    = audioDiscreteSourceZones + audioClonedSourceZones
-totalVideoSourceZones    = videoDiscreteSourceZones + videoClonedSourceZones
+totalAudioSourceZones    = audioDiscreteSourceZones + audioClonedSourceZones + audioCustomSourceZones
+totalVideoSourceZones    = videoDiscreteSourceZones + videoClonedSourceZones + videoCustomSourceZones
 totalAvReceiverZones     = avReceiverDiscreteZones + avReceiverClonedZones
 totalDisplayZones        = displayDiscreteZones + displayClonedZones
 totalProjectRooms        = rooms + exteriorZones
@@ -96,13 +99,18 @@ totalDiscreteDeviceZones = displayDiscreteZones
                          + avReceiverDiscreteZones
                          + audioDiscreteSourceZones
                          + videoDiscreteSourceZones
+                         + motorizedLiftDiscreteZones
 
 totalClonedDeviceZones   = displayClonedZones
                          + avReceiverClonedZones
                          + audioClonedSourceZones
                          + videoClonedSourceZones
+                         + motorizedLiftClonedZones
+
+totalCustomDeviceZones   = audioCustomSourceZones + videoCustomSourceZones
 
 totalDeviceZones         = totalDiscreteDeviceZones + totalClonedDeviceZones
+                         + totalCustomDeviceZones
 ```
 
 ### Total project zones
@@ -112,10 +120,11 @@ Drives controller hours and processor counts.
 ```
 totalProjectZones = sum of:
     lightingZones, shadingZones, keypadZones,
-    audioZones, audioDiscreteSourceZones, audioClonedSourceZones,
-    videoZones, videoDiscreteSourceZones, videoClonedSourceZones,
+    audioZones, audioDiscreteSourceZones, audioClonedSourceZones, audioCustomSourceZones,
+    videoZones, videoDiscreteSourceZones, videoClonedSourceZones, videoCustomSourceZones,
     avReceiverDiscreteZones, avReceiverClonedZones,
     displayDiscreteZones, displayClonedZones,
+    motorizedLiftDiscreteZones, motorizedLiftClonedZones,
     totalDeviceZones,
     thermostatZones, heaterZones, fanZones, climateTimerZones,
     alarmZones, accessZones, cameraZones,
@@ -204,6 +213,7 @@ their respective rates.
 - `videoZones` at `videoZone`
 - `totalDiscreteDeviceZones` at `deviceDiscreteZone`
 - `totalClonedDeviceZones` at `deviceClonedZone`
+- `totalCustomDeviceZones` at `deviceCustomZone`
 
 **Climate** - `thermostatZones`, `heaterZones`, `fanZones` at their rates, plus
 `climateTimerZones` at `timerZone`.

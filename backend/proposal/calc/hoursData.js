@@ -6,6 +6,7 @@ const SIMPLE_LINES = [
   { section: 'audioVideo', id: 'videoZones', label: 'Distributed Video Zones', rateKey: 'videoZone' },
   { section: 'audioVideo', id: 'totalDiscreteDeviceZones', label: 'Discrete Device Zones', rateKey: 'deviceDiscreteZone' },
   { section: 'audioVideo', id: 'totalClonedDeviceZones', label: 'Cloned Device Zones', rateKey: 'deviceClonedZone' },
+  { section: 'audioVideo', id: 'totalCustomDeviceZones', label: 'Custom Device Zones', rateKey: 'deviceCustomZone' },
   { section: 'climate', id: 'thermostatZones', label: 'Thermostat Zones', rateKey: 'thermostatZone' },
   { section: 'climate', id: 'heaterZones', label: 'Heater Zones', rateKey: 'heaterZone' },
   { section: 'climate', id: 'fanZones', label: 'Fan Zones', rateKey: 'fanZone' },

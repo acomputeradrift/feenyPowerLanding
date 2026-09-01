@@ -22,7 +22,7 @@ Background reading, in order:
   docs/rti_proposal/06-api.md
   docs/rti_proposal/07-pdf-document.md
   docs/rti_proposal/08-design-system.md
-Also read development_continuity.md and deployment.md at the repository root.
+Also read continuity.md and deployment.md at the repository root.
 
 CONTEXT
 We are replacing a Google Forms + Apps Script + Google Docs pipeline with a
@@ -60,17 +60,17 @@ WHAT IS ALREADY DONE (do not redo)
    Project total: 62.3 hours. IEEE-754 sums are kept as the Apps Script
    produced them (7.700000000000001, 8.600000000000001, 3.0999999999999996).
 2. Calculators under backend/proposal/calc/: rates.js (RATE_CARD_VERSION
-   2026.1, no logic), systemData.js, hoursData.js (rates injected, returns
+   2026.2, no logic), systemData.js, hoursData.js (rates injected, returns)
    lineItems + sectionHours + totalProjectHours). Parity tests pass.
 3. Shared schema + validation under backend/proposal/shared/: schema.js
-   (10 steps, SCHEMA_VERSION 2026.1), validate.js, repeatGroups.js (FR-6).
+   (10 steps, SCHEMA_VERSION 2026.4), validate.js, repeatGroups.js (FR-6).
    Repeat groups attach to discrete counts; names are optional. Floorplan
    add-on is hidden unless globalControllerCount > 0 and cannot exceed it.
 4. POST /api/proposal/estimate — section totals only, no rates, no persist,
    no email. Mounted at /api/proposal. Shared modules served at
    /scripts/proposal/shared. Rate key is poolAndPumps (06-api.md was
    corrected from poolPumps).
-5. development_continuity.md and deployment.md restored at repo root.
+5. continuity.md and deployment.md restored at repo root.
 6. Form UI at GET /rti_proposal/ (ADR-011: redirect /rti_proposal only when
    originalUrl with query stripped is exactly that path, then next()).
    frontend/rti_proposal.html copies the FAQ header/partners/footer shell.
@@ -135,7 +135,7 @@ Do not add React, a bundler, or a second test framework.
 ## Open items still unresolved
 
 - **Email.** Resend is live. To is always `feeny.jamie@gmail.com`. Reply-To is the dealer. No dealer copy.
-- **Form header copy is invented** and may still be changed. See CONTINUITY.md.
+- **Form header copy is invented** and may still be changed. See agent_brief.md.
 - **Backup and retention deliberately deferred.** [05-data-model.md](05-data-model.md).
 
 ## How to verify before starting

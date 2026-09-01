@@ -108,7 +108,7 @@ process.stdout.write(`Legacy commit: ${fixture.meta.legacyCommit} ${fixture.meta
 process.stdout.write('\nSystem totals\n');
 process.stdout.write(`  totalProjectZones:        ${systemData.totalProjectZones}\n`);
 process.stdout.write(`  totalProjectRooms:        ${systemData.totalProjectRooms}\n`);
-process.stdout.write(`  totalDeviceZones:         ${systemData.totalDeviceZones} (discrete ${systemData.totalDiscreteDeviceZones}, cloned ${systemData.totalClonedDeviceZones})\n`);
+process.stdout.write(`  totalDeviceZones:         ${systemData.totalDeviceZones} (discrete ${systemData.totalDiscreteDeviceZones}, cloned ${systemData.totalClonedDeviceZones}, custom ${systemData.totalCustomDeviceZones})\n`);
 process.stdout.write(`  mainProcessorCount:       ${systemData.mainProcessorCount}\n`);
 process.stdout.write(`  auxProcessorCount:        ${systemData.auxProcessorCount}\n`);
 process.stdout.write(`  expansionModuleCount:     ${systemData.expansionModuleCount}\n`);

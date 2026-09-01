@@ -128,6 +128,17 @@ describe('FR-2 FR-3 schema catalogue', () => {
     }
   });
 
+  it('splits Cable and Satellite and drops Tuner from source types', () => {
+    assert.deepEqual(
+      findQuestion('audioSourceDetails').fields.find((field) => field.id === 'type').options,
+      ['Streamer', 'Turntable', 'Custom']
+    );
+    assert.deepEqual(
+      findQuestion('videoSourceDetails').fields.find((field) => field.id === 'type').options,
+      ['Media Player', 'Cable', 'Satellite', 'Games Console', 'Custom']
+    );
+  });
+
   it('uses dealer-facing project detail labels, defaults, and a required timeline', () => {
     assert.equal(findQuestion('contractorName').label, 'Your Name');
     assert.equal(findQuestion('contractorEmail').label, 'Your Email');
@@ -151,6 +162,26 @@ describe('FR-2 FR-3 schema catalogue', () => {
       findQuestion('additionalInfo').help,
       'Please include any additional information that will help me put together a budget for your project.'
     );
+    assert.equal(
+      findQuestion('audioZones').help,
+      'Include any zones that use an audio distribution matrix system or amplifier.'
+    );
+    assert.equal(
+      findQuestion('videoZones').help,
+      'Include any zones that use a video distribution matrix system or HDBaseT transmitter and receivers.'
+    );
+    assert.equal(
+      findQuestion('motorizedLiftZones').help,
+      'Include any motorized lifts or mounts controlled by RTI.'
+    );
+    for (const question of getQuestions(steps)) {
+      if (!question.help) continue;
+      assert.equal(
+        question.help.endsWith('.'),
+        true,
+        `${question.id} help must end with a period`
+      );
+    }
   });
 
   it('attaches repeat groups to the named-detail counts only', () => {
@@ -191,6 +222,12 @@ describe('FR-4 conditional visibility', () => {
     const question = findQuestion('floorplanAddOnCount');
     assert.equal(isVisible(question, { globalControllerCount: 0 }), false);
     assert.equal(isVisible(question, { globalControllerCount: 2 }), true);
+  });
+
+  it('shows motorized lifts only when there is at least one display', () => {
+    const question = findQuestion('motorizedLiftZones');
+    assert.equal(isVisible(question, { displayDiscreteZones: 0 }), false);
+    assert.equal(isVisible(question, { displayDiscreteZones: 1 }), true);
   });
 });
 
@@ -361,12 +398,32 @@ describe('FR-8 validation', () => {
     assert.equal(validate(steps, answers)['globalControllerDetails[0].type'], 'Type is required');
   });
 
+  it('requires a video source when there are distributed video zones', () => {
+    const answers = answersFromFixture();
+    answers.videoZones = 2;
+    answers.videoDiscreteSourceZones = 0;
+    answers.videoSourceDetails = [];
+    assert.equal(
+      validate(steps, answers).videoDiscreteSourceZones,
+      'Enter at least one video source when there are distributed video zones'
+    );
+  });
+
+  it('allows zero audio sources even when there are distributed audio zones', () => {
+    const answers = answersFromFixture();
+    answers.audioZones = 3;
+    answers.audioDiscreteSourceZones = 0;
+    answers.audioSourceDetails = [];
+    assert.equal(validate(steps, answers).audioDiscreteSourceZones, undefined);
+    assert.equal(validate(steps, answers).audioZones, undefined);
+  });
+
   it('reports repeat-field errors with indexed paths', () => {
     const answers = answersFromFixture();
     answers.audioSourceDetails[0] = { type: 'Not A Type' };
     assert.equal(
       validate(steps, answers)['audioSourceDetails[0].type'],
-      'Type must be one of: Streamer, Tuner, Turntable, Custom'
+      'Type must be one of: Streamer, Turntable, Custom'
     );
   });
 });

@@ -76,7 +76,9 @@ function toLegacyHoursData(result) {
     totalLightingShadingHours: result.sectionHours.lightingShading,
     audioZoneHours: line.audioZones.hours,
     videoZoneHours: line.videoZones.hours,
-    deviceZoneHours: line.totalDiscreteDeviceZones.hours + line.totalClonedDeviceZones.hours,
+    deviceZoneHours: line.totalDiscreteDeviceZones.hours
+      + line.totalClonedDeviceZones.hours
+      + line.totalCustomDeviceZones.hours,
     totalAudioVideoHours: result.sectionHours.audioVideo,
     thermostatZoneHours: line.thermostatZones.hours,
     heaterZoneHours: line.heaterZones.hours,

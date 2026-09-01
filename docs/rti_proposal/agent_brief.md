@@ -1,4 +1,4 @@
-# RTI proposal — agent continuity
+# RTI proposal — agent brief
 
 Catch-up for look, copy, and form-behavior work. Do not rebuild the feature.
 
@@ -19,7 +19,7 @@ Local: http://localhost:3000/rti_proposal/
 
 Do not read the full spec set for a visual or form pass. `01`–`08` are constraining specs, not a backlog. If a spec is wrong, say so and update it in the same change.
 
-Repo-wide rules: `development_continuity.md` and `deployment.md` at the repo root.
+Repo-wide rules: `continuity.md` and `deployment.md` at the repo root.
 
 ## Session workflow (Jamie’s preference)
 
@@ -88,6 +88,8 @@ These are current product rules, not a backlog.
 - Exterior zones may be 0.
 - Global controllers may be 0, and room controllers may be 0, but **not both**. Error: *Enter at least one global controller or one room controller*.
 - `projectTimeline` is **required**.
+- Distributed video zones require at least one video source. Error: *Enter at least one video source when there are distributed video zones*. Audio sources may be 0 even when distributed audio zones are 0 or greater.
+- `motorizedLiftZones` appears **immediately under** the display repeat when `displayDiscreteZones` > 0. It may be 0. Help: *Include any motorized lifts or mounts controlled by RTI.* First unit discrete, later units cloned, billed with other device zones.
 
 **Defaults (unedited look faded)**
 
@@ -102,16 +104,16 @@ These are current product rules, not a backlog.
 |---|---|---|
 | `rooms` | `roomDetails` | Name: Room 1, Room 2, … (optional to edit) |
 | `exteriorZones` | `exteriorZoneDetails` | Name: Exterior Zone 1, … (optional to edit) |
-| `audioDiscreteSourceZones` | `audioSourceDetails` | Name default; **type required**: Streamer / Tuner / Turntable / Custom |
-| `videoDiscreteSourceZones` | `videoSourceDetails` | Name default; **type required**: Media Player / Cable or Satellite / Games Console / Custom |
+| `audioDiscreteSourceZones` | `audioSourceDetails` | Name default; **type required**: Streamer / Turntable / Custom |
+| `videoDiscreteSourceZones` | `videoSourceDetails` | Name default; **type required**: Media Player / Cable / Satellite / Games Console / Custom |
 | `displayDiscreteZones` | `displayDetails` | Name default; **type required**: TV / Projector |
 | `cameraZones` | `cameraDetails` | Name default Camera 1, …; location optional |
 | `globalControllerCount` | `globalControllerDetails` | **Type required**: iPhone / iPad / Touchscreen |
 
-No name fields on AV receivers (count only). Do **not** put Discrete/Cloned labels back on the form. Those counts are derived in `systemData.js`:
+No name fields on AV receivers or motorized lifts (count only). Do **not** put Discrete/Cloned labels back on the form. Those counts are derived in `systemData.js`:
 
 - First of each type is discrete; later of the same type are cloned (half rate).
-- `Custom` is **never** cloned — each Custom is discrete.
+- `Custom` audio or video is **never** cloned. Each Custom is billed at 33 minutes (`deviceCustomZone`), not the 22-minute discrete device rate.
 - AV receivers have no type: first unit discrete, rest cloned.
 - Global controllers: extra units of a type already counted do not add to the hours multiplier. Legacy answers without types still bill the total count.
 - Form field ids such as `audioDiscreteSourceZones` are the **total** count the dealer entered. Live answers do not include `*Cloned*` keys. Those keys still exist on the calculator output and on old submissions for golden-master parity.
@@ -138,7 +140,7 @@ Built and live (`e723f32` on `master`). Do not reimplement. The Google Form Auto
 - Audit route is disabled until `PROPOSAL_AUDIT_TOKEN` is set on the **server** `.env`.
 - FAQ “get started” answer links `/rti_proposal/`. The Google Form is gone from the public site and is not coming back.
 - Backup/retention was deferred on purpose.
-- `SCHEMA_VERSION` is `2026.3`.
+- `SCHEMA_VERSION` is `2026.4`.
 
 **Live email sends the five-page v2 PDF.**
 

@@ -73,7 +73,8 @@ function includedSystems(systemData) {
     + asCount(systemData.videoZones)
     + asCount(systemData.totalVideoSourceZones)
     + asCount(systemData.totalAvReceiverZones)
-    + asCount(systemData.totalDisplayZones);
+    + asCount(systemData.totalDisplayZones)
+    + asCount(systemData.totalMotorizedLiftZones);
   if (hasAv > 0) systems.push('audio/video');
   if (
     asCount(systemData.thermostatZones)
@@ -248,7 +249,8 @@ function systemSections(answers, systemData) {
             'Display'
           );
           if (extra) lines.push(extra);
-        }
+        },
+        (lines) => pushCount(lines, systemData.totalMotorizedLiftZones, 'Motorized Lift or Mount', 'Motorized Lifts or Mounts')
       ])
     },
     {

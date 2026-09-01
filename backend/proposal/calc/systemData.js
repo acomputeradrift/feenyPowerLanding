@@ -6,12 +6,13 @@ export function splitByType(items) {
   const seen = new Set();
   let discrete = 0;
   let cloned = 0;
-  if (!Array.isArray(items)) return { discrete, cloned };
+  let custom = 0;
+  if (!Array.isArray(items)) return { discrete, cloned, custom };
   for (const item of items) {
     const type = item && typeof item.type === 'string' ? item.type.trim() : '';
     if (!type) continue;
     if (type === 'Custom') {
-      discrete += 1;
+      custom += 1;
       continue;
     }
     if (seen.has(type)) cloned += 1;
@@ -20,7 +21,7 @@ export function splitByType(items) {
       discrete += 1;
     }
   }
-  return { discrete, cloned };
+  return { discrete, cloned, custom };
 }
 
 export function splitUniformCount(total) {
@@ -33,12 +34,13 @@ function resolveTypedPair(answers, countKey, clonedKey, detailsKey) {
   if (Object.hasOwn(answers, clonedKey)) {
     return {
       discrete: asCount(answers[countKey]),
-      cloned: asCount(answers[clonedKey])
+      cloned: asCount(answers[clonedKey]),
+      custom: 0
     };
   }
   const split = splitByType(answers[detailsKey]);
-  if (split.discrete + split.cloned > 0) return split;
-  return { discrete: asCount(answers[countKey]), cloned: 0 };
+  if (split.discrete + split.cloned + split.custom > 0) return split;
+  return { discrete: asCount(answers[countKey]), cloned: 0, custom: 0 };
 }
 
 function resolveUniformPair(answers, countKey, clonedKey) {
@@ -67,6 +69,7 @@ export function calculateSystemData(answers = {}) {
   );
   const audioDiscreteSourceZones = audioSplit.discrete;
   const audioClonedSourceZones = audioSplit.cloned;
+  const audioCustomSourceZones = audioSplit.custom;
   const videoZones = asCount(answers.videoZones);
   const videoSplit = resolveTypedPair(
     answers,
@@ -76,6 +79,7 @@ export function calculateSystemData(answers = {}) {
   );
   const videoDiscreteSourceZones = videoSplit.discrete;
   const videoClonedSourceZones = videoSplit.cloned;
+  const videoCustomSourceZones = videoSplit.custom;
   const displaySplit = resolveTypedPair(
     answers,
     'displayDiscreteZones',
@@ -91,6 +95,13 @@ export function calculateSystemData(answers = {}) {
   );
   const avReceiverDiscreteZones = avSplit.discrete;
   const avReceiverClonedZones = avSplit.cloned;
+  const liftSplit = resolveUniformPair(
+    answers,
+    'motorizedLiftZones',
+    'motorizedLiftClonedZones'
+  );
+  const motorizedLiftDiscreteZones = liftSplit.discrete;
+  const motorizedLiftClonedZones = liftSplit.cloned;
   const thermostatZones = asCount(answers.thermostatZones);
   const heaterZones = asCount(answers.heaterZones);
   const fanZones = asCount(answers.fanZones);
@@ -108,20 +119,24 @@ export function calculateSystemData(answers = {}) {
 
   const climateTimerZones = heaterZones + fanZones;
   const poolAndPumpsTimerZones = poolZones + pumpZones;
-  const totalAudioSourceZones = audioDiscreteSourceZones + audioClonedSourceZones;
-  const totalVideoSourceZones = videoDiscreteSourceZones + videoClonedSourceZones;
+  const totalAudioSourceZones = audioDiscreteSourceZones + audioClonedSourceZones + audioCustomSourceZones;
+  const totalVideoSourceZones = videoDiscreteSourceZones + videoClonedSourceZones + videoCustomSourceZones;
   const totalAvReceiverZones = avReceiverDiscreteZones + avReceiverClonedZones;
   const totalDisplayZones = displayDiscreteZones + displayClonedZones;
+  const totalMotorizedLiftZones = motorizedLiftDiscreteZones + motorizedLiftClonedZones;
 
   const totalDiscreteDeviceZones = displayDiscreteZones
     + avReceiverDiscreteZones
     + audioDiscreteSourceZones
-    + videoDiscreteSourceZones;
+    + videoDiscreteSourceZones
+    + motorizedLiftDiscreteZones;
   const totalClonedDeviceZones = displayClonedZones
     + avReceiverClonedZones
     + audioClonedSourceZones
-    + videoClonedSourceZones;
-  const totalDeviceZones = totalDiscreteDeviceZones + totalClonedDeviceZones;
+    + videoClonedSourceZones
+    + motorizedLiftClonedZones;
+  const totalCustomDeviceZones = audioCustomSourceZones + videoCustomSourceZones;
+  const totalDeviceZones = totalDiscreteDeviceZones + totalClonedDeviceZones + totalCustomDeviceZones;
 
   // Timer rollups and AV device counts are included alongside their rollups
   // (legacy double count). Devices are billed once on the AV line; the extra
@@ -134,13 +149,17 @@ export function calculateSystemData(answers = {}) {
     audioZones,
     audioDiscreteSourceZones,
     audioClonedSourceZones,
+    audioCustomSourceZones,
     videoZones,
     videoDiscreteSourceZones,
     videoClonedSourceZones,
+    videoCustomSourceZones,
     avReceiverDiscreteZones,
     avReceiverClonedZones,
     displayDiscreteZones,
     displayClonedZones,
+    motorizedLiftDiscreteZones,
+    motorizedLiftClonedZones,
     totalDeviceZones,
     thermostatZones,
     heaterZones,
@@ -175,10 +194,12 @@ export function calculateSystemData(answers = {}) {
     audioZones,
     audioDiscreteSourceZones,
     audioClonedSourceZones,
+    audioCustomSourceZones,
     totalAudioSourceZones,
     videoZones,
     videoDiscreteSourceZones,
     videoClonedSourceZones,
+    videoCustomSourceZones,
     totalVideoSourceZones,
     displayDiscreteZones,
     displayClonedZones,
@@ -186,8 +207,12 @@ export function calculateSystemData(answers = {}) {
     avReceiverDiscreteZones,
     avReceiverClonedZones,
     totalAvReceiverZones,
+    motorizedLiftDiscreteZones,
+    motorizedLiftClonedZones,
+    totalMotorizedLiftZones,
     totalDiscreteDeviceZones,
     totalClonedDeviceZones,
+    totalCustomDeviceZones,
     totalDeviceZones,
     thermostatZones,
     heaterZones,

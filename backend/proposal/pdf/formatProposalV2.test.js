@@ -222,6 +222,25 @@ describe('proposal v2 wording', () => {
     ]);
   });
 
+  it('lists motorized lifts as a count-only AV row', () => {
+    const answers = validAnswers({
+      rooms: 1,
+      roomControllerCount: 1,
+      displayDiscreteZones: 1,
+      motorizedLiftZones: 2
+    });
+    answers.displayDetails = [{ type: 'TV', name: 'Living Room' }];
+    const content = buildProposalContentV2(
+      { answers },
+      calculateSystemData(answers),
+      calculateHoursData(calculateSystemData(answers), rates)
+    );
+    assert.deepEqual(content.systems.sections[1].lines, [
+      '1 x Display (TV)',
+      '2 x Motorized Lifts or Mounts'
+    ]);
+  });
+
   it('does not include v1 page titles', async () => {
     const answers = highRdAnswers();
     const def = JSON.stringify(await buildDocDefinitionV2(

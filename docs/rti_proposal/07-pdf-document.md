@@ -206,7 +206,7 @@ v2 pages:
    Pool/Pumps, Inputs/Outputs). Typed devices print `N x Type (Name)` (e.g. `1 x
    Streamer (Sonos Port)`, `1 x Display (TV)`). Audio and video zone counts print
    `N x Distributed Audio Zones` / `N x Distributed Video Zones`. Count-only
-   rows stay `N x` (lighting zones, AV receivers, I/O). Empty categories print
+   rows stay `N x` (lighting zones, AV receivers, motorized lifts or mounts, I/O). Empty categories print
    `None Included`.
 4. Controller Overview — title stays at the top. Light grey band (`#a7a9ac`)
    lists each present global type as `N x Global Controller (iPhone)` and

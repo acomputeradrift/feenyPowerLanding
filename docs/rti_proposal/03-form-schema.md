@@ -126,7 +126,7 @@ The feature that motivated the whole project (FR-5).
   fields: [
     { kind: "text", id: "name", label: "Source name", required: false },
     { kind: "select", id: "type", label: "Type", required: true,
-      options: ["Streamer", "Tuner", "Turntable", "Custom"] }
+      options: ["Streamer", "Turntable", "Custom"] }
   ]
 }
 ```
@@ -247,29 +247,38 @@ All required. The live form does not ask dealers to distinguish discrete from
 cloned devices. Count every unit, collect a type on each source and display, and
 let `systemData` derive the split used by the calculator: the first of each type
 is discrete, later units of the same type are cloned. `Custom` is the exception:
-every Custom item is discrete and is never cloned. AV receivers have no type;
+every Custom audio or video source is billed at 33 minutes and is never cloned.
+AV receivers have no type;
 the first unit is discrete and the rest are cloned. Cloned devices are still
 charged at half the discrete rate. See [04-calculations.md](04-calculations.md).
 
-- `audioZones` - Distributed Audio Zones
+- `audioZones` - Distributed Audio Zones. "Include any zones that use an
+  audio distribution matrix system or amplifier." Audio sources may be
+  zero even when this count is zero or greater.
 - `audioDiscreteSourceZones` - Audio Sources. "Include any streamers,
   turntables or other audio only sources (distributed and local)."
-- `videoZones` - Distributed Video Zones
+- `videoZones` - Distributed Video Zones. "Include any zones that use a
+  video distribution matrix system or HDBaseT transmitter and receivers."
+  A count greater than zero requires at least one video source.
 - `videoDiscreteSourceZones` - Video Sources. "Include any media players,
   cable/sat boxes or other video sources (distributed and local)."
 - `avReceiverDiscreteZones` - AV Receiver Zones. "Include theatres,
   cinemas and other rooms with a surround sound receiver."
 - `displayDiscreteZones` - Display Zones. "Include any TVs or projectors
   to be controlled."
+- `motorizedLiftZones` - Motorized Lifts or Mounts, optional, visible when
+  `displayDiscreteZones` > 0. "Include any motorized lifts or mounts
+  controlled by RTI." Zero is allowed. First unit discrete, later units
+  cloned, billed with the other device zones.
 
 Repeat groups, each immediately below its count. New name fields default
 to the item label (`Audio Source 1`, `Video Source 1`, `Display 1`). Source type
 `Other` is `Custom`.
 
 - `audioSourceDetails` over `audioDiscreteSourceZones` - name (optional), type
-  (required: Streamer / Tuner / Turntable / Custom)
+  (required: Streamer / Turntable / Custom)
 - `videoSourceDetails` over `videoDiscreteSourceZones` - name (optional), type
-  (required: Media Player / Cable or Satellite / Games Console / Custom)
+  (required: Media Player / Cable / Satellite / Games Console / Custom)
 - `displayDetails` over `displayDiscreteZones` - name (optional), type (required:
   TV / Projector)
 
@@ -320,7 +329,7 @@ All required. No repeat groups.
 ### Step 9 - Controllers
 
 - `globalControllerCount` - Global Controllers, required. "iPhone, iPad,
-  Touchscreens (controls all rooms, all sources)"
+  Touchscreens (controls all rooms, all sources)."
 
 Repeat group: `globalControllerDetails` over `globalControllerCount`, immediately
 below the count. Type select is required: iPhone / iPad / Touchscreen.
@@ -329,7 +338,7 @@ below the count. Type select is required: iPhone / iPad / Touchscreen.
   "Include this for each Global Controller (iPad, Touchscreens) that you would
   like a floorplan interface."
 - `roomControllerCount` - Single Room Controllers, required. "Handheld Remotes,
-  Touchscreens (controls single room, local sources)"
+  Touchscreens (controls single room, local sources)."
 
 Either controller count may be 0, but not both. `floorplanAddOnCount` is
 logically bounded by `globalControllerCount`. Add

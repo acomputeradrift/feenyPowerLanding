@@ -14,11 +14,11 @@ describe('first-of-type discrete, later same type cloned', () => {
   it('splits typed items with the first of each type discrete', () => {
     assert.deepEqual(
       splitByType([{ type: 'Streamer' }, { type: 'Streamer' }, { type: 'Turntable' }]),
-      { discrete: 2, cloned: 1 }
+      { discrete: 2, cloned: 1, custom: 0 }
     );
     assert.deepEqual(
       splitByType([{ type: 'Custom' }, { type: 'Custom' }, { type: 'Streamer' }]),
-      { discrete: 3, cloned: 0 }
+      { discrete: 1, cloned: 0, custom: 2 }
     );
     assert.deepEqual(splitUniformCount(3), { discrete: 1, cloned: 2 });
     assert.deepEqual(splitUniformCount(0), { discrete: 0, cloned: 0 });
@@ -53,8 +53,64 @@ describe('first-of-type discrete, later same type cloned', () => {
       audioDiscreteSourceZones: 2,
       audioSourceDetails: [{ type: 'Custom' }, { type: 'Custom' }]
     });
-    assert.equal(data.audioDiscreteSourceZones, 2);
+    assert.equal(data.audioDiscreteSourceZones, 0);
     assert.equal(data.audioClonedSourceZones, 0);
+    assert.equal(data.audioCustomSourceZones, 2);
+    assert.equal(data.totalCustomDeviceZones, 2);
+  });
+
+  it('bills each Custom audio or video source at 33 minutes', () => {
+    const customAudio = {
+      audioDiscreteSourceZones: 1,
+      audioSourceDetails: [{ type: 'Custom' }]
+    };
+    const customVideo = {
+      videoDiscreteSourceZones: 1,
+      videoSourceDetails: [{ type: 'Custom' }]
+    };
+    const twoAppleTvs = {
+      videoDiscreteSourceZones: 2,
+      videoSourceDetails: [{ type: 'Media Player' }, { type: 'Media Player' }]
+    };
+    assert.equal(lineHours(customAudio, 'totalCustomDeviceZones'), 0.6);
+    assert.equal(lineHours(customVideo, 'totalCustomDeviceZones'), 0.6);
+    assert.equal(lineHours(customAudio, 'totalDiscreteDeviceZones'), 0);
+    assert.equal(lineHours(twoAppleTvs, 'totalDiscreteDeviceZones'), 0.4);
+    assert.equal(lineHours(twoAppleTvs, 'totalClonedDeviceZones'), 0.2);
+    assert.equal(lineHours(twoAppleTvs, 'totalCustomDeviceZones'), 0);
+  });
+
+  it('treats Cable and Satellite as separate video source types', () => {
+    const both = {
+      videoDiscreteSourceZones: 2,
+      videoSourceDetails: [{ type: 'Cable' }, { type: 'Satellite' }]
+    };
+    const twoCable = {
+      videoDiscreteSourceZones: 2,
+      videoSourceDetails: [{ type: 'Cable' }, { type: 'Cable' }]
+    };
+    const data = calculateSystemData(both);
+    assert.equal(data.videoDiscreteSourceZones, 2);
+    assert.equal(data.videoClonedSourceZones, 0);
+    assert.ok(
+      lineHours(both, 'totalDiscreteDeviceZones')
+        > lineHours(twoCable, 'totalDiscreteDeviceZones')
+    );
+  });
+
+  it('bills motorized lifts like other untyped device zones', () => {
+    const one = { displayDiscreteZones: 1, displayDetails: [{ type: 'TV' }], motorizedLiftZones: 1 };
+    const two = { displayDiscreteZones: 1, displayDetails: [{ type: 'TV' }], motorizedLiftZones: 2 };
+    const none = { displayDiscreteZones: 1, displayDetails: [{ type: 'TV' }] };
+    const oneData = calculateSystemData(one);
+    const twoData = calculateSystemData(two);
+    assert.equal(oneData.motorizedLiftDiscreteZones, 1);
+    assert.equal(oneData.motorizedLiftClonedZones, 0);
+    assert.equal(twoData.motorizedLiftDiscreteZones, 1);
+    assert.equal(twoData.motorizedLiftClonedZones, 1);
+    assert.equal(lineHours(one, 'totalDiscreteDeviceZones'), 0.8);
+    assert.equal(lineHours(none, 'totalDiscreteDeviceZones'), 0.4);
+    assert.equal(lineHours(two, 'totalClonedDeviceZones'), 0.2);
   });
 
   it('treats AV receivers as one type: first discrete, rest cloned', () => {
@@ -85,7 +141,7 @@ describe('first-of-type discrete, later same type cloned', () => {
     };
     const appleTvAndHulu = {
       videoDiscreteSourceZones: 2,
-      videoSourceDetails: [{ type: 'Media Player' }, { type: 'Cable or Satellite' }]
+      videoSourceDetails: [{ type: 'Media Player' }, { type: 'Cable' }]
     };
     assert.ok(
       lineHours(appleTvAndHulu, 'totalDiscreteDeviceZones')
@@ -119,7 +175,7 @@ describe('first-of-type discrete, later same type cloned', () => {
       audioSourceDetails: [{ type: 'Streamer', name: 'Sonos' }],
       avReceiverDiscreteZones: 1,
       videoDiscreteSourceZones: 2,
-      videoSourceDetails: [{ type: 'Media Player' }, { type: 'Cable or Satellite' }],
+      videoSourceDetails: [{ type: 'Media Player' }, { type: 'Cable' }],
       displayDiscreteZones: 1,
       displayDetails: [{ type: 'TV' }]
     };

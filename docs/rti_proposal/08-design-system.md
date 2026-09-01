@@ -9,7 +9,7 @@ derived from the existing `consultation.html`, `faq.html`, `global.css`,
 Create **only** `frontend/styles/rti_proposal.css`.
 
 `global.css` and `consultation.css` are shared by the landing and FAQ pages.
-`development_continuity.md` flags them as needing protection from unrelated edits,
+`continuity.md` flags them as needing protection from unrelated edits,
 and NFR-5 makes a regression on those pages a project failure. This mirrors exactly
 how `faq.css` was added: shared styles untouched, one page-scoped file added.
 

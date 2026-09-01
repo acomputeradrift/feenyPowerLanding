@@ -22,14 +22,14 @@ recent-changes entries - are written during implementation, not here.
 
 ## Reading order
 
-For look or copy work, start at **[CONTINUITY.md](CONTINUITY.md)** and stop
+For look or copy work, start at **[agent_brief.md](agent_brief.md)** and stop
 there unless the task needs a specific spec.
 
 For behaviour or architecture, read `01` and `02` first. They establish what
 is being built and why the technology choices are what they are. Everything
 else can be read on demand.
 
-- **[CONTINUITY.md](CONTINUITY.md)** - short agent catch-up for ongoing work.
+- **[agent_brief.md](agent_brief.md)** - short agent catch-up for ongoing work.
 
 - **[00-handoff-prompt.md](00-handoff-prompt.md)** - the prompt used to start
   implementation, plus the list of open items still to resolve.
@@ -57,7 +57,7 @@ application. See [02-decisions.md](02-decisions.md) ADR-001.
 
 Before writing code, read the two existing repository-level documents:
 
-- `development_continuity.md` - repository layout, conventions, and agent rules
+- `continuity.md` - repository layout, conventions, and agent rules
 - `deployment.md` - the local-to-production sync procedure
 
 The legacy Apps Script system being replaced lives in a separate repository at
