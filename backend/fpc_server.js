@@ -8,6 +8,7 @@ import uploadRoutes from './routes/upload.js';
 import processRoute from './routes/process.js';
 import retrieveRoute from './routes/retrieve.js';
 import proposalRoutes, { handleProposalAudit } from './routes/proposal.js';
+import ideaFeedbackRoutes from './routes/ideaFeedback.js';
 import { handleProposalPdfPreview } from './proposal/pdf/preview.js';
 import { requireMongoUri } from './requireMongoUri.js';
 
@@ -72,6 +73,17 @@ app.get('/rti_proposal/', (req, res) => {
 
 app.get('/rti_proposal/preview.pdf', handleProposalPdfPreview);
 app.get('/rti_proposal/audit/:reference', handleProposalAudit);
+
+app.get('/idea-feedback', (req, res, next) => {
+    const pathOnly = req.originalUrl.split('?')[0];
+    if (pathOnly === '/idea-feedback') {
+        const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+        res.redirect('/idea-feedback/' + qs);
+        return;
+    }
+    next();
+});
+app.use('/idea-feedback', ideaFeedbackRoutes);
 
 // ✅ Redirect `/rti_diagnostics/` to `/rti_diagnostics/upload_files/`
 app.get('/rti_diagnostics/', (req, res) => {

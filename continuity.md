@@ -32,6 +32,7 @@ Unit tests (calculator, no server): `cd backend && npm test`
 | `/rti_proposal/` | RTI programming budget form → PDF + email |
 | `/rti_proposal/preview.pdf` | PDF preview — **localhost only** |
 | `/rti_proposal/audit/:reference` | Token-gated rate audit (404 unless env token set) |
+| `/idea-feedback/` | Hidden HMAC-signed confirm page for overnight idea thumbs (GET never writes) |
 | `/rti_diagnostics/upload_files/` | RTI log upload |
 | `/rti_diagnostics/process_files/` | Log analysis results |
 
@@ -82,6 +83,7 @@ Current product (`SCHEMA_VERSION` `2026.5`, `RATE_CARD_VERSION` `2026.2`): Custo
 | `PROPOSAL_EMAIL_*` | Resend config; To is always `feeny.jamie@gmail.com` |
 | `PROPOSAL_AUDIT_TOKEN` | Enables audit route when set |
 | `PROPOSAL_IP_HASH_SALT` | Optional IP hashing on submit |
+| `IDEA_FEEDBACK_HMAC` | Same value as Cursor Cloud Secret; required for `/idea-feedback/` |
 
 Local and server each have their own `.env` — not synced via git.
 

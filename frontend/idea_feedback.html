@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Idea feedback | Feeny Power &amp; Control Ltd</title>
+    <link rel="icon" href="/images/feeny-logo-512-circle-black-back.png" type="image/x-icon">
+    <link rel="stylesheet" href="/styles/idea_feedback.css">
+</head>
+<body>
+    <main class="feedback-card">
+        <p class="feedback-kicker">Morning idea</p>
+        <h1 id="idea-title">This idea</h1>
+        <p class="feedback-date" id="idea-date"></p>
+        <form method="post" action="/idea-feedback/" id="feedback-form">
+            <input type="hidden" name="b" id="field-b">
+            <input type="hidden" name="d" id="field-d">
+            <input type="hidden" name="t" id="field-t">
+            <input type="hidden" name="s" id="field-s">
+            <p class="feedback-label">Was this useful?</p>
+            <div class="feedback-thumbs" role="radiogroup" aria-label="Was this useful?">
+                <label class="thumb">
+                    <input type="radio" name="v" value="up">
+                    <span aria-hidden="true">👍</span>
+                    <span class="thumb-text">Useful</span>
+                </label>
+                <label class="thumb">
+                    <input type="radio" name="v" value="down">
+                    <span aria-hidden="true">👎</span>
+                    <span class="thumb-text">Not useful</span>
+                </label>
+            </div>
+            <label class="feedback-comment-label" for="comment">What should we change? <span>(optional)</span></label>
+            <textarea id="comment" name="comment" maxlength="2000" rows="5" placeholder="One sentence is enough."></textarea>
+            <button type="submit">Confirm</button>
+        </form>
+    </main>
+    <script src="/scripts/idea_feedback.js"></script>
+</body>
+</html>

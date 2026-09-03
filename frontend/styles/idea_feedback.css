@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,500;1,300&display=swap');
+
+body {
+    margin: 0;
+    padding: 32px 16px;
+    font-family: Rubik, Arial, Helvetica, sans-serif;
+    line-height: 1.5;
+    color: #333;
+    background: #f2f0eb;
+}
+
+.feedback-card {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 28px 24px;
+    background: #fff;
+    border: 1px solid #ddd8cf;
+}
+
+.feedback-kicker,
+.feedback-label,
+.feedback-comment-label {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #575759;
+}
+
+.feedback-comment-label span {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 300;
+    color: #a7a9ac;
+}
+
+h1 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: #1a1a1a;
+}
+
+.feedback-date {
+    margin: 0 0 20px;
+    color: #575759;
+}
+
+.feedback-thumbs {
+    display: flex;
+    gap: 16px;
+    margin: 0 0 20px;
+}
+
+.thumb {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 88px;
+    padding: 12px 10px;
+    border: 1px solid #a7a9ac;
+    background: #fff;
+    cursor: pointer;
+}
+
+.thumb input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.thumb span[aria-hidden="true"] {
+    font-size: 28px;
+    line-height: 1;
+}
+
+.thumb-text {
+    font-size: 13px;
+    color: #575759;
+}
+
+.thumb:has(input:checked) {
+    border-color: #fcb040;
+    background: #fff8ec;
+}
+
+.feedback-comment-label {
+    display: block;
+}
+
+textarea {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 20px;
+    padding: 10px;
+    border: 1px solid #a7a9ac;
+    font: inherit;
+    color: #333;
+    resize: vertical;
+}
+
+button {
+    appearance: none;
+    border: 0;
+    padding: 12px 20px;
+    background: #fcb040;
+    color: #1a1a1a;
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #ff8c00;
+}

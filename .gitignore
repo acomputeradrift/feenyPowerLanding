@@ -1,4 +1,5 @@
 .env
 backend/proposal/outbox/
 backend/proposal/email/outbox/
+backend/ideaFeedback/outbox/
 
