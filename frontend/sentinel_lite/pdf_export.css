@@ -1,0 +1,186 @@
+/* Portrait breakdown export — layout only; brand tokens come from styles.css */
+
+html.pdf-export,
+body.pdf-export {
+  margin: 0;
+  background: #fff;
+  color: var(--ink, #000);
+  font-family: Rubik, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+body.pdf-export {
+  width: 100%;
+}
+
+.pdf-export .pdf-topbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 22px 14px;
+  border-bottom: 3px solid var(--orange, #fcb040);
+  background: #fff;
+}
+
+.pdf-export .pdf-topbar .brand {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.pdf-export .pdf-changelog-title {
+  margin: 0;
+  flex: 1 1 auto;
+  max-width: 48%;
+  text-align: right;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--ink, #000);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.pdf-export .pdf-workspace {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  background: #fff;
+}
+
+.pdf-export .pdf-workspace .filter-panel,
+.pdf-export .pdf-workspace .chart-panel {
+  width: auto !important;
+  max-width: none;
+  flex: none;
+  overflow: visible;
+  border: none;
+  background: #fff;
+}
+
+.pdf-export .pdf-workspace .filter-panel {
+  border-right: 1px solid var(--line, #a7a9ac);
+  padding: 16px 16px 24px;
+}
+
+.pdf-export .pdf-workspace .chart-panel {
+  padding: 16px 16px 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Same title → content gap as the live panes */
+.pdf-export .filter-panel h2,
+.pdf-export .chart-panel h2 {
+  margin: 0 0 8px;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+/*
+  Keep the explainer *slot* (same min-height / margin as the app) but no text,
+  so Animo Group and BY KIND stay aligned with the live layout.
+*/
+.pdf-export .filter-hint,
+.pdf-export .chart-hint {
+  visibility: hidden;
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.35;
+  min-height: calc(12px * 1.35);
+}
+
+.pdf-export .chart-body {
+  margin: 0;
+  gap: 18px;
+}
+
+.pdf-export .chart-chips {
+  margin: 14px 0 0;
+  order: 3;
+}
+
+.pdf-export .filter-toggle,
+.pdf-export input[type="checkbox"],
+.pdf-export .chart-chip-clear,
+.pdf-export .chart-row {
+  pointer-events: none;
+}
+
+.pdf-export .chart-row.is-clickable {
+  cursor: default;
+}
+
+.pdf-export .chart-chips[hidden] {
+  display: none !important;
+}
+
+/*
+  Native checkbox checked state is unreliable in headless print.
+  Paint checked boxes explicitly from the checked attribute.
+*/
+.pdf-export input[type="checkbox"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  margin: 3px 0 0;
+  flex: 0 0 auto;
+  border: 1.5px solid var(--green, #39b54a);
+  border-radius: 2px;
+  background: #fff;
+  vertical-align: top;
+  position: relative;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.pdf-export input[type="checkbox"]:checked,
+.pdf-export input[type="checkbox"][checked] {
+  background: var(--green, #39b54a);
+  border-color: var(--green, #39b54a);
+}
+
+.pdf-export input[type="checkbox"]:checked::after,
+.pdf-export input[type="checkbox"][checked]::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 1.5px 1.5px 0;
+  transform: rotate(45deg);
+}
+
+.pdf-export input[type="checkbox"]:indeterminate,
+.pdf-export input[type="checkbox"][data-indeterminate="1"] {
+  background: var(--green, #39b54a);
+  border-color: var(--green, #39b54a);
+}
+
+.pdf-export input[type="checkbox"]:indeterminate::after,
+.pdf-export input[type="checkbox"][data-indeterminate="1"]::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 5px;
+  width: 7px;
+  height: 0;
+  border: 0;
+  border-top: 2px solid #fff;
+  transform: none;
+}
+
+/*
+ * Page box for the browser print dialog. Reproduces the margins the Playwright
+ * export used; print_background is covered by the print-color-adjust rules above.
+ */
+@page {
+  size: Letter portrait;
+  margin: 0.35in 0.4in;
+}

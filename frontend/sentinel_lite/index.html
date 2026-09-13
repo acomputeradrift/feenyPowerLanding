@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sentinel Lite</title>
+    <!-- Every asset is same-origin. Nothing here may reach a third party. -->
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="preload" href="./assets/fonts/Rubik-latin.woff2" as="font" type="font/woff2" crossorigin />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <img
+            class="brand-logo"
+            src="./assets/feeny-logo.png"
+            alt="Feeny Power and Control"
+            width="86"
+            height="60"
+          />
+          <div class="brand-text">
+            <h1>Sentinel Lite <span id="appVersion" class="app-version"></span></h1>
+            <p>Local two-file Apex changelog</p>
+          </div>
+        </div>
+        <div class="topbar-meta">
+          <span
+            id="usageCounter"
+            class="usage-counter is-pending"
+            title="Usage counting starts when Sentinel Lite goes live on Feeny Power"
+            >Uses —</span
+          >
+          <a
+            class="feedback-link"
+            href="mailto:feeny.jamie@gmail.com?subject=Sentinel%20Lite%20feedback"
+            >Feedback?</a
+          >
+        </div>
+      </header>
+
+      <div class="workspace">
+        <aside id="filterPanel" class="filter-panel" aria-label="Filter">
+          <h2>Filter</h2>
+          <p class="filter-hint">Hides lines on screen. Download matches what is visible.</p>
+          <div id="filterTree" class="filter-tree"></div>
+        </aside>
+        <div
+          id="filterResizer"
+          class="filter-resizer"
+          role="separator"
+          aria-orientation="vertical"
+          aria-controls="filterPanel"
+          aria-label="Resize filter pane"
+          tabindex="0"
+        ></div>
+
+        <main class="main">
+          <section class="files" aria-label="Apex files">
+            <label class="file-card">
+              <span class="file-kicker">File A · previous</span>
+              <span class="file-name" id="fileAName">No file chosen</span>
+              <input id="fileA" type="file" accept=".apex" />
+              <span class="file-pick">Load .apex</span>
+            </label>
+            <label class="file-card">
+              <span class="file-kicker">File B · current</span>
+              <span class="file-name" id="fileBName">No file chosen</span>
+              <input id="fileB" type="file" accept=".apex" />
+              <span class="file-pick">Load .apex</span>
+            </label>
+          </section>
+
+          <section class="actions">
+            <button id="compareBtn" type="button" disabled>Compare</button>
+            <p id="progressLine" class="progress" role="status"></p>
+            <div class="export-actions">
+              <button id="exportBtn" type="button" disabled>Download .xlsx</button>
+              <button id="exportPdfBtn" type="button" disabled>Download PDF</button>
+            </div>
+          </section>
+
+          <section class="changelog-box" id="changelogBox" aria-label="Change log">
+            <h2 id="changelogHeading">Change Log (A -&gt; B)</h2>
+            <div id="changelogBody">
+              <p class="empty">Choose two .apex files.</p>
+            </div>
+          </section>
+        </main>
+
+        <div
+          id="chartResizer"
+          class="chart-resizer"
+          role="separator"
+          aria-orientation="vertical"
+          aria-controls="chartPanel"
+          aria-label="Resize breakdown pane"
+          tabindex="0"
+        ></div>
+
+        <aside id="chartPanel" class="chart-panel" aria-label="Change breakdown">
+          <h2>Breakdown</h2>
+          <p id="chartHint" class="chart-hint">
+            Counts follow the filter tree. Click a bar to narrow the log; clear the chip to return.
+          </p>
+          <div id="chartBody" class="chart-body">
+            <p class="empty">Compare two files to see change counts.</p>
+          </div>
+          <div id="chartChips" class="chart-chips" hidden></div>
+        </aside>
+      </div>
+    </div>
+    <script src="./app.js"></script>
+  </body>
+</html>

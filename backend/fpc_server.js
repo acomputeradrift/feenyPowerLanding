@@ -39,6 +39,62 @@ app.use('/images', express.static(path.join(__dirname, '../frontend/images')));
 // ✅ If using locally installed xlsx, serve it too
 app.use('/scripts/xlsx', express.static(path.join(__dirname, 'node_modules/xlsx/dist')));
 
+// ✅ Sentinel Lite — static only, and that is the whole point.
+// The dealer's .apex files are compared by Pyodide inside their own browser, so
+// this server never receives one and offers no endpoint that could accept one.
+// Published from the Sentinel (Lite) repo with `tools/publish_web.py`.
+const sentinelLiteRoot = path.join(__dirname, '../frontend/sentinel_lite');
+
+app.use('/sentinel_lite', (req, res, next) => {
+    // Scoped to this path so the marketing pages keep their current headers.
+    // 'wasm-unsafe-eval' is what lets the browser compile the Pyodide module;
+    // connect-src 'self' means the page cannot phone anywhere, including us.
+    res.setHeader(
+        'Content-Security-Policy',
+        [
+            "default-src 'self'",
+            "script-src 'self' 'wasm-unsafe-eval'",
+            "worker-src 'self'",
+            "style-src 'self' 'unsafe-inline'",
+            "font-src 'self'",
+            "img-src 'self' data:",
+            "connect-src 'self'",
+            "form-action 'none'",
+            "frame-ancestors 'none'",
+        ].join('; '),
+    );
+    next();
+});
+
+app.use(
+    '/sentinel_lite',
+    express.static(sentinelLiteRoot, {
+        setHeaders: (res, filePath) => {
+            if (filePath.endsWith('.wasm')) {
+                // Express does not know this type, and the browser refuses to
+                // compile a module served as application/octet-stream.
+                res.setHeader('Content-Type', 'application/wasm');
+            }
+            // The runtime is version-pinned and republished as whole files, so it
+            // can be cached hard. The app shell must not be.
+            const pinned = filePath.includes(`${path.sep}vendor${path.sep}`);
+            res.setHeader(
+                'Cache-Control',
+                pinned ? 'public, max-age=31536000, immutable' : 'no-cache',
+            );
+        },
+    }),
+);
+
+app.get('/sentinel_lite', (req, res, next) => {
+    const pathOnly = req.originalUrl.split('?')[0];
+    if (pathOnly === '/sentinel_lite') {
+        res.redirect('/sentinel_lite/');
+        return;
+    }
+    next();
+});
+
 // ✅ Redirect root URL to /consultation/
 app.get('/', (req, res) => {
     res.redirect('/consultation');

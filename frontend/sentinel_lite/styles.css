@@ -1,0 +1,939 @@
+/*
+ * Rubik, self-hosted. A privacy-first page must not call fonts.googleapis.com on
+ * every load, and the PDF export must render with the network off. One variable
+ * file per subset covers 400/500/700 — the same file Google Fonts serves.
+ */
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url("./assets/fonts/Rubik-latin-ext.woff2") format("woff2");
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+    U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: "Rubik";
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url("./assets/fonts/Rubik-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light;
+  /* Brand */
+  --orange: #fcb040;
+  --orange-hover: #e89528;
+  --dark-grey: #58585a;
+  --light-grey: #a7a9ac;
+  --green: #39b54a;
+  --green-hover: #2f9a3e;
+  --white: #ffffff;
+  --black: #000000;
+
+  /* Roles — contrast-safe (WCAG AA body ≥ 4.5:1) */
+  --ink: var(--black);
+  --muted: var(--dark-grey); /* #58585a on white ≈ 5.9:1 */
+  --line: var(--light-grey); /* borders only — not body text on white */
+  --paper: #f4f4f5;
+  --panel: var(--white);
+  --sidebar: var(--white);
+  --accent: var(--orange);
+  --accent-hover: var(--orange-hover);
+  --accent-ink: var(--black); /* black on orange ≈ 8:1+ */
+  --success: var(--green);
+  --success-ink: var(--black); /* black on green ≈ 5.5:1+ */
+  --removed: #d64545;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: Rubik, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 22px 14px;
+  border-bottom: 3px solid var(--accent);
+  background: var(--panel);
+}
+
+.brand {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.topbar-meta {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 18px;
+}
+
+.usage-counter {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.usage-counter.is-pending {
+  opacity: 0.7;
+}
+
+.feedback-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dark-grey);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+}
+
+.feedback-link:hover {
+  color: var(--ink);
+}
+
+.brand-logo {
+  display: block;
+  flex: 0 0 auto;
+  height: 60px;
+  width: auto;
+  max-height: 60px;
+  object-fit: contain;
+  align-self: center;
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+  min-width: 0;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--ink);
+  line-height: 1.15;
+}
+
+.brand .app-version {
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0;
+}
+
+.brand p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.3;
+}
+
+.workspace {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.filter-panel {
+  --filter-width: 280px;
+  width: var(--filter-width);
+  flex-shrink: 0;
+  padding: 16px 16px 24px;
+  background: var(--sidebar);
+  border-right: 1px solid var(--line);
+  overflow: auto;
+}
+
+.filter-resizer {
+  flex: 0 0 5px;
+  margin-left: -1px;
+  cursor: col-resize;
+  background: transparent;
+  touch-action: none;
+  position: relative;
+  z-index: 2;
+}
+
+.filter-resizer::after {
+  content: "";
+  position: absolute;
+  inset: 0 -2px;
+}
+
+.filter-resizer:hover,
+.filter-resizer:focus-visible,
+.workspace.is-resizing-filter .filter-resizer {
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  outline: none;
+}
+
+.workspace.is-resizing-filter {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.workspace.is-resizing-filter .main,
+.workspace.is-resizing-filter .chart-panel,
+.workspace.is-resizing-chart .main,
+.workspace.is-resizing-chart .filter-panel {
+  pointer-events: none;
+}
+
+.chart-resizer {
+  flex: 0 0 5px;
+  margin-right: -1px;
+  cursor: col-resize;
+  background: transparent;
+  touch-action: none;
+  position: relative;
+  z-index: 2;
+}
+
+.chart-resizer::after {
+  content: "";
+  position: absolute;
+  inset: 0 -2px;
+}
+
+.chart-resizer:hover,
+.chart-resizer:focus-visible,
+.workspace.is-resizing-chart .chart-resizer {
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  outline: none;
+}
+
+.workspace.is-resizing-chart {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.filter-panel h2,
+.changelog-box h2,
+.chart-panel h2 {
+  margin: 0 0 8px;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Same reserved block under Filter / Breakdown so tree root and BY KIND share a baseline. */
+.filter-hint,
+.chart-hint {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.35;
+  min-height: calc(12px * 1.35);
+}
+
+.filter-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filter-system {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-places {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 0 0 22px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.filter-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.filter-toggle {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12px;
+  line-height: 22px;
+  cursor: pointer;
+}
+
+.filter-toggle:hover {
+  color: var(--ink);
+}
+
+.filter-parent,
+.filter-child {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.filter-parent {
+  flex: 1;
+  min-width: 0;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.filter-parent input {
+  margin-top: 2px;
+  accent-color: var(--success);
+}
+
+.filter-counts {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.filter-count-added {
+  color: var(--green);
+}
+
+.filter-count-changed {
+  color: var(--orange);
+}
+
+.filter-count-removed {
+  color: var(--removed);
+}
+
+.filter-group.is-collapsed > .filter-children,
+.filter-system.is-collapsed > .filter-places,
+li.is-collapsed > .filter-kinds,
+li.is-collapsed > .filter-grandchildren,
+li.is-collapsed > .filter-templates {
+  display: none;
+}
+
+.filter-children,
+.filter-grandchildren,
+.filter-templates {
+  margin: 0;
+  padding: 2px 0 0 22px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Sit under the header checkbox/label, past the collapse toggle. */
+.filter-kinds {
+  margin: 0;
+  padding: 2px 0 0 40px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.filter-heading > .filter-parent,
+.filter-heading > .filter-child,
+.filter-heading > .filter-source,
+.filter-heading > .filter-template {
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-child,
+.filter-source,
+.filter-template,
+.filter-kind {
+  font-size: 13px;
+}
+
+.filter-source,
+.filter-template,
+.filter-kind {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.filter-child input,
+.filter-source input,
+.filter-template input,
+.filter-kind input {
+  accent-color: var(--success);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 18px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.files {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.file-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 4px 12px;
+  padding: 12px 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.file-card:hover {
+  border-color: var(--dark-grey);
+}
+
+.file-card:focus-within {
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: 1px;
+}
+
+.file-card input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.file-kicker {
+  grid-column: 1;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.file-name {
+  grid-column: 1;
+  font-size: 14px;
+  color: var(--ink);
+  word-break: break-all;
+}
+
+.file-name.is-empty {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.file-pick {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  padding: 6px 10px;
+  border: 1px solid var(--dark-grey);
+  border-radius: 3px;
+  background: var(--white);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.file-card:hover .file-pick {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+button {
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--success);
+  border-radius: 3px;
+  background: var(--success);
+  color: var(--success-ink);
+  font: 700 13px/1 Rubik, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--green-hover);
+  border-color: var(--green-hover);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--dark-grey);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+#exportBtn,
+#exportPdfBtn {
+  background: var(--white);
+  color: var(--ink);
+  border-color: var(--dark-grey);
+}
+
+#exportBtn:hover:not(:disabled),
+#exportPdfBtn:hover:not(:disabled) {
+  background: var(--success);
+  border-color: var(--success);
+  color: var(--success-ink);
+}
+
+.export-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.progress {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.changelog-box {
+  flex: 1;
+  min-height: 220px;
+  padding: 14px 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  overflow: auto;
+}
+
+.empty {
+  margin: 0;
+  color: var(--muted);
+  font-style: italic;
+  font-size: 14px;
+}
+
+.changelog-place {
+  margin: 16px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.changelog-place:first-of-type {
+  margin-top: 8px;
+}
+
+.changelog-lines {
+  margin: 6px 0 0;
+  padding: 0 0 0 18px;
+}
+
+.changelog-line {
+  margin: 0 0 4px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink);
+  /* Skip layout and paint for offscreen rows; a long changelog scrolls at any length. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 19px;
+}
+
+.changelog-segment {
+  cursor: help;
+  position: relative;
+}
+
+.changelog-segment:hover::after,
+.changelog-verb-plain:hover::after,
+.changelog-verb:hover::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  padding: 3px 7px;
+  border-radius: 3px;
+  background: var(--dark-grey);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.changelog-line strong {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.changelog-verb-plain {
+  cursor: help;
+  position: relative;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.changelog-verb {
+  cursor: pointer;
+  position: relative;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: underline dotted;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--light-grey);
+}
+
+.changelog-verb:hover,
+.changelog-verb:focus-visible {
+  text-decoration-color: var(--dark-grey);
+  outline: none;
+}
+
+.changelog-verb[aria-expanded="true"] {
+  text-decoration-style: solid;
+  text-decoration-color: var(--dark-grey);
+}
+
+.changelog-details {
+  font-weight: 400;
+}
+
+.changelog-details.is-collapsed {
+  display: none !important;
+}
+
+.chart-panel {
+  --chart-width: 260px;
+  width: var(--chart-width);
+  flex-shrink: 0;
+  padding: 16px 16px 24px;
+  background: var(--sidebar);
+  border-left: 1px solid var(--line);
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.chart-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 14px 0 0;
+}
+
+.chart-chips[hidden] {
+  display: none !important;
+}
+
+.chart-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 2px 4px 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: var(--white);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.chart-chip-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.chart-chip-clear {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.chart-chip-clear:hover,
+.chart-chip-clear:focus-visible {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--light-grey) 35%, var(--white));
+  outline: none;
+}
+
+.chart-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 0;
+}
+
+.chart-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chart-section-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.chart-bars {
+  margin: 0;
+  padding: 0 0 0 22px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chart-row {
+  display: grid;
+  grid-template-columns: minmax(72px, 38%) 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.chart-row.is-clickable {
+  cursor: pointer;
+  border-radius: 3px;
+  margin: 0 -4px;
+  padding: 2px 4px;
+}
+
+.chart-row.is-clickable:hover,
+.chart-row.is-clickable:focus-visible {
+  background: color-mix(in srgb, var(--light-grey) 28%, var(--white));
+  outline: none;
+}
+
+.chart-row.is-active {
+  background: color-mix(in srgb, var(--orange) 16%, var(--white));
+}
+
+.chart-row.is-active:hover,
+.chart-row.is-active:focus-visible {
+  background: color-mix(in srgb, var(--orange) 22%, var(--white));
+}
+
+.chart-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.chart-track {
+  height: 12px;
+  background: color-mix(in srgb, var(--light-grey) 35%, var(--white));
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.chart-stack {
+  display: flex;
+  height: 100%;
+  min-width: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.chart-stack .chart-fill {
+  min-width: 2px;
+  border-radius: 0;
+}
+
+.chart-stack .chart-fill:first-child {
+  border-radius: 2px 0 0 2px;
+}
+
+.chart-stack .chart-fill:last-child {
+  border-radius: 0 2px 2px 0;
+}
+
+.chart-stack .chart-fill:only-child {
+  border-radius: 2px;
+}
+
+.chart-fill {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: 2px;
+  background: var(--dark-grey);
+}
+
+.chart-fill-added {
+  background: var(--green);
+}
+
+.chart-fill-changed {
+  background: var(--orange);
+}
+
+.chart-fill-removed {
+  background: var(--removed);
+}
+
+.chart-fill-subject {
+  background: var(--dark-grey);
+}
+
+.chart-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  min-width: 1.5em;
+  text-align: right;
+}
+
+.chart-count-added {
+  color: var(--green);
+}
+
+.chart-count-changed {
+  color: var(--orange);
+}
+
+.chart-count-removed {
+  color: var(--removed);
+}
+
+@media (max-width: 1100px) {
+  .chart-panel {
+    --chart-width: 220px;
+  }
+
+  .chart-row {
+    grid-template-columns: minmax(64px, 42%) 1fr auto;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 720px) {
+  .workspace {
+    flex-direction: column;
+  }
+
+  .filter-panel {
+    width: 100%;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .filter-resizer,
+  .chart-resizer {
+    display: none;
+  }
+
+  .main {
+    order: 2;
+  }
+
+  .chart-panel {
+    order: 3;
+    width: 100%;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .files {
+    grid-template-columns: 1fr;
+  }
+}
+
+/*
+ * Print host for the PDF export. Off-screen but sized like a Letter page so the
+ * breakdown lays out the same as it will on paper; a 0x0 or hidden frame gives
+ * some browsers nothing to print.
+ */
+.pdf-print-frame {
+  position: fixed;
+  left: -20000px;
+  top: 0;
+  width: 8.5in;
+  height: 11in;
+  border: 0;
+}
