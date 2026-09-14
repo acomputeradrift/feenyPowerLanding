@@ -78,9 +78,12 @@ app.use(
                 // compile a module served as application/octet-stream.
                 res.setHeader('Content-Type', 'application/wasm');
             }
-            // The runtime is version-pinned and republished as whole files, so it
-            // can be cached hard. The app shell must not be.
-            const pinned = filePath.includes(`${path.sep}vendor${path.sep}`);
+            // Pyodide + pinned dependency wheels are content-addressed in practice
+            // and safe to cache forever. The engine wheel is rewritten every ship at
+            // the same URL — immutable would pin dealers on a stale version forever.
+            const engineWheel = filePath.endsWith(`${path.sep}sentinel_lite.whl`);
+            const pinned =
+                filePath.includes(`${path.sep}vendor${path.sep}`) && !engineWheel;
             res.setHeader(
                 'Cache-Control',
                 pinned ? 'public, max-age=31536000, immutable' : 'no-cache',
