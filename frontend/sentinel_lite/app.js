@@ -597,10 +597,14 @@ function syncCloneFormState(sourceRoot, cloneRoot) {
 }
 
 /** Drop unchecked filter nodes so the PDF shows only the active cut. */
+/**
+ * PDF Filter tree shape:
+ * - keep checked / indeterminate nodes only
+ * - rooms collapsed to the place heading (no branch children)
+ * - Global expanded only through Macro List / Variable List / Drivers /
+ *   Sources (and other Global branch headings) — nothing deeper
+ */
 function prunePdfFilterTree(filterRoot) {
-  filterRoot.querySelectorAll(".is-collapsed").forEach((node) => {
-    node.classList.remove("is-collapsed");
-  });
   filterRoot.querySelectorAll(".filter-toggle").forEach((node) => node.remove());
 
   const boxes = [...filterRoot.querySelectorAll('input[type="checkbox"]')];
@@ -620,6 +624,30 @@ function prunePdfFilterTree(filterRoot) {
       host.remove();
     });
 
+  filterRoot.querySelectorAll(".filter-group").forEach((group) => {
+    const place = String(group.dataset.place || "");
+    const children = group.querySelector(":scope > .filter-children");
+    if (!children) return;
+    if (place !== "Global") {
+      children.remove();
+      return;
+    }
+    // Global: keep branch headings only — strip nested lists under each branch.
+    children.querySelectorAll(":scope > li").forEach((branchItem) => {
+      branchItem
+        .querySelectorAll(
+          ":scope > .filter-kinds, :scope > .filter-grandchildren, :scope > .filter-templates, :scope > .filter-children, :scope > ul",
+        )
+        .forEach((nested) => nested.remove());
+      branchItem.classList.remove("is-collapsed");
+    });
+    group.classList.remove("is-collapsed");
+  });
+
+  filterRoot.querySelectorAll(".filter-system").forEach((system) => {
+    system.classList.remove("is-collapsed");
+  });
+
   filterRoot
     .querySelectorAll(
       ".filter-kinds, .filter-templates, .filter-grandchildren, .filter-children, .filter-places",
@@ -633,52 +661,14 @@ function prunePdfFilterTree(filterRoot) {
 }
 
 /**
- * Fit Filter|Breakdown into the Letter content box under the topbar.
- * Uniform scale down only when needed — never widen the layout first (that
- * was over-shrinking into a postage stamp with a blank page). Clip to one page.
+ * Fit only the Filter tree into the Letter content box under the topbar.
+ * Breakdown / chart / topbar are never scaled.
  */
 function fitPdfWorkspaceToPage(doc) {
-  const sheet = doc.querySelector(".pdf-sheet");
-  const topbar = doc.querySelector(".pdf-topbar");
-  const slot = doc.querySelector(".pdf-fit-slot");
-  const workspace = doc.querySelector(".pdf-workspace");
-  if (!sheet || !slot || !workspace) return;
-
-  // Match @page content box: Letter minus 0.35in vertical / 0.4in horizontal.
-  const pageContentH = (11 - 0.35 * 2) * 96;
-  const pageContentW = (8.5 - 0.4 * 2) * 96;
-  sheet.style.width = `${pageContentW}px`;
-  sheet.style.maxHeight = `${pageContentH}px`;
-  sheet.style.overflow = "hidden";
-
-  const topbarH = topbar ? topbar.getBoundingClientRect().height : 0;
-  const slotH = Math.max(120, pageContentH - topbarH);
-  slot.style.height = `${slotH}px`;
-  slot.style.overflow = "hidden";
-
-  workspace.classList.remove("is-scaled");
-  workspace.style.removeProperty("--pdf-scale");
-  workspace.style.removeProperty("--pdf-natural-height");
-  workspace.style.removeProperty("width");
-  workspace.style.removeProperty("height");
-  workspace.style.removeProperty("margin-bottom");
-
-  // Force layout at the real content width before measuring.
-  void workspace.offsetHeight;
-  const rect = workspace.getBoundingClientRect();
-  const neededH = rect.height;
-  const neededW = rect.width || pageContentW;
-  if (!(neededH > 0) || !(neededW > 0)) return;
-
-  const scale = Math.min(1, slotH / neededH, pageContentW / neededW);
-  if (scale >= 0.999) return;
-
-  workspace.classList.add("is-scaled");
-  workspace.style.setProperty("--pdf-scale", String(scale));
-  workspace.style.setProperty("--pdf-natural-height", `${neededH}px`);
-  // Keep pre-transform layout size; transform only changes paint. Parent clips.
-  workspace.style.width = `${neededW}px`;
-  workspace.style.height = `${neededH}px`;
+  if (typeof fitPdfFilterColumnToPage !== "function") {
+    throw new Error("pdf_fit.js missing");
+  }
+  return fitPdfFilterColumnToPage(doc);
 }
 
 /** Live Filter + Breakdown panels → print HTML (Rubik + same CSS). */
@@ -732,6 +722,7 @@ function buildBreakdownPdfHtml() {
   <base href="${base}" />
   <link rel="stylesheet" href="${base}styles.css" />
   <link rel="stylesheet" href="${base}pdf_export.css" />
+  <script src="${base}pdf_fit.js"></script>
   <title>breakdown</title>
 </head>
 <body class="pdf-export">

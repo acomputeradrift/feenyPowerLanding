@@ -23,7 +23,7 @@ const PYODIDE_URL = new URL("./vendor/pyodide/", import.meta.url).href;
  * Engine wheel URL carries ?v= so a prior immutable cache cannot pin a stale
  * engine after ship (keep in sync with sentinel_lite.__version__).
  */
-const ENGINE_WHEEL_VERSION = "0.6.3";
+const ENGINE_WHEEL_VERSION = "0.6.4";
 const WHEELS = [
   "./vendor/wheels/et_xmlfile-2.0.0-py3-none-any.whl",
   "./vendor/wheels/openpyxl-3.1.5-py2.py3-none-any.whl",

@@ -68,13 +68,34 @@ body.pdf-export {
   box-sizing: border-box;
 }
 
-/*
-  Uniform paint-scale only. Do not widen layout before measuring — that reflow
-  shortens height, then scale-from-old-height crushes the page into a postage stamp.
-*/
-.pdf-export .pdf-workspace.is-scaled {
-  transform: scale(var(--pdf-scale, 1));
-  transform-origin: top left;
+/* Filter tree fit host — full column width; fit shrinks font only. */
+.pdf-export .pdf-filter-scale-host {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* PDF tree is already pruned/collapsed — keep rows compact. */
+.pdf-export .filter-system,
+.pdf-export .filter-places,
+.pdf-export .filter-group,
+.pdf-export .filter-children {
+  gap: 2px;
+}
+
+.pdf-export .filter-places {
+  padding-left: 14px;
+}
+
+.pdf-export .filter-children {
+  padding-top: 0;
+}
+
+.pdf-export .filter-tree.is-filter-fitted {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .pdf-export .pdf-workspace .filter-panel,

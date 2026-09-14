@@ -1,0 +1,142 @@
+<!doctype html>
+<html class="pdf-export" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <base href="../" />
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="stylesheet" href="../pdf_export.css" />
+    <title>pdf-filter-fit-proof</title>
+  </head>
+  <body class="pdf-export">
+    <div class="pdf-sheet">
+      <header class="pdf-topbar">
+        <div class="brand">
+          <div class="brand-text">
+            <h1>Sentinel Lite <span class="app-version">proof</span></h1>
+            <p>Local two-file Apex change summary</p>
+          </div>
+        </div>
+        <h2 class="pdf-changelog-title">Change Summary (A -&gt; B)</h2>
+      </header>
+      <div class="pdf-fit-slot">
+        <div class="pdf-workspace">
+          <aside class="filter-panel" aria-label="Filter">
+            <h2>Filter</h2>
+            <p class="filter-hint"></p>
+            <div class="filter-tree" id="tallTree"></div>
+          </aside>
+          <aside class="chart-panel" aria-label="Breakdown">
+            <h2>Breakdown</h2>
+            <p class="chart-hint"></p>
+            <div class="chart-body">
+              <div class="chart-block">
+                <h3 class="chart-block-title">BY KIND</h3>
+                <div class="chart-row">
+                  <span class="chart-row-label">Added</span>
+                  <span class="chart-row-value">308</span>
+                </div>
+                <div class="chart-row">
+                  <span class="chart-row-label">Changed</span>
+                  <span class="chart-row-value">74</span>
+                </div>
+                <div class="chart-row">
+                  <span class="chart-row-label">Removed</span>
+                  <span class="chart-row-value">71</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+    <script src="../pdf_fit.js"></script>
+    <script>
+      (function () {
+        const tree = document.getElementById("tallTree");
+        // Matches PDF prune shape: Global open through branch headings only;
+        // every room is a single collapsed heading. Tall enough to need shrink.
+        const rooms = [];
+        for (let i = 0; i < 55; i += 1) {
+          rooms.push(`Room ${i}`);
+        }
+
+        function row(className, text) {
+          const label = document.createElement("label");
+          label.className = className;
+          const box = document.createElement("input");
+          box.type = "checkbox";
+          box.checked = true;
+          box.setAttribute("checked", "checked");
+          const span = document.createElement("span");
+          span.textContent = text;
+          label.append(box, span);
+          return label;
+        }
+
+        const system = document.createElement("div");
+        system.className = "filter-system";
+        system.append(
+          row("filter-parent", "Sung Residence [405, 1291, 2303]"),
+        );
+        const places = document.createElement("div");
+        places.className = "filter-places";
+
+        const global = document.createElement("div");
+        global.className = "filter-group";
+        global.dataset.place = "Global";
+        global.append(row("filter-parent", "Global [243, 296, 1466]"));
+        const branches = document.createElement("ul");
+        branches.className = "filter-children";
+        ["Macro List", "Variable List", "Drivers", "Sources"].forEach((name) => {
+          const li = document.createElement("li");
+          li.append(row("filter-child", `${name} [1, 2, 3]`));
+          branches.append(li);
+        });
+        global.append(branches);
+        places.append(global);
+
+        rooms.forEach((name, i) => {
+          const group = document.createElement("div");
+          group.className = "filter-group";
+          group.dataset.place = name;
+          group.append(
+            row("filter-parent", `${name} [${10 + i}, ${20 + i}, ${5 + i}]`),
+          );
+          places.append(group);
+        });
+
+        system.append(places);
+        tree.append(system);
+
+        const metrics = fitPdfFilterColumnToPage(document);
+        const chartH2 = document.querySelector(".chart-panel h2");
+        const filterH2 = document.querySelector(".filter-panel h2");
+        const report = {
+          ...metrics,
+          filterTitleFontSize: filterH2
+            ? parseFloat(getComputedStyle(filterH2).fontSize)
+            : 0,
+          chartTitleFontSize: chartH2
+            ? parseFloat(getComputedStyle(chartH2).fontSize)
+            : 0,
+          chartTransform: getComputedStyle(document.querySelector(".chart-panel"))
+            .transform,
+          workspaceTransform: getComputedStyle(
+            document.querySelector(".pdf-workspace"),
+          ).transform,
+          treeTransform: getComputedStyle(
+            document.querySelector(".filter-tree"),
+          ).transform,
+          globalBranchCount: document.querySelectorAll(
+            '.filter-group[data-place="Global"] > .filter-children > li',
+          ).length,
+          roomChildLists: document.querySelectorAll(
+            '.filter-group:not([data-place="Global"]) > .filter-children',
+          ).length,
+        };
+        document.body.dataset.proof = JSON.stringify(report);
+        document.title = "PROOF:" + JSON.stringify(report);
+      })();
+    </script>
+  </body>
+</html>
