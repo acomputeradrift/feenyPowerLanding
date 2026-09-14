@@ -19,11 +19,15 @@ const PYODIDE_URL = new URL("./vendor/pyodide/", import.meta.url).href;
  * Order matters: et_xmlfile before openpyxl. These are put on sys.path and
  * imported with zipimport — all three are pure Python, so no package manager
  * runs on the page and there is no code path that could reach PyPI.
+ *
+ * Engine wheel URL carries ?v= so a prior immutable cache cannot pin a stale
+ * engine after ship (keep in sync with sentinel_lite.__version__).
  */
+const ENGINE_WHEEL_VERSION = "0.6.3";
 const WHEELS = [
   "./vendor/wheels/et_xmlfile-2.0.0-py3-none-any.whl",
   "./vendor/wheels/openpyxl-3.1.5-py2.py3-none-any.whl",
-  "./vendor/wheels/sentinel_lite.whl",
+  `./vendor/wheels/sentinel_lite.whl?v=${ENGINE_WHEEL_VERSION}`,
 ];
 
 const MOUNT = "/apex";
@@ -43,10 +47,13 @@ async function init() {
   for (const url of WHEELS) {
     const response = await fetch(new URL(url, import.meta.url));
     if (!response.ok) throw new Error(`wheel ${url}`);
-    const name = url.slice(url.lastIndexOf("/") + 1);
+    const name = url.slice(url.lastIndexOf("/") + 1).split("?")[0];
     pyodide.FS.writeFile(`/wheels/${name}`, new Uint8Array(await response.arrayBuffer()));
   }
-  const paths = WHEELS.map((url) => `"/wheels/${url.slice(url.lastIndexOf("/") + 1)}"`);
+  const paths = WHEELS.map((url) => {
+    const name = url.slice(url.lastIndexOf("/") + 1).split("?")[0];
+    return `"/wheels/${name}"`;
+  });
   pyodide.runPython(`import sys\nsys.path[:0] = [${paths.join(", ")}]`);
   engine = pyodide.pyimport("sentinel_lite.browser");
   return engine.__version__;
