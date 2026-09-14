@@ -69,23 +69,30 @@
           <section class="actions">
             <button id="compareBtn" type="button" disabled>Compare</button>
             <p id="progressLine" class="progress" role="status"></p>
+            <div class="log-tools" id="logTools" aria-label="Search and find in change summary">
+              <label class="log-tools-label" for="keywordSearch">Search:</label>
+              <input
+                id="keywordSearch"
+                type="search"
+                spellcheck="false"
+                autocomplete="off"
+                disabled
+                title="Comma-separated terms. Use +include or -exclude (e.g. Driver Command, IR, -Apple TV)."
+                placeholder="term, +keep, -drop"
+              />
+              <button id="keywordSearchClear" type="button" disabled>Clear</button>
+              <span class="log-tools-meta" id="keywordSearchCount">Count: 0</span>
+              <label class="log-tools-label" for="findQuery">Find:</label>
+              <input id="findQuery" type="search" spellcheck="false" autocomplete="off" disabled />
+              <button id="findPrev" type="button" disabled>Prev</button>
+              <button id="findNext" type="button" disabled>Next</button>
+              <button id="findClear" type="button" disabled>Clear</button>
+              <span class="log-tools-meta" id="findMatch">Match: None</span>
+            </div>
             <div class="export-actions">
               <button id="exportBtn" type="button" disabled>Download .xlsx</button>
               <button id="exportPdfBtn" type="button" disabled>Download PDF</button>
             </div>
-          </section>
-
-          <section class="log-tools" id="logTools" aria-label="Search and find in change summary">
-            <label class="log-tools-label" for="keywordSearch">Search:</label>
-            <input id="keywordSearch" type="search" spellcheck="false" autocomplete="off" disabled />
-            <button id="keywordSearchClear" type="button" disabled>Clear</button>
-            <span class="log-tools-meta" id="keywordSearchCount">Count: 0</span>
-            <label class="log-tools-label" for="findQuery">Find:</label>
-            <input id="findQuery" type="search" spellcheck="false" autocomplete="off" disabled />
-            <button id="findPrev" type="button" disabled>Prev</button>
-            <button id="findNext" type="button" disabled>Next</button>
-            <button id="findClear" type="button" disabled>Clear</button>
-            <span class="log-tools-meta" id="findMatch">Match: None</span>
           </section>
 
           <section class="changelog-box" id="changelogBox" aria-label="Change summary">

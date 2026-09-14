@@ -501,6 +501,7 @@ li.is-collapsed > .filter-templates {
 }
 
 .actions {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -555,13 +556,22 @@ button:disabled {
 }
 
 .log-tools {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 8px 10px;
+  gap: 6px 8px;
   font-size: 13px;
   color: var(--ink);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.log-tools > * {
+  pointer-events: auto;
 }
 
 .log-tools-label {
@@ -570,7 +580,7 @@ button:disabled {
 }
 
 .log-tools input[type="search"] {
-  width: 11rem;
+  width: 8rem;
   max-width: 100%;
   height: 34px;
   padding: 0 10px;

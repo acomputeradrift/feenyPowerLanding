@@ -83,8 +83,10 @@ const state = {
   result: null,
   /** Overlay on the tree: null | { type: "kind", kind } | { type: "subject", subject }. */
   chartFilter: null,
-  /** Case-insensitive substring; empty = no extra narrowing of visible lines. */
+  /** Raw Keyword Search box text (Oracle Filter syntax). */
   keywordSearch: "",
+  /** Last valid parse: { includes, excludes }. Empty lists = no keyword filter. */
+  keywordFilter: { includes: [], excludes: [] },
   /** Highlight + Prev/Next within currently shown lines (does not hide). */
   find: { query: "", matches: [], index: -1 },
   /** entry -> { key, anyTemplateKey, subject }, built once per compare. */
@@ -245,6 +247,43 @@ function appendChangelogLine(parent, line, segments) {
 
 function plainLine(line) {
   return String(line || "").replace(/\*\*(.+?)\*\*/g, "$1");
+}
+
+/**
+ * Oracle Diagnostics keyword syntax: comma-separated terms; plain/+ = include
+ * (AND); - = exclude (any hit drops the line). Case-insensitive substring.
+ * Empty input → no keyword filter. Empty tokens / lone +/- → invalid.
+ */
+function tryParseKeywordFilter(input) {
+  const raw = String(input || "").trim();
+  if (!raw) return { ok: true, includes: [], excludes: [] };
+  const includes = [];
+  const excludes = [];
+  for (const part of String(input || "").split(",")) {
+    const trimmed = part.trim();
+    if (!trimmed) return { ok: false, includes: [], excludes: [] };
+    const sign = trimmed[0];
+    if (sign === "+" || sign === "-") {
+      const term = trimmed.slice(1).trim();
+      if (!term) return { ok: false, includes: [], excludes: [] };
+      if (sign === "-") excludes.push(term.toLowerCase());
+      else includes.push(term.toLowerCase());
+    } else {
+      includes.push(trimmed.toLowerCase());
+    }
+  }
+  return { ok: true, includes, excludes };
+}
+
+function lineMatchesKeywordFilter(lineText, includes, excludes) {
+  const hay = String(lineText || "").toLowerCase();
+  for (const term of includes) {
+    if (!hay.includes(term)) return false;
+  }
+  for (const term of excludes) {
+    if (hay.includes(term)) return false;
+  }
+  return true;
 }
 
 /**
@@ -1069,9 +1108,9 @@ function passesTreeFilter(entry) {
 }
 
 function passesKeywordSearch(entry) {
-  const needle = String(state.keywordSearch || "").trim().toLowerCase();
-  if (!needle) return true;
-  return plainLine(entry.line).toLowerCase().includes(needle);
+  const filter = state.keywordFilter || { includes: [], excludes: [] };
+  if (!filter.includes.length && !filter.excludes.length) return true;
+  return lineMatchesKeywordFilter(plainLine(entry.line), filter.includes, filter.excludes);
 }
 
 function isLineVisible(entry) {
@@ -1122,6 +1161,7 @@ function clearLogToolTimers() {
 function clearSearchAndFind() {
   clearLogToolTimers();
   state.keywordSearch = "";
+  state.keywordFilter = { includes: [], excludes: [] };
   state.find = { query: "", matches: [], index: -1 };
   const keywordInput = $("keywordSearch");
   const findInput = $("findQuery");
@@ -1282,6 +1322,15 @@ function moveFind(delta) {
 
 function applyKeywordSearch(raw) {
   state.keywordSearch = String(raw || "");
+  const parsed = tryParseKeywordFilter(state.keywordSearch);
+  // Oracle only applies valid parses; keep the last good filter while typing
+  // through a transient invalid string (e.g. trailing comma).
+  if (parsed.ok) {
+    state.keywordFilter = {
+      includes: parsed.includes,
+      excludes: parsed.excludes,
+    };
+  }
   const prevHit =
     state.find.index >= 0 && state.find.matches[state.find.index]
       ? state.find.matches[state.find.index]
