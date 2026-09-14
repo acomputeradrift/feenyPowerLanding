@@ -75,6 +75,19 @@
             </div>
           </section>
 
+          <section class="log-tools" id="logTools" aria-label="Search and find in change summary">
+            <label class="log-tools-label" for="keywordSearch">Search:</label>
+            <input id="keywordSearch" type="search" spellcheck="false" autocomplete="off" disabled />
+            <button id="keywordSearchClear" type="button" disabled>Clear</button>
+            <span class="log-tools-meta" id="keywordSearchCount">Count: 0</span>
+            <label class="log-tools-label" for="findQuery">Find:</label>
+            <input id="findQuery" type="search" spellcheck="false" autocomplete="off" disabled />
+            <button id="findPrev" type="button" disabled>Prev</button>
+            <button id="findNext" type="button" disabled>Next</button>
+            <button id="findClear" type="button" disabled>Clear</button>
+            <span class="log-tools-meta" id="findMatch">Match: None</span>
+          </section>
+
           <section class="changelog-box" id="changelogBox" aria-label="Change summary">
             <h2 id="changelogHeading">Change Summary (A -&gt; B)</h2>
             <div id="changelogBody">

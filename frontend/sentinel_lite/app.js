@@ -83,6 +83,10 @@ const state = {
   result: null,
   /** Overlay on the tree: null | { type: "kind", kind } | { type: "subject", subject }. */
   chartFilter: null,
+  /** Case-insensitive substring; empty = no extra narrowing of visible lines. */
+  keywordSearch: "",
+  /** Highlight + Prev/Next within currently shown lines (does not hide). */
+  find: { query: "", matches: [], index: -1 },
   /** entry -> { key, anyTemplateKey, subject }, built once per compare. */
   meta: null,
   /** Mirror of the filter tree: { leaves: Map, places: Map }. */
@@ -90,6 +94,10 @@ const state = {
   /** Lifetime Compare Count from the Feeny Power beacon, or null if unknown. */
   compareCount: null,
 };
+
+const LOG_TOOLS_DEBOUNCE_MS = 200;
+let keywordSearchTimer = null;
+let findQueryTimer = null;
 
 const $ = (id) => document.getElementById(id);
 
@@ -1060,8 +1068,14 @@ function passesTreeFilter(entry) {
   return filter.places.get(entry.place);
 }
 
+function passesKeywordSearch(entry) {
+  const needle = String(state.keywordSearch || "").trim().toLowerCase();
+  if (!needle) return true;
+  return plainLine(entry.line).toLowerCase().includes(needle);
+}
+
 function isLineVisible(entry) {
-  return passesChartFilter(entry) && passesTreeFilter(entry);
+  return passesChartFilter(entry) && passesTreeFilter(entry) && passesKeywordSearch(entry);
 }
 
 function passesChartFilter(entry) {
@@ -1075,6 +1089,14 @@ function passesChartFilter(entry) {
   return true;
 }
 
+/** Tree + chart chip only — candidates before Keyword Search. */
+function candidateEntries() {
+  if (!state.result) return [];
+  return state.result.entries.filter(
+    (entry) => passesChartFilter(entry) && passesTreeFilter(entry),
+  );
+}
+
 /** Entries matching the filter tree only (not the chart chip). */
 function treeVisibleEntries() {
   if (!state.result) return [];
@@ -1084,6 +1106,213 @@ function treeVisibleEntries() {
 function visibleEntries() {
   if (!state.result) return [];
   return state.result.entries.filter(isLineVisible);
+}
+
+function clearLogToolTimers() {
+  if (keywordSearchTimer) {
+    clearTimeout(keywordSearchTimer);
+    keywordSearchTimer = null;
+  }
+  if (findQueryTimer) {
+    clearTimeout(findQueryTimer);
+    findQueryTimer = null;
+  }
+}
+
+function clearSearchAndFind() {
+  clearLogToolTimers();
+  state.keywordSearch = "";
+  state.find = { query: "", matches: [], index: -1 };
+  const keywordInput = $("keywordSearch");
+  const findInput = $("findQuery");
+  if (keywordInput) keywordInput.value = "";
+  if (findInput) findInput.value = "";
+  clearFindHighlights();
+  syncLogTools();
+}
+
+function logToolsEnabled() {
+  return state.compareStatus === "done" && !!state.result && candidateEntries().length > 0;
+}
+
+function syncLogTools() {
+  const enabled = logToolsEnabled();
+  const ids = [
+    "keywordSearch",
+    "keywordSearchClear",
+    "findQuery",
+    "findPrev",
+    "findNext",
+    "findClear",
+  ];
+  for (const id of ids) {
+    const node = $(id);
+    if (!node) continue;
+    if (id === "findPrev" || id === "findNext") {
+      node.disabled = !enabled || state.find.matches.length === 0;
+    } else if (id === "keywordSearchClear") {
+      node.disabled = !enabled || !String(state.keywordSearch || "").trim();
+    } else if (id === "findClear") {
+      node.disabled = !enabled || !String(state.find.query || "").trim();
+    } else {
+      node.disabled = !enabled;
+    }
+  }
+  const count = $("keywordSearchCount");
+  if (count) {
+    count.textContent = `Count: ${enabled ? visibleEntries().length : 0}`;
+  }
+  syncFindMatchLabel();
+}
+
+function syncFindMatchLabel() {
+  const label = $("findMatch");
+  if (!label) return;
+  const total = state.find.matches.length;
+  if (!String(state.find.query || "").trim() || total === 0 || state.find.index < 0) {
+    label.textContent = "Match: None";
+    return;
+  }
+  label.textContent = `Match: ${state.find.index + 1}/${total}`;
+}
+
+function clearFindHighlights() {
+  const body = $("changelogBody");
+  if (!body) return;
+  for (const hit of [...body.querySelectorAll(".find-hit")]) {
+    const parent = hit.parentNode;
+    if (!parent) continue;
+    parent.replaceChild(document.createTextNode(hit.textContent || ""), hit);
+    parent.normalize();
+  }
+  state.find.matches = [];
+}
+
+function collectFindMatches(root, query) {
+  const needle = String(query || "");
+  if (!needle || !root) return [];
+  const lowerNeedle = needle.toLowerCase();
+  const matches = [];
+  const lines = root.querySelectorAll(".changelog-line");
+  for (const line of lines) {
+    const walker = document.createTreeWalker(line, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+
+    for (const node of textNodes) {
+      const text = node.nodeValue;
+      if (!text) continue;
+      const lower = text.toLowerCase();
+      let start = 0;
+      let idx = lower.indexOf(lowerNeedle, start);
+      if (idx < 0) continue;
+      const parent = node.parentNode;
+      if (!parent) continue;
+      const frag = document.createDocumentFragment();
+      while (idx >= 0) {
+        if (idx > start) frag.append(document.createTextNode(text.slice(start, idx)));
+        const hit = el("span", "find-hit", text.slice(idx, idx + needle.length));
+        frag.append(hit);
+        matches.push(hit);
+        start = idx + needle.length;
+        idx = lower.indexOf(lowerNeedle, start);
+      }
+      if (start < text.length) frag.append(document.createTextNode(text.slice(start)));
+      parent.replaceChild(frag, node);
+    }
+  }
+  return matches;
+}
+
+function markCurrentFindHit() {
+  for (const hit of state.find.matches) {
+    hit.classList.toggle("is-current", false);
+  }
+  const current = state.find.matches[state.find.index];
+  if (!current) return;
+  current.classList.add("is-current");
+  current.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+
+/**
+ * Highlight Find matches in the currently shown changelog DOM.
+ * @param {{ resetIndex?: boolean }} [opts]
+ */
+function runFind(opts = {}) {
+  const resetIndex = !!opts.resetIndex;
+  clearFindHighlights();
+  const query = String(state.find.query || "").trim();
+  const body = $("changelogBody");
+  if (!query || !body || !logToolsEnabled()) {
+    state.find.index = -1;
+    syncLogTools();
+    return;
+  }
+  const matches = collectFindMatches(body, query);
+  state.find.matches = matches;
+  if (!matches.length) {
+    state.find.index = -1;
+  } else if (resetIndex || state.find.index < 0) {
+    state.find.index = 0;
+  } else if (state.find.index >= matches.length) {
+    state.find.index = matches.length - 1;
+  }
+  markCurrentFindHit();
+  syncLogTools();
+}
+
+/** After renderChangelog: re-apply Find without forcing index 0 unless needed. */
+function reapplyFindAfterRender(opts = {}) {
+  if (!String(state.find.query || "").trim()) {
+    state.find.matches = [];
+    state.find.index = -1;
+    syncLogTools();
+    return;
+  }
+  runFind({ resetIndex: !!opts.resetIndex });
+}
+
+function moveFind(delta) {
+  const total = state.find.matches.length;
+  if (!total) return;
+  state.find.index = (state.find.index + delta + total) % total;
+  markCurrentFindHit();
+  syncFindMatchLabel();
+}
+
+function applyKeywordSearch(raw) {
+  state.keywordSearch = String(raw || "");
+  const prevHit =
+    state.find.index >= 0 && state.find.matches[state.find.index]
+      ? state.find.matches[state.find.index]
+      : null;
+  const prevLine = prevHit && prevHit.closest(".changelog-line");
+  const prevAnchor = prevLine
+    ? { line: prevLine.textContent || "", hit: prevHit.textContent || "" }
+    : null;
+  renderChangelog({
+    resetIndex: false,
+    afterFind: () => {
+      if (!String(state.find.query || "").trim()) return;
+      const matches = state.find.matches;
+      if (!matches.length) return;
+      if (!prevAnchor) return;
+      const still = matches.findIndex((hit) => {
+        const line = hit.closest(".changelog-line");
+        return (
+          line &&
+          (line.textContent || "") === prevAnchor.line &&
+          (hit.textContent || "") === prevAnchor.hit
+        );
+      });
+      if (still < 0) runFind({ resetIndex: true });
+      else if (still !== state.find.index) {
+        state.find.index = still;
+        markCurrentFindHit();
+        syncFindMatchLabel();
+      }
+    },
+  });
 }
 
 function kindCounts(entries, place, scope) {
@@ -1432,7 +1661,7 @@ function placeholderFilter(placeKey, title, branches) {
   return group;
 }
 
-function renderChangelog() {
+function renderChangelog(findOpts = {}) {
   const heading = $("changelogHeading");
   const body = $("changelogBody");
   const a = state.fileA ? state.fileA.name : "A";
@@ -1495,6 +1724,8 @@ function renderChangelog() {
     }
   } finally {
     syncExportButton();
+    reapplyFindAfterRender({ resetIndex: !!findOpts.resetIndex });
+    if (typeof findOpts.afterFind === "function") findOpts.afterFind();
   }
 }
 
@@ -1704,6 +1935,7 @@ function onFileChange(which, input) {
   state.result = null;
   state.chartFilter = null;
   state.meta = null;
+  clearSearchAndFind();
   disableExportButtons();
   setProgress("");
   resetFilterPlaceholder();
@@ -1797,6 +2029,7 @@ async function onCompare() {
   state.compareError = null;
   state.result = null;
   state.chartFilter = null;
+  clearSearchAndFind();
   setProgress(COMPARE_STARTING);
   renderChangelog();
   renderChart();
@@ -2139,6 +2372,67 @@ async function noteCompareUsage() {
   }
 }
 
+function bindLogTools() {
+  const keywordInput = $("keywordSearch");
+  const findInput = $("findQuery");
+  if (keywordInput) {
+    keywordInput.addEventListener("input", () => {
+      clearTimeout(keywordSearchTimer);
+      keywordSearchTimer = setTimeout(() => {
+        keywordSearchTimer = null;
+        applyKeywordSearch(keywordInput.value);
+      }, LOG_TOOLS_DEBOUNCE_MS);
+    });
+  }
+  const keywordClear = $("keywordSearchClear");
+  if (keywordClear) {
+    keywordClear.addEventListener("click", () => {
+      clearTimeout(keywordSearchTimer);
+      keywordSearchTimer = null;
+      if (keywordInput) keywordInput.value = "";
+      applyKeywordSearch("");
+    });
+  }
+  if (findInput) {
+    findInput.addEventListener("input", () => {
+      clearTimeout(findQueryTimer);
+      findQueryTimer = setTimeout(() => {
+        findQueryTimer = null;
+        state.find.query = findInput.value;
+        runFind({ resetIndex: true });
+      }, LOG_TOOLS_DEBOUNCE_MS);
+    });
+    findInput.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter") return;
+      event.preventDefault();
+      clearTimeout(findQueryTimer);
+      findQueryTimer = null;
+      const next = findInput.value;
+      if (String(next) !== String(state.find.query)) {
+        state.find.query = next;
+        runFind({ resetIndex: true });
+        return;
+      }
+      moveFind(1);
+    });
+  }
+  const findPrev = $("findPrev");
+  if (findPrev) findPrev.addEventListener("click", () => moveFind(-1));
+  const findNext = $("findNext");
+  if (findNext) findNext.addEventListener("click", () => moveFind(1));
+  const findClear = $("findClear");
+  if (findClear) {
+    findClear.addEventListener("click", () => {
+      clearTimeout(findQueryTimer);
+      findQueryTimer = null;
+      if (findInput) findInput.value = "";
+      state.find.query = "";
+      runFind({ resetIndex: true });
+    });
+  }
+  syncLogTools();
+}
+
 function bind() {
   $("fileA").addEventListener("change", (event) => onFileChange("fileA", event.target));
   $("fileB").addEventListener("change", (event) => onFileChange("fileB", event.target));
@@ -2149,6 +2443,7 @@ function bind() {
   resetFilterPlaceholder();
   bindFilterResize();
   bindChartResize();
+  bindLogTools();
   renderFiles();
   renderCompareCount();
   refreshCompareCount();

@@ -554,6 +554,72 @@ button:disabled {
   justify-content: flex-end;
 }
 
+.log-tools {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 10px;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.log-tools-label {
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.log-tools input[type="search"] {
+  width: 11rem;
+  max-width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--dark-grey);
+  border-radius: 3px;
+  background: var(--white);
+  color: var(--ink);
+  font: 500 13px/1 Rubik, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.log-tools input[type="search"]:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: 1px;
+}
+
+.log-tools input[type="search"]:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.log-tools button {
+  background: var(--white);
+  color: var(--ink);
+  border-color: var(--dark-grey);
+}
+
+.log-tools button:hover:not(:disabled) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.log-tools-meta {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.find-hit {
+  background: #ffec99;
+  color: inherit;
+  border-radius: 1px;
+}
+
+.find-hit.is-current {
+  background: #ffa500;
+  color: var(--ink);
+}
+
 .progress {
   margin: 0;
   min-height: 1.2em;
