@@ -50,6 +50,15 @@ body.pdf-export {
   background: #fff;
 }
 
+/* Shrink Filter|Breakdown only when a Letter page would overflow. */
+.pdf-export .pdf-workspace.is-scaled {
+  transform: scale(var(--pdf-scale, 1));
+  transform-origin: top left;
+  width: calc(100% / var(--pdf-scale, 1));
+  /* Transform does not shrink layout flow — reclaim the unused space. */
+  margin-bottom: calc((var(--pdf-scale, 1) - 1) * var(--pdf-natural-height, 0px));
+}
+
 .pdf-export .pdf-workspace .filter-panel,
 .pdf-export .pdf-workspace .chart-panel {
   width: auto !important;
@@ -63,6 +72,11 @@ body.pdf-export {
 .pdf-export .pdf-workspace .filter-panel {
   border-right: 1px solid var(--line, #a7a9ac);
   padding: 16px 16px 24px;
+}
+
+/* Pruned PDF tree is fully expanded — no collapse affordance. */
+.pdf-export .filter-toggle {
+  display: none !important;
 }
 
 .pdf-export .pdf-workspace .chart-panel {

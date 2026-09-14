@@ -25,11 +25,10 @@ const KIND_LABELS = {
 const KIND_ORDER = ["added", "removed", "changed"];
 
 /**
- * Compare usage counter (top-right). Off until Feeny Power hosts this live.
- * Flip to true and wire persistence / site API when that ships.
+ * Lifetime Compare Count (top-right). Server-side total of Compare button hits
+ * since going live. Count-only beacon — never sends file names, paths, or lines.
  */
-const USAGE_COUNTER_LIVE = false;
-const USAGE_STORAGE_KEY = "sentinelLite.compareUses";
+const COMPARE_COUNT_PATH = "/api/sentinel_lite/compare-count";
 
 /** Display order for [added, changed, removed] badges. */
 const COUNT_KIND_ORDER = ["added", "changed", "removed"];
@@ -88,6 +87,8 @@ const state = {
   meta: null,
   /** Mirror of the filter tree: { leaves: Map, places: Map }. */
   filter: null,
+  /** Lifetime Compare Count from the Feeny Power beacon, or null if unknown. */
+  compareCount: null,
 };
 
 const $ = (id) => document.getElementById(id);
@@ -595,6 +596,66 @@ function syncCloneFormState(sourceRoot, cloneRoot) {
   });
 }
 
+/** Drop unchecked filter nodes so the PDF shows only the active cut. */
+function prunePdfFilterTree(filterRoot) {
+  filterRoot.querySelectorAll(".is-collapsed").forEach((node) => {
+    node.classList.remove("is-collapsed");
+  });
+  filterRoot.querySelectorAll(".filter-toggle").forEach((node) => node.remove());
+
+  const boxes = [...filterRoot.querySelectorAll('input[type="checkbox"]')];
+  boxes
+    .map((box) => ({ box, depth: filterCheckboxDepth(box) }))
+    .sort((a, b) => b.depth - a.depth)
+    .forEach(({ box }) => {
+      const kept =
+        box.checked ||
+        box.indeterminate ||
+        box.getAttribute("data-indeterminate") === "1";
+      if (kept) return;
+      const host = filterCheckboxHost(box);
+      if (!host || host === filterRoot || host.classList.contains("filter-panel")) {
+        return;
+      }
+      host.remove();
+    });
+
+  filterRoot
+    .querySelectorAll(
+      ".filter-kinds, .filter-templates, .filter-grandchildren, .filter-children, .filter-places",
+    )
+    .forEach((list) => {
+      if (!list.children.length) list.remove();
+    });
+  filterRoot.querySelectorAll(".filter-group").forEach((group) => {
+    if (!group.querySelector('input[type="checkbox"]')) group.remove();
+  });
+}
+
+/**
+ * Letter printable height minus the topbar. Scale the Filter|Breakdown block only
+ * when it still overflows after pruning — never upscale.
+ */
+function fitPdfWorkspaceToPage(doc) {
+  const workspace = doc.querySelector(".pdf-workspace");
+  const topbar = doc.querySelector(".pdf-topbar");
+  if (!workspace) return;
+  const pageInnerPx = (11 - 0.35 * 2) * 96;
+  const topbarH = topbar ? topbar.getBoundingClientRect().height : 0;
+  const available = Math.max(160, pageInnerPx - topbarH);
+  const needed = workspace.getBoundingClientRect().height;
+  if (!(needed > available + 0.5)) {
+    workspace.classList.remove("is-scaled");
+    workspace.style.removeProperty("--pdf-scale");
+    workspace.style.removeProperty("--pdf-natural-height");
+    return;
+  }
+  const scale = available / needed;
+  workspace.classList.add("is-scaled");
+  workspace.style.setProperty("--pdf-scale", String(scale));
+  workspace.style.setProperty("--pdf-natural-height", `${needed}px`);
+}
+
 /** Live Filter + Breakdown panels → print HTML (Rubik + same CSS). */
 function buildBreakdownPdfHtml() {
   const filterSource = $("filterPanel");
@@ -605,6 +666,7 @@ function buildBreakdownPdfHtml() {
   const filter = filterSource.cloneNode(true);
   const chart = chartSource.cloneNode(true);
   syncCloneFormState(filterSource, filter);
+  prunePdfFilterTree(filter);
   filter.removeAttribute("id");
   chart.removeAttribute("id");
 
@@ -1626,7 +1688,6 @@ function onFileChange(which, input) {
   setProgress("");
   resetFilterPlaceholder();
   renderFiles();
-  renderCompareCount();
   renderChangelog();
   renderChart();
 }
@@ -1702,12 +1763,14 @@ async function engineRequest(message, onEvent) {
 }
 
 async function onCompare() {
-  noteCompareUsage();
   if (!bothLoaded()) {
     renderChangelog();
     renderChart();
     return;
   }
+  // Count the Compare click as soon as the engine run starts. Fire-and-forget so
+  // a slow beacon never stalls extract; the topbar updates when the POST returns.
+  void noteCompareUsage();
   $("compareBtn").disabled = true;
   disableExportButtons();
   state.compareStatus = "running";
@@ -1715,7 +1778,6 @@ async function onCompare() {
   state.result = null;
   state.chartFilter = null;
   setProgress(COMPARE_STARTING);
-  renderCompareCount();
   renderChangelog();
   renderChart();
 
@@ -1724,7 +1786,6 @@ async function onCompare() {
     state.compareError = message || COMPARE_FAILED;
     state.result = null;
     setProgress("");
-    renderCompareCount();
     renderChangelog();
     renderChart();
   };
@@ -1748,7 +1809,6 @@ async function onCompare() {
         state.meta = buildEntryMeta(event.entries);
         renderFilter(event.entries);
         setProgress("");
-        renderCompareCount();
         renderChangelog();
         renderChart();
       }
@@ -1818,6 +1878,7 @@ async function onExportPdf() {
     });
     const doc = frame.contentDocument;
     if (doc && doc.fonts) await doc.fonts.ready;
+    fitPdfWorkspaceToPage(doc);
     const view = frame.contentWindow;
     // Keep the frame alive while the dialog is open; Safari returns immediately.
     view.addEventListener("afterprint", () => frame.remove(), { once: true });
@@ -1999,34 +2060,53 @@ function setAppVersion(version) {
 function renderCompareCount() {
   const slot = $("compareCount");
   if (!slot) return;
-  if (
-    state.compareStatus === "done" &&
-    state.result &&
-    Array.isArray(state.result.entries)
-  ) {
-    slot.textContent = `Compare Count: ${state.result.entries.length}`;
+  const count = state.compareCount;
+  if (Number.isFinite(count) && count >= 0) {
+    slot.textContent = `Compare Count: ${count}`;
     return;
   }
-  slot.textContent = "Compare Count:";
+  slot.textContent = "Compare Count: —";
 }
 
-function readUsageCount() {
+function parseCompareCount(payload) {
+  const raw = payload && payload.count;
+  const n = typeof raw === "number" ? raw : Number.parseInt(String(raw || ""), 10);
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
+
+async function refreshCompareCount() {
   try {
-    const raw = localStorage.getItem(USAGE_STORAGE_KEY);
-    const n = Number.parseInt(raw || "0", 10);
-    return Number.isFinite(n) && n > 0 ? n : 0;
+    const response = await fetch(COMPARE_COUNT_PATH, {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      credentials: "same-origin",
+      cache: "no-store",
+    });
+    if (!response.ok) return;
+    const next = parseCompareCount(await response.json());
+    if (next == null) return;
+    state.compareCount = next;
+    renderCompareCount();
   } catch (_error) {
-    return 0;
+    /* Local serve has no beacon — leave the dash. */
   }
 }
 
-function noteCompareUsage() {
-  if (!USAGE_COUNTER_LIVE) return;
-  const next = readUsageCount() + 1;
+async function noteCompareUsage() {
   try {
-    localStorage.setItem(USAGE_STORAGE_KEY, String(next));
+    const response = await fetch(COMPARE_COUNT_PATH, {
+      method: "POST",
+      headers: { Accept: "application/json" },
+      credentials: "same-origin",
+      cache: "no-store",
+    });
+    if (!response.ok) return;
+    const next = parseCompareCount(await response.json());
+    if (next == null) return;
+    state.compareCount = next;
+    renderCompareCount();
   } catch (_error) {
-    /* ignore quota / private mode */
+    /* Compare still runs; the topbar keeps the last known total. */
   }
 }
 
@@ -2042,6 +2122,7 @@ function bind() {
   bindChartResize();
   renderFiles();
   renderCompareCount();
+  refreshCompareCount();
   renderChangelog();
   renderChart();
   // Warm the engine now so it is ready by the time two files are picked. No
