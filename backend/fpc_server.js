@@ -9,6 +9,7 @@ import processRoute from './routes/process.js';
 import retrieveRoute from './routes/retrieve.js';
 import proposalRoutes, { handleProposalAudit } from './routes/proposal.js';
 import ideaFeedbackRoutes from './routes/ideaFeedback.js';
+import sentinelLiteCompareCountRoutes from './routes/sentinelLiteCompareCount.js';
 import { handleProposalPdfPreview } from './proposal/pdf/preview.js';
 import { requireMongoUri } from './requireMongoUri.js';
 
@@ -26,6 +27,8 @@ app.use('/api/upload', uploadRoutes);
 app.use(processRoute);
 app.use(retrieveRoute);
 app.use('/api/proposal', proposalRoutes);
+// Count-only: +1 when a dealer hits Compare. No files, names, paths, or bodies.
+app.use('/api/sentinel_lite/compare-count', sentinelLiteCompareCountRoutes);
 
 
 
@@ -48,7 +51,7 @@ const sentinelLiteRoot = path.join(__dirname, '../frontend/sentinel_lite');
 app.use('/sentinel_lite', (req, res, next) => {
     // Scoped to this path so the marketing pages keep their current headers.
     // 'wasm-unsafe-eval' is what lets the browser compile the Pyodide module;
-    // connect-src 'self' means the page cannot phone anywhere, including us.
+    // connect-src 'self' allows the count-only Compare beacon on this origin.
     res.setHeader(
         'Content-Security-Policy',
         [
