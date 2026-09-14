@@ -10,8 +10,19 @@ body.pdf-export {
   print-color-adjust: exact;
 }
 
+html.pdf-export,
 body.pdf-export {
   width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+.pdf-export .pdf-sheet {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  overflow: hidden;
 }
 
 .pdf-export .pdf-topbar {
@@ -43,20 +54,27 @@ body.pdf-export {
   word-break: break-word;
 }
 
+.pdf-export .pdf-fit-slot {
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
 .pdf-export .pdf-workspace {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: start;
   background: #fff;
+  box-sizing: border-box;
 }
 
-/* Shrink Filter|Breakdown only when a Letter page would overflow. */
+/*
+  Uniform paint-scale only. Do not widen layout before measuring — that reflow
+  shortens height, then scale-from-old-height crushes the page into a postage stamp.
+*/
 .pdf-export .pdf-workspace.is-scaled {
   transform: scale(var(--pdf-scale, 1));
   transform-origin: top left;
-  width: calc(100% / var(--pdf-scale, 1));
-  /* Transform does not shrink layout flow — reclaim the unused space. */
-  margin-bottom: calc((var(--pdf-scale, 1) - 1) * var(--pdf-natural-height, 0px));
 }
 
 .pdf-export .pdf-workspace .filter-panel,

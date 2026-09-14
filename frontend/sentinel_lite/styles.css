@@ -934,7 +934,8 @@ button:disabled {
   position: fixed;
   left: -20000px;
   top: 0;
-  width: 8.5in;
-  height: 11in;
+  /* Match @page content box so measure ≈ print. */
+  width: 7.7in;
+  height: 10.3in;
   border: 0;
 }

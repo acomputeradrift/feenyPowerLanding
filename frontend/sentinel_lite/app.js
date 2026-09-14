@@ -633,27 +633,52 @@ function prunePdfFilterTree(filterRoot) {
 }
 
 /**
- * Letter printable height minus the topbar. Scale the Filter|Breakdown block only
- * when it still overflows after pruning — never upscale.
+ * Fit Filter|Breakdown into the Letter content box under the topbar.
+ * Uniform scale down only when needed — never widen the layout first (that
+ * was over-shrinking into a postage stamp with a blank page). Clip to one page.
  */
 function fitPdfWorkspaceToPage(doc) {
-  const workspace = doc.querySelector(".pdf-workspace");
+  const sheet = doc.querySelector(".pdf-sheet");
   const topbar = doc.querySelector(".pdf-topbar");
-  if (!workspace) return;
-  const pageInnerPx = (11 - 0.35 * 2) * 96;
+  const slot = doc.querySelector(".pdf-fit-slot");
+  const workspace = doc.querySelector(".pdf-workspace");
+  if (!sheet || !slot || !workspace) return;
+
+  // Match @page content box: Letter minus 0.35in vertical / 0.4in horizontal.
+  const pageContentH = (11 - 0.35 * 2) * 96;
+  const pageContentW = (8.5 - 0.4 * 2) * 96;
+  sheet.style.width = `${pageContentW}px`;
+  sheet.style.maxHeight = `${pageContentH}px`;
+  sheet.style.overflow = "hidden";
+
   const topbarH = topbar ? topbar.getBoundingClientRect().height : 0;
-  const available = Math.max(160, pageInnerPx - topbarH);
-  const needed = workspace.getBoundingClientRect().height;
-  if (!(needed > available + 0.5)) {
-    workspace.classList.remove("is-scaled");
-    workspace.style.removeProperty("--pdf-scale");
-    workspace.style.removeProperty("--pdf-natural-height");
-    return;
-  }
-  const scale = available / needed;
+  const slotH = Math.max(120, pageContentH - topbarH);
+  slot.style.height = `${slotH}px`;
+  slot.style.overflow = "hidden";
+
+  workspace.classList.remove("is-scaled");
+  workspace.style.removeProperty("--pdf-scale");
+  workspace.style.removeProperty("--pdf-natural-height");
+  workspace.style.removeProperty("width");
+  workspace.style.removeProperty("height");
+  workspace.style.removeProperty("margin-bottom");
+
+  // Force layout at the real content width before measuring.
+  void workspace.offsetHeight;
+  const rect = workspace.getBoundingClientRect();
+  const neededH = rect.height;
+  const neededW = rect.width || pageContentW;
+  if (!(neededH > 0) || !(neededW > 0)) return;
+
+  const scale = Math.min(1, slotH / neededH, pageContentW / neededW);
+  if (scale >= 0.999) return;
+
   workspace.classList.add("is-scaled");
   workspace.style.setProperty("--pdf-scale", String(scale));
-  workspace.style.setProperty("--pdf-natural-height", `${needed}px`);
+  workspace.style.setProperty("--pdf-natural-height", `${neededH}px`);
+  // Keep pre-transform layout size; transform only changes paint. Parent clips.
+  workspace.style.width = `${neededW}px`;
+  workspace.style.height = `${neededH}px`;
 }
 
 /** Live Filter + Breakdown panels → print HTML (Rubik + same CSS). */
@@ -710,19 +735,23 @@ function buildBreakdownPdfHtml() {
   <title>breakdown</title>
 </head>
 <body class="pdf-export">
-  <header class="pdf-topbar">
-    <div class="brand">
-      <img class="brand-logo" src="${base}assets/feeny-logo.png" alt="Feeny Power and Control" width="86" height="60" />
-      <div class="brand-text">
-        <h1>Sentinel Lite <span class="app-version">${escapeHtml(version)}</span></h1>
-        <p>Local two-file Apex change summary</p>
+  <div class="pdf-sheet">
+    <header class="pdf-topbar">
+      <div class="brand">
+        <img class="brand-logo" src="${base}assets/feeny-logo.png" alt="Feeny Power and Control" width="86" height="60" />
+        <div class="brand-text">
+          <h1>Sentinel Lite <span class="app-version">${escapeHtml(version)}</span></h1>
+          <p>Local two-file Apex change summary</p>
+        </div>
+      </div>
+      <h2 class="pdf-changelog-title">${escapeHtml(changeTitle)}</h2>
+    </header>
+    <div class="pdf-fit-slot">
+      <div class="pdf-workspace">
+        ${filter.outerHTML}
+        ${chart.outerHTML}
       </div>
     </div>
-    <h2 class="pdf-changelog-title">${escapeHtml(changeTitle)}</h2>
-  </header>
-  <div class="pdf-workspace">
-    ${filter.outerHTML}
-    ${chart.outerHTML}
   </div>
 </body>
 </html>`;
@@ -1878,6 +1907,15 @@ async function onExportPdf() {
     });
     const doc = frame.contentDocument;
     if (doc && doc.fonts) await doc.fonts.ready;
+    // Two frames so font metrics + pruned tree finish layout before measure.
+    await new Promise((resolve) => {
+      const view = frame.contentWindow;
+      if (!view) {
+        resolve();
+        return;
+      }
+      view.requestAnimationFrame(() => view.requestAnimationFrame(resolve));
+    });
     fitPdfWorkspaceToPage(doc);
     const view = frame.contentWindow;
     // Keep the frame alive while the dialog is open; Safari returns immediately.
