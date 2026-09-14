@@ -53,13 +53,13 @@ const ROOM_BRANCHES = [
 ];
 
 const EMPTY_CHOOSE = "Choose two .apex files.";
-const EMPTY_READY = "Press Compare to build the change log.";
+const EMPTY_READY = "Press Compare to build the change summary.";
 const EMPTY_NONE = "No changes since last file.";
 const EMPTY_FILTER = "Nothing matches the filter.";
 const COMPARE_RUNNING = "Comparing…";
 const COMPARE_STARTING = "Extracting A…";
-const COMPARE_FAILED = "Changelog could not be computed.";
-const EXPORT_FAILED = "Changelog could not be exported.";
+const COMPARE_FAILED = "Change summary could not be computed.";
+const EXPORT_FAILED = "Change summary could not be exported.";
 const PDF_EXPORT_FAILED = "Breakdown could not be exported.";
 const XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
@@ -68,7 +68,7 @@ const ENGINE_HEAP_LIMIT = 1536 * 1024 * 1024;
 const CHART_EMPTY_HINT = "Compare two files to see change counts.";
 const CHART_NONE = "No changes since last file.";
 const CHART_FILTER_EMPTY = "Nothing matches the filter.";
-const CHART_FAILED = "Changelog could not be computed.";
+const CHART_FAILED = "Change summary could not be computed.";
 const CHART_RUNNING = "Comparing…";
 
 /** Kind bar order for the breakdown chart (matches badge colors). */
@@ -299,7 +299,7 @@ function appendChartRow(list, label, count, max, fillClass, countClass, options 
     item.classList.add("is-clickable");
     item.tabIndex = 0;
     item.setAttribute("role", "button");
-    item.title = options.title || "Filter change log";
+    item.title = options.title || "Filter change summary";
     const activate = (event) => {
       event.preventDefault();
       options.onSelect();
@@ -330,7 +330,7 @@ function appendStackedSubjectRow(list, subject, counts, max, options = {}) {
     item.classList.add("is-clickable");
     item.tabIndex = 0;
     item.setAttribute("role", "button");
-    item.title = options.title || "Filter change log";
+    item.title = options.title || "Filter change summary";
     const activate = (event) => {
       event.preventDefault();
       options.onSelect();
@@ -633,7 +633,7 @@ function buildBreakdownPdfHtml() {
   const version = versionEl ? String(versionEl.textContent || "").trim() : "";
   const prev = state.result.previousFile || "—";
   const curr = state.result.currentFile || "—";
-  const changeTitle = `Change Log (${prev} -> ${curr})`;
+  const changeTitle = `Change Summary (${prev} -> ${curr})`;
   const base = escapeHtml(assetBase());
 
   // Title drives the browser's default "Save as PDF" filename. Rubik is
@@ -653,7 +653,7 @@ function buildBreakdownPdfHtml() {
       <img class="brand-logo" src="${base}assets/feeny-logo.png" alt="Feeny Power and Control" width="86" height="60" />
       <div class="brand-text">
         <h1>Sentinel Lite <span class="app-version">${escapeHtml(version)}</span></h1>
-        <p>Local two-file Apex changelog</p>
+        <p>Local two-file Apex change summary</p>
       </div>
     </div>
     <h2 class="pdf-changelog-title">${escapeHtml(changeTitle)}</h2>
@@ -1355,7 +1355,7 @@ function renderChangelog() {
   const body = $("changelogBody");
   const a = state.fileA ? state.fileA.name : "A";
   const b = state.fileB ? state.fileB.name : "B";
-  heading.textContent = `Change Log (${a} -> ${b})`;
+  heading.textContent = `Change Summary (${a} -> ${b})`;
 
   try {
     if (!bothLoaded()) {
@@ -1626,6 +1626,7 @@ function onFileChange(which, input) {
   setProgress("");
   resetFilterPlaceholder();
   renderFiles();
+  renderCompareCount();
   renderChangelog();
   renderChart();
 }
@@ -1714,6 +1715,7 @@ async function onCompare() {
   state.result = null;
   state.chartFilter = null;
   setProgress(COMPARE_STARTING);
+  renderCompareCount();
   renderChangelog();
   renderChart();
 
@@ -1722,6 +1724,7 @@ async function onCompare() {
     state.compareError = message || COMPARE_FAILED;
     state.result = null;
     setProgress("");
+    renderCompareCount();
     renderChangelog();
     renderChart();
   };
@@ -1745,6 +1748,7 @@ async function onCompare() {
         state.meta = buildEntryMeta(event.entries);
         renderFilter(event.entries);
         setProgress("");
+        renderCompareCount();
         renderChangelog();
         renderChart();
       }
@@ -1776,7 +1780,7 @@ async function onExport() {
     let failed = false;
     await engineRequest({ cmd: "exportXlsx", payload: exportPayload(shown) }, (event) => {
       if (event.type === "xlsx") {
-        saveBlob(new Blob([event.bytes], { type: XLSX_TYPE }), "changelog.xlsx");
+        saveBlob(new Blob([event.bytes], { type: XLSX_TYPE }), "change_summary.xlsx");
         return;
       }
       failed = true;
@@ -1992,6 +1996,20 @@ function setAppVersion(version) {
   document.title = text ? `Sentinel Lite ${text}` : "Sentinel Lite";
 }
 
+function renderCompareCount() {
+  const slot = $("compareCount");
+  if (!slot) return;
+  if (
+    state.compareStatus === "done" &&
+    state.result &&
+    Array.isArray(state.result.entries)
+  ) {
+    slot.textContent = `Compare Count: ${state.result.entries.length}`;
+    return;
+  }
+  slot.textContent = "Compare Count:";
+}
+
 function readUsageCount() {
   try {
     const raw = localStorage.getItem(USAGE_STORAGE_KEY);
@@ -2002,21 +2020,6 @@ function readUsageCount() {
   }
 }
 
-function renderUsageCounter() {
-  const slot = $("usageCounter");
-  if (!slot) return;
-  if (!USAGE_COUNTER_LIVE) {
-    slot.textContent = "Uses —";
-    slot.classList.add("is-pending");
-    slot.title = "Usage counting starts when Sentinel Lite goes live on Feeny Power";
-    return;
-  }
-  const count = readUsageCount();
-  slot.textContent = `Uses ${count}`;
-  slot.classList.remove("is-pending");
-  slot.title = "Compares run on this browser";
-}
-
 function noteCompareUsage() {
   if (!USAGE_COUNTER_LIVE) return;
   const next = readUsageCount() + 1;
@@ -2025,7 +2028,6 @@ function noteCompareUsage() {
   } catch (_error) {
     /* ignore quota / private mode */
   }
-  renderUsageCounter();
 }
 
 function bind() {
@@ -2039,7 +2041,7 @@ function bind() {
   bindFilterResize();
   bindChartResize();
   renderFiles();
-  renderUsageCounter();
+  renderCompareCount();
   renderChangelog();
   renderChart();
   // Warm the engine now so it is ready by the time two files are picked. No

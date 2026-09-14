@@ -30,8 +30,8 @@ const MOUNT = "/apex";
 const PREVIOUS_PATH = `${MOUNT}/a.apex`;
 const CURRENT_PATH = `${MOUNT}/b.apex`;
 
-const COMPARE_FAILED = "Changelog could not be computed.";
-const EXPORT_FAILED = "Changelog could not be exported.";
+const COMPARE_FAILED = "Change summary could not be computed.";
+const EXPORT_FAILED = "Change summary could not be exported.";
 
 let pyodide = null;
 let engine = null;
