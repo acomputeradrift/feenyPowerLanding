@@ -6,6 +6,29 @@ There is no automated deploy pipeline. GitHub is the source of truth; the server
 
 ---
 
+## Sentinel Lite (`/sentinel_lite/`)
+
+**Do not deploy Sentinel Lite with the hand steps below.** The static bundle under
+`frontend/sentinel_lite/` is generated. Editing it here, or copying files in by
+hand, is how live drifts from the engine repo.
+
+Release path (agent runs this — Jamie does not):
+
+1. In the **Sentinel (Lite)** repo, commit `main` if needed.
+2. Run `.venv314/bin/python tools/ship.py` from that repo.
+
+`ship.py` publishes `web/` into this repo, commits **only** `frontend/sentinel_lite/`,
+pushes both remotes, pulls on the droplet, restarts PM2, and verifies the live
+wheel hash. Unrelated dirty files in this repo (e.g. ideaFeedback) are left alone.
+
+Mount and headers live in `backend/fpc_server.js` (`/sentinel_lite/`). Changing
+that mount is ordinary Feeny Power work — use the standard workflow below — but
+shipping a new engine/UI build is always `tools/ship.py` from Sentinel Lite.
+
+Live URL: https://www.feenypowerandcontrol.com/sentinel_lite/
+
+---
+
 ## Architecture
 
 ```
