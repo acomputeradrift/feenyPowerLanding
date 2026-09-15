@@ -67,16 +67,17 @@
           </section>
 
           <section class="actions">
-            <div class="actions-row actions-row-primary">
-              <button id="compareBtn" type="button" disabled>Compare</button>
-              <p id="progressLine" class="progress" role="status"></p>
-              <div class="export-actions">
-                <button id="exportBtn" type="button" disabled>Download .xlsx</button>
-                <button id="exportPdfBtn" type="button" disabled>Download PDF</button>
-              </div>
+            <button id="compareBtn" type="button" disabled>Compare</button>
+            <p id="progressLine" class="progress" role="status"></p>
+            <div class="export-actions">
+              <button id="exportBtn" type="button" disabled>Download .xlsx</button>
+              <button id="exportPdfBtn" type="button" disabled>Download PDF</button>
             </div>
+          </section>
+
+          <section class="changelog-box" id="changelogBox" aria-label="Change summary">
             <div
-              class="actions-row log-tools"
+              class="log-tools"
               id="logTools"
               aria-label="Search and find in change summary"
             >
@@ -109,11 +110,9 @@
                 <span class="log-tools-meta" id="findMatch">Match: None</span>
               </div>
             </div>
-          </section>
-
-          <section class="changelog-box" id="changelogBox" aria-label="Change summary">
+            <div class="changelog-tools-rule" aria-hidden="true"></div>
             <h2 id="changelogHeading">Change Summary (A -&gt; B)</h2>
-            <div id="changelogBody">
+            <div id="changelogBody" class="changelog-body">
               <p class="empty">Choose two .apex files.</p>
             </div>
           </section>
