@@ -1271,6 +1271,7 @@ function markCurrentFindHit() {
   const current = state.find.matches[state.find.index];
   if (!current) return;
   current.classList.add("is-current");
+  // Scroll only enough to reveal the hit; sticky actions bar stays put in .main.
   current.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 

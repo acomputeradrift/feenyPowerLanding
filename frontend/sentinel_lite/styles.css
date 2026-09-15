@@ -416,10 +416,12 @@ li.is-collapsed > .filter-templates {
 .main {
   flex: 1;
   min-width: 0;
+  min-height: 0;
   padding: 18px 22px 22px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  overflow: auto;
 }
 
 .files {
@@ -501,10 +503,20 @@ li.is-collapsed > .filter-templates {
 }
 
 .actions {
-  position: relative;
+  /* Same chrome as .file-card; sticks under the top of .main while the log scrolls. */
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 12px;
+  /* Match file-card: 12+12 pad + kicker + gap + name ≈ file row height. */
+  min-height: calc(24px + 11px * 1.3 + 4px + 14px * 1.3);
+  padding: 12px 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
 }
 
 button {
@@ -623,6 +635,8 @@ button:disabled {
   background: #ffec99;
   color: inherit;
   border-radius: 1px;
+  /* Keep the current hit clear of the sticky actions bar. */
+  scroll-margin-top: 5.5rem;
 }
 
 .find-hit.is-current {
@@ -638,12 +652,12 @@ button:disabled {
 }
 
 .changelog-box {
-  flex: 1;
+  flex: 1 0 auto;
   min-height: 220px;
   padding: 14px 16px;
   background: var(--panel);
   border: 1px solid var(--line);
-  overflow: auto;
+  overflow: visible;
 }
 
 .empty {
