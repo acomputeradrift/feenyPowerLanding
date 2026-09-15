@@ -424,7 +424,7 @@ li.is-collapsed > .filter-templates {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .files {
@@ -507,11 +507,8 @@ li.is-collapsed > .filter-templates {
 }
 
 .actions {
-  /* Same chrome as .file-card; sticks under the top of .main while the log scrolls.
-     Requires .main (not the window) to be the scrollport — see html/body/.app height lock. */
-  position: sticky;
-  top: 0;
-  z-index: 4;
+  /* Same chrome as .file-card. Stays put; only .changelog-box scrolls. */
+  position: relative;
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -641,8 +638,7 @@ button:disabled {
   background: #ffec99;
   color: inherit;
   border-radius: 1px;
-  /* Keep the current hit clear of the sticky actions bar. */
-  scroll-margin-top: 5.5rem;
+  scroll-margin-top: 0.75rem;
 }
 
 .find-hit.is-current {
@@ -658,12 +654,12 @@ button:disabled {
 }
 
 .changelog-box {
-  flex: 1 0 auto;
-  min-height: 220px;
+  flex: 1;
+  min-height: 0;
   padding: 14px 16px;
   background: var(--panel);
   border: 1px solid var(--line);
-  overflow: visible;
+  overflow: auto;
 }
 
 .empty {
