@@ -98,16 +98,19 @@ body {
   min-height: 0;
 }
 
-/* Centered in the topbar; height capped to the logo so the bar does not grow. */
+/* Centered in the topbar; outer gaps ~half of the prior 17/20px so the bar does not grow. */
 .topbar-cta {
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  top: 8px;
+  bottom: 10px;
+  transform: translateX(-50%);
   box-sizing: border-box;
-  width: min(520px, calc(100% - 420px));
-  max-height: 60px;
-  padding: 5px 14px;
+  width: min(560px, calc(100% - 380px));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3px 16px;
   border-radius: 6px;
   background: var(--dark-grey);
   color: var(--white);
@@ -128,22 +131,23 @@ body {
 
 .topbar-cta-hook {
   display: block;
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--white);
 }
 
 .topbar-cta-offer {
   display: block;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 400;
   color: #f0f0f0;
+  white-space: nowrap;
 }
 
 .topbar-cta-action {
   display: inline-block;
   margin-top: 1px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--orange);
   text-decoration: underline;
