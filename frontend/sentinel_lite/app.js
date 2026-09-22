@@ -759,9 +759,11 @@ function buildBreakdownPdfHtml() {
   const curr = state.result.currentFile || "—";
   const changeTitle = `Change Summary (${prev} -> ${curr})`;
   const base = escapeHtml(assetBase());
+  // Title drives the browser's default "Save as PDF" filename (no .pdf —
+  // Chrome / Safari append it). Rubik is self-hosted, so this document
+  // renders with no network at all.
+  const pdfTitle = escapeHtml(exportDownloadBase("change_summary"));
 
-  // Title drives the browser's default "Save as PDF" filename. Rubik is
-  // self-hosted, so this document renders with no network at all.
   return `<!DOCTYPE html>
 <html class="pdf-export" lang="en">
 <head>
@@ -770,7 +772,7 @@ function buildBreakdownPdfHtml() {
   <link rel="stylesheet" href="${base}styles.css" />
   <link rel="stylesheet" href="${base}pdf_export.css" />
   <script src="${base}pdf_fit.js"></script>
-  <title>breakdown</title>
+  <title>${pdfTitle}</title>
 </head>
 <body class="pdf-export">
   <div class="pdf-sheet">
@@ -803,6 +805,40 @@ function exportTimestamp() {
   const hh = String(now.getHours()).padStart(2, "0");
   const min = String(now.getMinutes()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+}
+
+/** Local YYYY-MM-DD for download / Save-as-PDF names. */
+function exportDateStamp() {
+  return exportTimestamp().slice(0, 10);
+}
+
+/** Apex label → safe middle segment (drop .apex; strip path/illegal chars). */
+function exportFileStem(name) {
+  const raw = String(name || "")
+    .trim()
+    .replace(/\.apex$/i, "");
+  const cleaned = raw
+    .replace(/[\/\\:\*\?"<>|\u0000-\u001f]/g, "_")
+    .replace(/\s+/g, " ")
+    .trim();
+  return cleaned || "file";
+}
+
+/**
+ * `YYYY-MM-DD_<file1>_<file2>_<kind>` — Excel uses kind `changes`, PDF
+ * `change_summary`. No extension; callers add `.xlsx` or leave bare for the
+ * print dialog title (browsers append `.pdf`).
+ */
+function exportDownloadBase(kind) {
+  const previous =
+    (state.result && state.result.previousFile) ||
+    (state.fileA && state.fileA.name) ||
+    "";
+  const current =
+    (state.result && state.result.currentFile) ||
+    (state.fileB && state.fileB.name) ||
+    "";
+  return `${exportDateStamp()}_${exportFileStem(previous)}_${exportFileStem(current)}_${kind}`;
 }
 
 function filterCheckboxLabel(box) {
@@ -2142,7 +2178,10 @@ async function onExport() {
     let failed = false;
     await engineRequest({ cmd: "exportXlsx", payload: exportPayload(shown) }, (event) => {
       if (event.type === "xlsx") {
-        saveBlob(new Blob([event.bytes], { type: XLSX_TYPE }), "change_summary.xlsx");
+        saveBlob(
+          new Blob([event.bytes], { type: XLSX_TYPE }),
+          `${exportDownloadBase("changes")}.xlsx`,
+        );
         return;
       }
       failed = true;
