@@ -2,8 +2,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 
-import { HMAC_ENV, verifyFeedback } from '../ideaFeedback/verify.js';
-import { upsertFeedback } from '../ideaFeedback/store.js';
+import { HMAC_ENV, reasonFits, toVotePayload, verifyFeedback, verifyVotesList, CATEGORIES } from '../ideaFeedback/verify.js';
+import { listFeedback, upsertFeedback } from '../ideaFeedback/store.js';
 import { sendFeedbackEmail } from '../ideaFeedback/email.js';
 
 const frontendDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../frontend');
@@ -36,6 +36,7 @@ export function createIdeaFeedbackRouter(deps = {}) {
 
   const secretFor = () => deps.secret ?? process.env[HMAC_ENV] ?? '';
   const upsert = deps.upsert || upsertFeedback;
+  const list = deps.list || listFeedback;
   const sendEmail = deps.sendEmail || sendFeedbackEmail;
   const pages = deps.frontendDir || frontendDir;
 
@@ -53,6 +54,27 @@ export function createIdeaFeedbackRouter(deps = {}) {
     res.sendFile(path.join(pages, 'idea_feedback_thanks.html'));
   });
 
+  router.get('/diag', (req, res) => {
+    res.set('X-Robots-Tag', 'noindex, nofollow');
+    res.type('text').send(secretFor() ? 'configured: yes' : 'configured: no');
+  });
+
+  router.get('/votes', async (req, res) => {
+    const listed = verifyVotesList(req.query, secretFor());
+    if (!listed) {
+      notFound(res);
+      return;
+    }
+    res.set('X-Robots-Tag', 'noindex, nofollow');
+    try {
+      const docs = await list(listed.business);
+      const votes = docs.map(toVotePayload).filter(Boolean);
+      res.json({ votes });
+    } catch {
+      res.status(500).type('text').send('Could not read feedback');
+    }
+  });
+
   router.post('/', async (req, res) => {
     if (!allowSubmit(clientIp(req))) {
       res.status(429).type('text').send('Try again later');
@@ -61,6 +83,14 @@ export function createIdeaFeedbackRouter(deps = {}) {
     const feedback = verifyFeedback(req.body, secretFor());
     if (!feedback) {
       notFound(res);
+      return;
+    }
+    if (!CATEGORIES.has(feedback.category)) {
+      res.status(400).type('text').send('Pick the topic');
+      return;
+    }
+    if (!reasonFits(feedback)) {
+      res.status(400).type('text').send('Pick a reason');
       return;
     }
     try {

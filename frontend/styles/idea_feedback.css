@@ -87,8 +87,58 @@ h1 {
     background: #fff8ec;
 }
 
+.reasons {
+    margin: 0 0 20px;
+    padding: 0;
+    border: 0;
+}
+
+.reasons legend {
+    margin: 0 0 8px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #575759;
+}
+
+.reasons label {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin: 0 0 8px;
+    font-size: 15px;
+}
+
 .feedback-comment-label {
     display: block;
+}
+
+select {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0 0 20px;
+    padding: 10px;
+    border: 1px solid #a7a9ac;
+    font: inherit;
+    color: #333;
+    background: #fff;
+}
+
+.feedback-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+button.secondary {
+    background: #fff;
+    border: 1px solid #a7a9ac;
+}
+
+button.secondary:hover {
+    background: #fff8ec;
 }
 
 textarea {

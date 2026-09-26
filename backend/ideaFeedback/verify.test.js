@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { signFeedback, verifyFeedback } from './verify.js';
+import { signFeedback, toVotePayload, verifyFeedback, verifyVotesList } from './verify.js';
 
 const secret = 'test-feedback-hmac';
 const valid = {
@@ -32,5 +32,42 @@ describe('idea feedback HMAC', () => {
     const signature = signFeedback(secret, valid);
     const down = verifyFeedback({ ...valid, vote: 'down', s: signature }, secret);
     assert.equal(down.vote, 'down');
+  });
+
+  it('keeps a reason and treats the old comment field as the note', () => {
+    const signature = signFeedback(secret, valid);
+    const verified = verifyFeedback({
+      ...valid,
+      s: signature,
+      reason: 'fits-how-i-work',
+      c: 'Sales / Email Outreach',
+      action: 'vote'
+    }, secret);
+    assert.equal(verified.reason, 'fits-how-i-work');
+    assert.equal(verified.note, 'Keep the thumbs.');
+    assert.equal(verified.category, 'Sales / Email Outreach');
+  });
+
+  it('signs the votes list with the literal date and title', () => {
+    const signature = signFeedback(secret, { business: 'fpc', date: 'votes', title: 'list' });
+    assert.deepEqual(verifyVotesList({ b: 'fpc', s: signature }, secret), { business: 'fpc' });
+    assert.equal(verifyVotesList({ b: 'fpc', s: 'nope' }, secret), null);
+  });
+
+  it('drops a bare thumb that has no reason from the votes list', () => {
+    assert.equal(toVotePayload({
+      date: '2026-09-02',
+      title: valid.title,
+      vote: 'up',
+      category: 'Sales / Email Outreach'
+    }), null);
+    assert.deepEqual(toVotePayload({
+      date: '2026-09-02',
+      title: valid.title,
+      vote: 'down',
+      reason: 'sparked',
+      category: 'Sales / Offer & Packaging',
+      note: 'led me somewhere else'
+    }).reason, 'sparked');
   });
 });

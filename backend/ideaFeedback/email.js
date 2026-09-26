@@ -19,11 +19,15 @@ function formatFromAddress(from) {
 }
 
 export function feedbackEmailCopy(feedback) {
-  const useful = feedback.vote === 'up' ? 'useful' : 'not useful';
-  const comment = feedback.comment ? `\n\n${feedback.comment}` : '';
+  let label = feedback.vote === 'up' ? 'useful' : 'not useful';
+  if (feedback.done) label = 'done';
+  else if (feedback.saved) label = 'saved for later';
+  const reason = feedback.reason ? `\nReason: ${feedback.reason}` : '';
+  const note = feedback.note || feedback.comment;
+  const comment = note ? `\n\n${note}` : '';
   return {
-    subject: `Idea feedback: ${useful} — ${feedback.date}`,
-    text: `${feedback.date} (${feedback.business})\n${feedback.title}\n\nVote: ${useful}${comment}\n`
+    subject: `Idea feedback: ${label} — ${feedback.date}`,
+    text: `${feedback.date} (${feedback.business})\n${feedback.title}\n\nVote: ${label}${reason}${comment}\n`
   };
 }
 
