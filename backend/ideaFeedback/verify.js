@@ -84,11 +84,20 @@ export function verifyVotesList(input, secret) {
   return { business };
 }
 
-export function reasonFits(parsed) {
-  if (parsed.done || parsed.saved) return true;
-  if (parsed.vote === 'up') return UP_REASONS.has(parsed.reason);
-  if (parsed.vote === 'down') return DOWN_REASONS.has(parsed.reason);
-  return false;
+export function applyChoice(parsed) {
+  const choice = parsed.reason;
+  const cleared = { ...parsed, saved: false, done: false, note: '', comment: '' };
+  if (parsed.vote === 'up' && choice === 'save-for-later') {
+    if (!parsed.note) return { error: 'Write the note' };
+    return { ...parsed, saved: true, done: false, reason: '' };
+  }
+  if (parsed.vote === 'down' && choice === 'sparked') {
+    if (!parsed.note) return { error: 'Write the note' };
+    return { ...parsed, saved: false, done: false, reason: 'sparked' };
+  }
+  if (parsed.vote === 'up' && UP_REASONS.has(choice)) return { ...cleared, reason: choice };
+  if (parsed.vote === 'down' && DOWN_REASONS.has(choice)) return { ...cleared, reason: choice };
+  return { error: 'Pick a reason' };
 }
 
 export function toVotePayload(doc) {

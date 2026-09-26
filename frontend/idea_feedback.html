@@ -6,7 +6,7 @@
     <meta name="robots" content="noindex, nofollow">
     <title>Idea feedback | Feeny Power &amp; Control Ltd</title>
     <link rel="icon" href="/images/feeny-logo-512-circle-black-back.png" type="image/x-icon">
-    <link rel="stylesheet" href="/styles/idea_feedback.css?v=20260925">
+    <link rel="stylesheet" href="/styles/idea_feedback.css?v=20260925b">
 </head>
 <body>
     <main class="feedback-card">
@@ -32,19 +32,20 @@
                 </label>
             </div>
             <fieldset class="reasons" id="reasons-up">
-                <legend>Why it was useful</legend>
-                <label><input type="radio" name="reason" value="fits-how-i-work"> Fits how I work</label>
-                <label><input type="radio" name="reason" value="new-angle"> New angle</label>
-                <label><input type="radio" name="reason" value="specific-enough"> Specific enough</label>
+                <legend>Thumbs up, pick one</legend>
+                <label><input type="radio" name="reason" value="fits-how-i-work"> Fits how I actually work</label>
+                <label><input type="radio" name="reason" value="new-angle"> A new angle I hadn't considered</label>
+                <label><input type="radio" name="reason" value="specific-enough"> Specific enough to start</label>
+                <label><input type="radio" name="reason" value="save-for-later"> Save for later</label>
             </fieldset>
             <fieldset class="reasons" id="reasons-down" hidden>
-                <legend>Why it was not useful</legend>
+                <legend>Thumbs down, pick one</legend>
                 <label><input type="radio" name="reason" value="not-how-i-work"> Not how I work</label>
-                <label><input type="radio" name="reason" value="already-doing-this"> Already doing this</label>
-                <label><input type="radio" name="reason" value="wrong-focus"> Wrong focus</label>
-                <label><input type="radio" name="reason" value="too-vague"> Too vague</label>
-                <label><input type="radio" name="reason" value="not-worth-payoff"> Not worth the payoff</label>
-                <label><input type="radio" name="reason" value="sparked"> This sparked a different idea</label>
+                <label><input type="radio" name="reason" value="already-doing-this"> Already doing this, or too close to a recent one</label>
+                <label><input type="radio" name="reason" value="wrong-focus"> Wrong focus for me right now</label>
+                <label><input type="radio" name="reason" value="too-vague"> Too vague — I couldn't start it Monday</label>
+                <label><input type="radio" name="reason" value="not-worth-payoff"> Fine idea, not worth the payoff</label>
+                <label><input type="radio" name="reason" value="sparked"> Wrong, but it gave me an idea</label>
             </fieldset>
             <div id="topic-row">
                 <label class="feedback-comment-label" for="field-c">Which topic was this?</label>
@@ -64,15 +65,13 @@
                     <option>Operations / Invoice &amp; Collections</option>
                 </select>
             </div>
-            <label class="feedback-comment-label" for="note">Note <span>(optional)</span></label>
-            <textarea id="note" name="note" maxlength="2000" rows="4" placeholder="What to keep, or what this sparked."></textarea>
-            <div class="feedback-actions">
-                <button type="submit" name="action" value="vote">Confirm</button>
-                <button type="submit" name="action" value="saved" class="secondary">Save for later</button>
-                <button type="submit" name="action" value="done" class="secondary">I did this</button>
+            <div id="note-row" hidden>
+                <label class="feedback-comment-label" for="note">Note</label>
+                <textarea id="note" name="note" maxlength="2000" rows="4"></textarea>
             </div>
+            <button type="submit">Confirm</button>
         </form>
     </main>
-    <script src="/scripts/idea_feedback.js?v=20260925"></script>
+    <script src="/scripts/idea_feedback.js?v=20260925b"></script>
 </body>
 </html>

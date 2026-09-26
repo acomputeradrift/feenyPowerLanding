@@ -4,6 +4,9 @@
     const date = params.get('d') || '';
     const vote = params.get('v') === 'down' ? 'down' : 'up';
     const form = document.getElementById('feedback-form');
+    const noteRow = document.getElementById('note-row');
+    const note = document.getElementById('note');
+    const NOTE_CHOICES = { 'save-for-later': true, sparked: true };
 
     const titleEl = document.getElementById('idea-title');
     const dateEl = document.getElementById('idea-date');
@@ -33,6 +36,21 @@
         if (topicRow) topicRow.hidden = true;
     }
 
+    function selectedReason() {
+        const picked = form && form.querySelector('input[name="reason"]:checked:not(:disabled)');
+        return picked ? picked.value : '';
+    }
+
+    function showNote() {
+        const open = Boolean(NOTE_CHOICES[selectedReason()]);
+        if (noteRow) noteRow.hidden = !open;
+        if (note) {
+            note.disabled = !open;
+            note.required = open;
+            if (!open) note.value = '';
+        }
+    }
+
     function showReasons(side) {
         ['up', 'down'].forEach(function (name) {
             const box = document.getElementById('reasons-' + name);
@@ -44,6 +62,7 @@
                 if (!on) input.checked = false;
             });
         });
+        showNote();
     }
 
     function selectVote(side) {
@@ -57,15 +76,15 @@
             showReasons(input.value);
         });
     });
+    document.querySelectorAll('input[name="reason"]').forEach(function (input) {
+        input.addEventListener('change', showNote);
+    });
     selectVote(vote);
 
     if (!form) return;
-    form.querySelectorAll('button[type="submit"]').forEach(function (button) {
-        button.addEventListener('click', function () {
-            const needsReason = button.value === 'vote';
-            form.querySelectorAll('input[name="reason"]').forEach(function (input) {
-                input.required = needsReason && !input.disabled;
-            });
+    form.addEventListener('submit', function () {
+        form.querySelectorAll('input[name="reason"]').forEach(function (input) {
+            input.required = !input.disabled;
         });
     });
 }());

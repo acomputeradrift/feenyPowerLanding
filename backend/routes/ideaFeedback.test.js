@@ -82,7 +82,8 @@ describe('idea feedback routes', () => {
     assert.equal(saved.length, 1);
     assert.equal(saved[0].vote, 'down');
     assert.equal(saved[0].reason, 'too-vague');
-    assert.equal(saved[0].note, 'Wrong leaf.');
+    assert.equal(saved[0].note, '');
+    assert.equal(saved[0].saved, false);
   });
 
   it('refuses a thumb that has no reason', async () => {
@@ -105,7 +106,25 @@ describe('idea feedback routes', () => {
     assert.equal(saved.length, 1);
   });
 
-  it('lists signed votes and accepts save-for-later without a reason', async () => {
+  it('opens a note only for save-for-later and for a sparked idea', async () => {
+    const bareSpark = new URLSearchParams({
+      v: 'down',
+      b: 'fpc',
+      d: '2026-09-02',
+      t: title,
+      s: query.get('s'),
+      c: 'Marketing / Social Media Content',
+      reason: 'sparked'
+    });
+    const refused = await fetch(`${baseUrl}/idea-feedback/`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: bareSpark,
+      redirect: 'manual'
+    });
+    assert.equal(refused.status, 400);
+    assert.equal(saved.length, 1);
+
     const save = new URLSearchParams({
       v: 'up',
       b: 'fpc',
@@ -113,8 +132,8 @@ describe('idea feedback routes', () => {
       t: 'A later card',
       s: signFeedback(secret, { business: 'fpc', date: '2026-09-03', title: 'A later card' }),
       c: 'Sales / Email Outreach',
-      note: 'Hold for the next dealer block.',
-      action: 'saved'
+      reason: 'save-for-later',
+      note: 'Hold for the next dealer block.'
     });
     const posted = await fetch(`${baseUrl}/idea-feedback/`, {
       method: 'POST',
@@ -129,6 +148,7 @@ describe('idea feedback routes', () => {
     const payload = await listed.json();
     const savedRow = payload.votes.find((row) => row.date === '2026-09-03');
     assert.equal(savedRow.saved, true);
+    assert.equal(savedRow.reason, undefined);
     assert.equal(savedRow.note, 'Hold for the next dealer block.');
     assert.equal(savedRow.category, 'Sales / Email Outreach');
     const bad = await fetch(`${baseUrl}/idea-feedback/votes?b=fpc&s=deadbeef`);

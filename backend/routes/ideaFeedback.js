@@ -2,7 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 
-import { HMAC_ENV, reasonFits, toVotePayload, verifyFeedback, verifyVotesList, CATEGORIES } from '../ideaFeedback/verify.js';
+import { HMAC_ENV, applyChoice, toVotePayload, verifyFeedback, verifyVotesList, CATEGORIES } from '../ideaFeedback/verify.js';
 import { listFeedback, upsertFeedback } from '../ideaFeedback/store.js';
 import { sendFeedbackEmail } from '../ideaFeedback/email.js';
 
@@ -89,12 +89,13 @@ export function createIdeaFeedbackRouter(deps = {}) {
       res.status(400).type('text').send('Pick the topic');
       return;
     }
-    if (!reasonFits(feedback)) {
-      res.status(400).type('text').send('Pick a reason');
+    const choice = applyChoice(feedback);
+    if (choice.error) {
+      res.status(400).type('text').send(choice.error);
       return;
     }
     try {
-      await upsert(feedback);
+      await upsert(choice);
     } catch {
       res.status(500).type('text').send('Could not save feedback');
       return;
