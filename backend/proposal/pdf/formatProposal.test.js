@@ -10,9 +10,9 @@ import {
   buildProposalContent
 } from './formatProposal.js';
 import { generateProposalPdf, proposalPdfFilename, buildDocDefinition } from './proposalDocument.js';
-import { calculateSystemData } from '../calc/systemData.js';
-import { calculateHoursData } from '../calc/hoursData.js';
-import { rates } from '../calc/rates.js';
+import { calculateSystemData } from '../calc/legacy/systemData.js';
+import { calculateHoursData } from '../calc/legacy/hoursData.js';
+import { rates } from '../calc/legacy/rates.js';
 import { validAnswers } from '../fixtures/validAnswers.js';
 
 describe('proposal wording (legacy formatters)', () => {

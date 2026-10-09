@@ -1,6 +1,7 @@
 import { timingSafeEqual } from 'node:crypto';
 
 import { ProposalSubmission } from '../models/ProposalSubmission.js';
+import { summaryHoursFromBreakdown } from './calc/hoursData.js';
 
 const SECTION_LABELS = {
   lightingShading: 'Lighting/Shading',
@@ -59,7 +60,15 @@ function formatSubmittedAt(value) {
 
 function formatNumber(value) {
   if (value == null || value === '') return '';
-  return String(value);
+  const n = Number(value);
+  if (!Number.isFinite(n)) return String(value);
+  return String(Math.round(n * 10000) / 10000);
+}
+
+function isEffortModel(submission) {
+  if (submission?.rateCardVersion === '2026.3') return true;
+  return Array.isArray(submission?.lineItems)
+    && submission.lineItems.some((item) => item && item.programmingMinutes != null);
 }
 
 function sectionLabel(section) {
@@ -85,6 +94,106 @@ function roundingChanged(item) {
 }
 
 export function renderAuditHtml(submission) {
+  if (isEffortModel(submission)) return renderEffortAuditHtml(submission);
+  return renderLegacyAuditHtml(submission);
+}
+
+function renderEffortAuditHtml(submission) {
+  const reference = escapeHtml(submission.reference || '');
+  const submittedAt = escapeHtml(formatSubmittedAt(submission.submittedAt));
+  const rateCardVersion = escapeHtml(submission.rateCardVersion || '');
+  const schemaVersion = escapeHtml(submission.schemaVersion || '');
+  const groups = groupLineItems(submission.lineItems);
+  const sectionHours = submission.sectionHours || {};
+  const summary = summaryHoursFromBreakdown(submission.breakdownHours);
+
+  const groupRows = groups.map((group) => {
+    const label = escapeHtml(sectionLabel(group.section));
+    const sectionId = escapeHtml(group.section);
+    const itemRows = group.items.map((item) => `<tr data-line-id="${escapeHtml(item.id || '')}">
+        <td>${escapeHtml(item.label || item.id || '')}</td>
+        <td data-field="count">${escapeHtml(formatNumber(item.count))}</td>
+        <td data-field="programmingMinutes">${escapeHtml(formatNumber(item.programmingMinutes))}</td>
+        <td data-field="graphicsMinutes">${escapeHtml(formatNumber(item.graphicsMinutes))}</td>
+        <td data-field="hours">${escapeHtml(formatNumber(item.hours))}</td>
+      </tr>`).join('\n');
+    const subtotal = escapeHtml(formatNumber(sectionHours[group.section]));
+    return `<tr class="section-head"><th colspan="5">${label}</th></tr>
+${itemRows}
+<tr class="section-subtotal" data-section="${sectionId}">
+  <th colspan="4">${label} subtotal</th>
+  <td data-field="sectionHours">${subtotal}</td>
+</tr>`;
+  }).join('\n');
+
+  const breakdown = submission.breakdownHours || {};
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Proposal audit ${reference}</title>
+  <style>
+    body { font-family: Rubik, Helvetica, Arial, sans-serif; color: #333; background: #f4f4f4; margin: 0; padding: 24px; line-height: 1.5; }
+    h1 { font-size: 1.4rem; margin: 0 0 12px; }
+    dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; margin: 0 0 24px; }
+    dt { color: #575759; }
+    dd { margin: 0; }
+    table { border-collapse: collapse; width: 100%; max-width: 960px; background: #fff; margin: 0 0 24px; }
+    th, td { border: 1px solid #a7a9ac; padding: 8px 10px; text-align: left; }
+    td[data-field], th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+    thead th { background: #575759; color: #fff; }
+    .section-head th { background: #a7a9ac; color: #222; }
+    .section-subtotal th, .section-subtotal td { background: #f1b353; }
+    tfoot th, tfoot td { background: #575759; color: #fff; }
+  </style>
+</head>
+<body>
+  <h1>Proposal audit</h1>
+  <dl>
+    <dt>Reference</dt><dd>${reference}</dd>
+    <dt>Submitted</dt><dd>${submittedAt}</dd>
+    <dt>Rate card</dt><dd>${rateCardVersion}</dd>
+    <dt>Schema</dt><dd>${schemaVersion}</dd>
+  </dl>
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Count</th>
+        <th>Programming minutes</th>
+        <th>Graphics minutes</th>
+        <th>Hours</th>
+      </tr>
+    </thead>
+    <tbody>
+${groupRows}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th colspan="4">Project total</th>
+        <td data-field="totalProjectHours">${escapeHtml(formatNumber(submission.totalProjectHours))}</td>
+      </tr>
+    </tfoot>
+  </table>
+  <table>
+    <thead>
+      <tr><th>Breakdown</th><th>Hours</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Overhead</td><td data-field="breakdownOverhead">${escapeHtml(formatNumber(breakdown.overhead))}</td></tr>
+      <tr><td>Programming</td><td data-field="breakdownProgramming">${escapeHtml(formatNumber(breakdown.programming))}</td></tr>
+      <tr><td>Graphics</td><td data-field="breakdownGraphics">${escapeHtml(formatNumber(breakdown.graphics))}</td></tr>
+      <tr><td>Total Hours</td><td data-field="billedHours">${escapeHtml(formatNumber(summary.total))}</td></tr>
+    </tbody>
+  </table>
+</body>
+</html>
+`;
+}
+
+function renderLegacyAuditHtml(submission) {
   const reference = escapeHtml(submission.reference || '');
   const submittedAt = escapeHtml(formatSubmittedAt(submission.submittedAt));
   const rateCardVersion = escapeHtml(submission.rateCardVersion || '');

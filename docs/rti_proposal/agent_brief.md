@@ -140,8 +140,8 @@ Built and live on `master`. Do not reimplement. The Google Form AutoProposal is 
 - Audit route is disabled until `PROPOSAL_AUDIT_TOKEN` is set on the **server** `.env`.
 - FAQ “get started” answer links `/rti_proposal/`. The Google Form is gone from the public site and is not coming back.
 - Backup/retention was deferred on purpose.
-- `SCHEMA_VERSION` is `2026.5`. `RATE_CARD_VERSION` is `2026.2`.
-- Custom audio/video is 33 minutes and never cloned. Video types include Box and Blu-ray Player. The console label is *Game Console*. Tuner is gone. Video zones require a video source. Motorized lifts sit under displays.
+- `SCHEMA_VERSION` is `2026.6`. `RATE_CARD_VERSION` is `2026.3`.
+- Hours are Overhead, Programming and Graphics (see [09-effort-model.md](09-effort-model.md)). Global controller types are Phone, Tablet, Large Touchscreen and Small Touchscreen. Custom audio/video is never cloned. Video types include Box and Blu-ray Player. The console label is *Game Console*. Tuner is gone. Video zones require a video source. Motorized lifts sit under displays. Displays are always discrete.
 
 **Live email sends the five-page v2 PDF.**
 
@@ -152,14 +152,14 @@ Five-page layout. Local preview: http://localhost:3000/rti_proposal/preview.pdf 
 Files: `backend/proposal/pdf/formatProposalV2.js`, `proposalDocumentV2.js`, `preview.js`, plus their tests. Route is `GET /rti_proposal/preview.pdf` in `fpc_server.js`. Spec notes: [07-pdf-document.md](07-pdf-document.md).
 
 1. **Cover** — no tagline. Feeny logo `200×150` (just larger than the visible RTI mark; the RTI PNG is padded). Contractor name 16pt. *Prepared for:* and *An* / *Proposal* are light grey `#a7a9ac` at 11pt. Orange band is PO / client / location only (no timeline or hours). RTI logo stays below the band at `480×76`, with *An* above and *Proposal* below.
-2. **Project Overview** — 22pt title. Left-aligned dark grey band. *Your project covers N rooms (Room 1, Room 2, …) and includes integration with … systems.* Controllers *control every room / system*. *Additional Info:* on its own line, then the notes (omit the block if blank). Commissioning date last.
+2. **Project Overview** — 22pt title. Left-aligned dark grey band. *Your project covers N interior spaces (Room 1, Room 2, …) and M exterior spaces (Front Patio, …), and includes integration with … systems.* With no exterior spaces the sentence stays *N rooms* and omits the exterior clause. Controllers *control every room / system*. *Additional Info:* on its own line, then the notes (omit the block if blank). Commissioning date last.
 3. **Controlled Systems Overview** — 22pt title. Sources `N x Type (Name)` (e.g. `1 x Streamer (Sonos Port)`). Displays grouped by type: `N x Display (TV)`, `N x Display (Projector)`. Audio/video zone counts are `N x Distributed Audio Zones` / `N x Distributed Video Zones`. Count-only rows stay `N x` (lighting, AV receivers, I/O). Empty categories `None Included`.
-4. **Controller Overview** — 22pt title. `N x Global Controller (iPhone)` (and iPad / Touchscreen). `N x Room Controller`. No ISR-4. Keep the counts.
-5. **Project Summary** — 22pt title. Orange band is only `Total Programming Hours: N`. Acceptance + signature / print name / date in the white space below.
+4. **Controller Overview** — 22pt title. `N x Global Controller (Phone)` (and Tablet / Large Touchscreen / Small Touchscreen). `N x Room Controller`. Clones are not called out. No ISR-4. Keep the counts.
+5. **Project Summary** — 22pt title. Orange band is `Overhead: N`, `Programming: N`, `Graphics: N`, then `Total Hours: N`. The three lines are whole hours that add up to the billed total. Acceptance + signature / print name / date in the white space below.
 
 Colour bands cycle Feeny logo colours: orange `#fcb040`, dark grey `#575759`, green `#39b54a`, light grey `#a7a9ac`. Dark grey uses white text; others black. Band body is 16pt Roboto, full-bleed table `fillColor`.
 
-**Band placement:** each band is `absolutePosition` at `y = (792 - renderedHeight) / 2` so it is geometrically centered on US Letter, independent of the page title. Height is measured from a real pdfmake table, not a line-count guess (16pt Roboto at `lineHeight` 1.25 is 23.4375pt, not 18). Titles stay in normal flow at the top at 22pt. Do not go back to flow spacers under titles.
+**Band placement:** each band is `absolutePosition` at `y = (792 - renderedHeight) / 2` so it is geometrically centered on US Letter, independent of the page title. A Controlled Systems list that would otherwise run into the 22pt title is shifted down to clear it. Height is measured from a real pdfmake table, not a line-count guess (16pt Roboto at `lineHeight` 1.25 is 23.4375pt, not 18). Titles stay in normal flow at the top at 22pt. Do not go back to flow spacers under titles.
 
 **Do not** paint a matching `background()` canvas. Height estimates run long on page 3 (six categories), so the canvas was taller than the table and looked like a huge green bar with copy at the top. Colour comes from the table only.
 

@@ -2,6 +2,12 @@ function asCount(value) {
   return Number(value) || 0;
 }
 
+const KNOWN_GLOBAL_TYPES = ['Phone', 'Tablet', 'Large Touchscreen', 'Small Touchscreen'];
+const LEGACY_GLOBAL_TYPES = {
+  iPhone: 'Phone',
+  iPad: 'Tablet'
+};
+
 export function splitByType(items) {
   const seen = new Set();
   let discrete = 0;
@@ -53,6 +59,56 @@ function resolveUniformPair(answers, countKey, clonedKey) {
   return splitUniformCount(answers[countKey]);
 }
 
+function resolveDisplays(answers) {
+  const split = resolveTypedPair(
+    answers,
+    'displayDiscreteZones',
+    'displayClonedZones',
+    'displayDetails'
+  );
+  return {
+    discrete: split.discrete + split.cloned + split.custom,
+    cloned: 0
+  };
+}
+
+function eachLegacyUnitIsDiscrete(type) {
+  return type === '' || type === 'Touchscreen' || !KNOWN_GLOBAL_TYPES.includes(type);
+}
+
+export function classifyGlobalControllers(details, count) {
+  const total = asCount(count);
+  const items = Array.isArray(details) ? details.slice(0, total) : [];
+  const types = items.map((item) => {
+    const raw = item && typeof item.type === 'string' ? item.type.trim() : '';
+    return LEGACY_GLOBAL_TYPES[raw] || raw;
+  });
+  const missing = total - types.length;
+  for (let i = 0; i < missing; i += 1) types.push('');
+
+  const seen = new Set();
+  let firstDiscreteGlobal = 0;
+  let additionalDiscreteGlobals = 0;
+  let clonedGlobals = 0;
+
+  for (const type of types) {
+    if (eachLegacyUnitIsDiscrete(type)) {
+      if (firstDiscreteGlobal === 0) firstDiscreteGlobal = 1;
+      else additionalDiscreteGlobals += 1;
+      continue;
+    }
+    if (seen.has(type)) {
+      clonedGlobals += 1;
+      continue;
+    }
+    seen.add(type);
+    if (firstDiscreteGlobal === 0) firstDiscreteGlobal = 1;
+    else additionalDiscreteGlobals += 1;
+  }
+
+  return { firstDiscreteGlobal, additionalDiscreteGlobals, clonedGlobals };
+}
+
 export function calculateSystemData(answers = {}) {
   const rooms = asCount(answers.rooms);
   const floors = asCount(answers.floors);
@@ -67,9 +123,6 @@ export function calculateSystemData(answers = {}) {
     'audioClonedSourceZones',
     'audioSourceDetails'
   );
-  const audioDiscreteSourceZones = audioSplit.discrete;
-  const audioClonedSourceZones = audioSplit.cloned;
-  const audioCustomSourceZones = audioSplit.custom;
   const videoZones = asCount(answers.videoZones);
   const videoSplit = resolveTypedPair(
     answers,
@@ -77,31 +130,17 @@ export function calculateSystemData(answers = {}) {
     'videoClonedSourceZones',
     'videoSourceDetails'
   );
-  const videoDiscreteSourceZones = videoSplit.discrete;
-  const videoClonedSourceZones = videoSplit.cloned;
-  const videoCustomSourceZones = videoSplit.custom;
-  const displaySplit = resolveTypedPair(
-    answers,
-    'displayDiscreteZones',
-    'displayClonedZones',
-    'displayDetails'
-  );
-  const displayDiscreteZones = displaySplit.discrete;
-  const displayClonedZones = displaySplit.cloned;
+  const displaySplit = resolveDisplays(answers);
   const avSplit = resolveUniformPair(
     answers,
     'avReceiverDiscreteZones',
     'avReceiverClonedZones'
   );
-  const avReceiverDiscreteZones = avSplit.discrete;
-  const avReceiverClonedZones = avSplit.cloned;
   const liftSplit = resolveUniformPair(
     answers,
     'motorizedLiftZones',
     'motorizedLiftClonedZones'
   );
-  const motorizedLiftDiscreteZones = liftSplit.discrete;
-  const motorizedLiftClonedZones = liftSplit.cloned;
   const thermostatZones = asCount(answers.thermostatZones);
   const heaterZones = asCount(answers.heaterZones);
   const fanZones = asCount(answers.fanZones);
@@ -113,133 +152,96 @@ export function calculateSystemData(answers = {}) {
   const outputRelayZones = asCount(answers.outputRelayZones);
   const inputSenseZones = asCount(answers.inputSenseZones);
   const globalControllerCount = asCount(answers.globalControllerCount);
-  const globalTypeSplit = splitByType(answers.globalControllerDetails);
+  const globals = classifyGlobalControllers(answers.globalControllerDetails, globalControllerCount);
   const floorplanAddOnCount = asCount(answers.floorplanAddOnCount);
   const roomControllerCount = asCount(answers.roomControllerCount);
 
-  const climateTimerZones = heaterZones + fanZones;
-  const poolAndPumpsTimerZones = poolZones + pumpZones;
-  const totalAudioSourceZones = audioDiscreteSourceZones + audioClonedSourceZones + audioCustomSourceZones;
-  const totalVideoSourceZones = videoDiscreteSourceZones + videoClonedSourceZones + videoCustomSourceZones;
-  const totalAvReceiverZones = avReceiverDiscreteZones + avReceiverClonedZones;
-  const totalDisplayZones = displayDiscreteZones + displayClonedZones;
-  const totalMotorizedLiftZones = motorizedLiftDiscreteZones + motorizedLiftClonedZones;
+  const timerZones = heaterZones + fanZones + pumpZones;
+  const alarmPanel = alarmZones > 0 ? 1 : 0;
+  const discreteGlobals = globals.firstDiscreteGlobal + globals.additionalDiscreteGlobals;
+  const floorplanControllers = Math.min(floorplanAddOnCount, discreteGlobals);
 
-  const totalDiscreteDeviceZones = displayDiscreteZones
-    + avReceiverDiscreteZones
-    + audioDiscreteSourceZones
-    + videoDiscreteSourceZones
-    + motorizedLiftDiscreteZones;
-  const totalClonedDeviceZones = displayClonedZones
-    + avReceiverClonedZones
-    + audioClonedSourceZones
-    + videoClonedSourceZones
-    + motorizedLiftClonedZones;
-  const totalCustomDeviceZones = audioCustomSourceZones + videoCustomSourceZones;
-  const totalDeviceZones = totalDiscreteDeviceZones + totalClonedDeviceZones + totalCustomDeviceZones;
+  const totalAudioSourceZones = audioSplit.discrete + audioSplit.cloned + audioSplit.custom;
+  const totalVideoSourceZones = videoSplit.discrete + videoSplit.cloned + videoSplit.custom;
+  const totalAvReceiverZones = avSplit.discrete + avSplit.cloned;
+  const totalDisplayZones = displaySplit.discrete;
+  const totalMotorizedLiftZones = liftSplit.discrete + liftSplit.cloned;
+  const totalDiscreteDeviceZones = displaySplit.discrete
+    + avSplit.discrete
+    + audioSplit.discrete
+    + videoSplit.discrete
+    + liftSplit.discrete;
+  const totalClonedDeviceZones = avSplit.cloned
+    + audioSplit.cloned
+    + videoSplit.cloned
+    + liftSplit.cloned;
+  const totalCustomDeviceZones = audioSplit.custom + videoSplit.custom;
 
-  // Timer rollups and AV device counts are included alongside their rollups
-  // (legacy double count). Devices are billed once on the AV line; the extra
-  // copy in totalProjectZones only inflates controller hours so source-heavy
-  // one-room theaters still price correctly.
-  const totalProjectZones = [
-    lightingZones,
-    shadingZones,
-    keypadZones,
-    audioZones,
-    audioDiscreteSourceZones,
-    audioClonedSourceZones,
-    audioCustomSourceZones,
-    videoZones,
-    videoDiscreteSourceZones,
-    videoClonedSourceZones,
-    videoCustomSourceZones,
-    avReceiverDiscreteZones,
-    avReceiverClonedZones,
-    displayDiscreteZones,
-    displayClonedZones,
-    motorizedLiftDiscreteZones,
-    motorizedLiftClonedZones,
-    totalDeviceZones,
-    thermostatZones,
-    heaterZones,
-    fanZones,
-    climateTimerZones,
-    alarmZones,
-    accessZones,
-    cameraZones,
-    poolZones,
-    pumpZones,
-    poolAndPumpsTimerZones,
-    outputRelayZones,
-    inputSenseZones
-  ]
-    .filter((n) => n > 0)
-    .reduce((sum, n) => sum + n, 0);
+  const countedRooms = rooms + exteriorZones;
+  const controlledSignal = [
+    lightingZones, shadingZones, keypadZones, audioZones, videoZones,
+    totalAudioSourceZones, totalVideoSourceZones, totalAvReceiverZones,
+    totalDisplayZones, totalMotorizedLiftZones, thermostatZones, heaterZones,
+    fanZones, alarmZones, accessZones, cameraZones, poolZones, pumpZones,
+    outputRelayZones, inputSenseZones, globalControllerCount, roomControllerCount,
+    floorplanAddOnCount
+  ].reduce((sum, n) => sum + n, 0);
+  const overheadRooms = countedRooms > 0 ? countedRooms : (controlledSignal > 0 ? 1 : 0);
+  const roomControllerShare = overheadRooms > 0 ? roomControllerCount / overheadRooms : 0;
+  const floorplanZonesShown = lightingZones + shadingZones + thermostatZones
+    + heaterZones + fanZones + alarmZones + accessZones + poolZones + pumpZones;
 
-  const totalProjectRooms = rooms + exteriorZones;
-
-  const rawProcessorCount = (totalProjectZones + totalProjectRooms) / 100;
-  const mainProcessorCount = (totalProjectZones + totalProjectRooms) > 350 ? 2 : 1;
-  const auxProcessorCount = Math.max(Math.ceil(rawProcessorCount) - 1, 0);
-  const expansionModuleCount = Math.ceil(rawProcessorCount);
-
-  const systemData = {
+  return {
     rooms,
     floors,
     exteriorZones,
+    overheadRooms,
     lightingZones,
     shadingZones,
     keypadZones,
     audioZones,
-    audioDiscreteSourceZones,
-    audioClonedSourceZones,
-    audioCustomSourceZones,
+    audioDiscreteSourceZones: audioSplit.discrete,
+    audioClonedSourceZones: audioSplit.cloned,
+    audioCustomSourceZones: audioSplit.custom,
     totalAudioSourceZones,
     videoZones,
-    videoDiscreteSourceZones,
-    videoClonedSourceZones,
-    videoCustomSourceZones,
+    videoDiscreteSourceZones: videoSplit.discrete,
+    videoClonedSourceZones: videoSplit.cloned,
+    videoCustomSourceZones: videoSplit.custom,
     totalVideoSourceZones,
-    displayDiscreteZones,
-    displayClonedZones,
+    displayDiscreteZones: displaySplit.discrete,
+    displayClonedZones: 0,
     totalDisplayZones,
-    avReceiverDiscreteZones,
-    avReceiverClonedZones,
+    avReceiverDiscreteZones: avSplit.discrete,
+    avReceiverClonedZones: avSplit.cloned,
     totalAvReceiverZones,
-    motorizedLiftDiscreteZones,
-    motorizedLiftClonedZones,
+    motorizedLiftDiscreteZones: liftSplit.discrete,
+    motorizedLiftClonedZones: liftSplit.cloned,
     totalMotorizedLiftZones,
     totalDiscreteDeviceZones,
     totalClonedDeviceZones,
     totalCustomDeviceZones,
-    totalDeviceZones,
+    totalDeviceZones: totalDiscreteDeviceZones + totalClonedDeviceZones + totalCustomDeviceZones,
     thermostatZones,
     heaterZones,
     fanZones,
-    climateTimerZones,
+    timerZones,
     alarmZones,
+    alarmPanel,
     accessZones,
     cameraZones,
     poolZones,
     pumpZones,
-    poolAndPumpsTimerZones,
     outputRelayZones,
     inputSenseZones,
     globalControllerCount,
+    firstDiscreteGlobal: globals.firstDiscreteGlobal,
+    additionalDiscreteGlobals: globals.additionalDiscreteGlobals,
+    clonedGlobals: globals.clonedGlobals,
     floorplanAddOnCount,
+    floorplanControllers,
+    floorplanZonesShown,
     roomControllerCount,
-    totalProjectZones,
-    totalProjectRooms,
-    mainProcessorCount,
-    auxProcessorCount,
-    expansionModuleCount
+    roomControllerShare
   };
-
-  if (globalTypeSplit.discrete + globalTypeSplit.cloned > 0) {
-    systemData.globalControllerDiscreteCount = globalTypeSplit.discrete;
-    systemData.globalControllerClonedCount = globalTypeSplit.cloned;
-  }
-
-  return systemData;
 }

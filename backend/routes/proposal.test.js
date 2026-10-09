@@ -33,11 +33,16 @@ describe('POST /api/proposal/estimate', () => {
     });
     assert.equal(response.status, 200);
     const body = await response.json();
-    assert.equal(body.totalProjectHours, 8);
+    assert.equal(body.sectionHours.lightingShading, 0);
+    assert.equal(body.sectionHours.audioVideo, 0);
     assert.equal(body.sectionHours.poolAndPumps, 0);
+    assert.equal(body.totalProjectHours, body.sectionHours.overhead);
+    assert.ok(body.totalProjectHours > 0);
     assert.equal(body.lineItems, undefined);
+    assert.deepEqual(Object.keys(body.breakdownHours).sort(), ['graphics', 'overhead', 'programming']);
     const serialized = JSON.stringify(body);
     assert.equal(serialized.includes('26.4'), false);
+    assert.equal(serialized.includes('2.26'), false);
     assert.equal(serialized.includes('minutesPerUnit'), false);
   });
 

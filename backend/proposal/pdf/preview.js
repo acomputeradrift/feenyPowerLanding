@@ -1,3 +1,6 @@
+import { calculateHoursData as calculateLegacyHours } from '../calc/legacy/hoursData.js';
+import { rates as legacyRates } from '../calc/legacy/rates.js';
+import { calculateSystemData as calculateLegacySystem } from '../calc/legacy/systemData.js';
 import { calculateHoursData } from '../calc/hoursData.js';
 import { rates } from '../calc/rates.js';
 import { calculateSystemData } from '../calc/systemData.js';
@@ -31,10 +34,10 @@ export function previewAnswers() {
     additionalInfo: 'Owner wants scenes labelled by time of day.'
   });
   answers.globalControllerDetails = [
-    { type: 'iPhone', name: 'Global Controller 1' },
-    { type: 'iPhone', name: 'Global Controller 2' },
-    { type: 'Touchscreen', name: 'Global Controller 3' },
-    { type: 'Touchscreen', name: 'Global Controller 4' }
+    { type: 'Phone', name: 'Global Controller 1' },
+    { type: 'Phone', name: 'Global Controller 2' },
+    { type: 'Large Touchscreen', name: 'Global Controller 3' },
+    { type: 'Large Touchscreen', name: 'Global Controller 4' }
   ];
   answers.audioSourceDetails = [{ type: 'Streamer', name: 'Sonos Port' }];
   answers.videoSourceDetails = [{ type: 'Media Player', name: 'Apple TV' }];
@@ -49,8 +52,11 @@ export async function handleProposalPdfPreview(req, res) {
   }
 
   const answers = previewAnswers();
-  const systemData = calculateSystemData(answers);
-  const hoursData = calculateHoursData(systemData, rates);
+  const useV1 = String(req.query?.v || '') === '1';
+  const systemData = useV1 ? calculateLegacySystem(answers) : calculateSystemData(answers);
+  const hoursData = useV1
+    ? calculateLegacyHours(systemData, legacyRates)
+    : calculateHoursData(systemData, rates);
   const submission = {
     reference: 'RTI-20260817-PREVIEW',
     contractorName: answers.contractorName,
@@ -60,7 +66,6 @@ export async function handleProposalPdfPreview(req, res) {
     answers
   };
 
-  const useV1 = String(req.query?.v || '') === '1';
   const generate = useV1 ? generateProposalPdf : generateProposalPdfV2;
 
   try {

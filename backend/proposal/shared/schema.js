@@ -1,4 +1,4 @@
-export const SCHEMA_VERSION = '2026.5';
+export const SCHEMA_VERSION = '2026.6';
 export const REPEAT_GROUP_MAX = 40;
 
 function text(id, label, extra = {}) {
@@ -118,7 +118,7 @@ export const steps = [
       count('rooms', 'Number of Rooms', {
         min: 1,
         max: REPEAT_GROUP_MAX,
-        help: 'Include all interior rooms that have some sort of control. Usually audio zones or lighting zones are the determining factor for inclusion. Exterior areas are entered later.'
+        help: 'Count only rooms with something controlled, usually lighting, then audio. Exterior areas are entered later.'
       }),
       repeat('roomDetails', 'Rooms', {
         repeatFor: 'rooms',
@@ -133,7 +133,7 @@ export const steps = [
       }),
       count('exteriorZones', 'Number of Exterior Zones', {
         max: REPEAT_GROUP_MAX,
-        help: 'Include all exterior areas that have some sort of control. Usually audio zones or lighting zones are the determining factor for inclusion. Examples would be front yard, back yard, side yard etc.'
+        help: 'Include exterior areas that have some sort of control. Each counts as a room.'
       }),
       repeat('exteriorZoneDetails', 'Exterior Zones', {
         repeatFor: 'exteriorZones',
@@ -284,19 +284,19 @@ export const steps = [
     questions: [
       count('globalControllerCount', 'Global Controllers', {
         max: REPEAT_GROUP_MAX,
-        help: 'iPhone, iPad, Touchscreens (controls all rooms, all sources).'
+        help: 'Phone, tablet, large touchscreen or small touchscreen (controls all rooms, all sources).'
       }),
       repeat('globalControllerDetails', 'Global Controllers', {
         repeatFor: 'globalControllerCount',
         itemLabel: (index) => `Global Controller ${index + 1}`,
         fields: [
-          select('type', 'Type', ['iPhone', 'iPad', 'Touchscreen'], { required: true })
+          select('type', 'Type', ['Phone', 'Tablet', 'Large Touchscreen', 'Small Touchscreen'], { required: true })
         ]
       }),
       count('floorplanAddOnCount', 'Floorplan Add On for Global Controllers', {
         required: false,
         visibleIf: (answers) => (Number(answers.globalControllerCount) || 0) > 0,
-        help: 'Include this for each Global Controller (iPad, Touchscreens) that you would like a floorplan interface.'
+        help: 'Touchscreens and Apple devices only.'
       }),
       count('roomControllerCount', 'Single Room Controllers', {
         help: 'Handheld Remotes, Touchscreens (controls single room, local sources).'

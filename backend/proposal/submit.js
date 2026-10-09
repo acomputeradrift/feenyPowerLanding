@@ -120,6 +120,7 @@ export async function processSubmission(body, meta = {}, deps = {}) {
     rateCardVersion: RATE_CARD_VERSION,
     lineItems: hoursData.lineItems,
     sectionHours: hoursData.sectionHours,
+    breakdownHours: hoursData.breakdownHours,
     totalProjectHours: hoursData.totalProjectHours,
     emailStatus: 'pending',
     clientIpHash: hashClientIp(meta.ip, ipHashSalt),

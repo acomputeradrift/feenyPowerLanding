@@ -1,3 +1,5 @@
+import { summaryHoursFromBreakdown } from '../calc/hoursData.js';
+
 function asCount(value) {
   const n = Number(value);
   return Number.isFinite(n) ? n : 0;
@@ -100,30 +102,69 @@ function commaList(items) {
   return (items || []).filter(Boolean).join(', ');
 }
 
-function roomsAndSystemsSentence(answers, systemData) {
-  const rooms = asCount(systemData.rooms);
-  const roomWord = rooms === 1 ? 'room' : 'rooms';
-  const names = namedItems(answers.roomDetails)
+function namedList(items) {
+  return namedItems(items)
     .map((item) => trimmed(item.name))
     .filter(Boolean);
-  const labelled = names.length > 0 ? ` (${commaList(names)})` : '';
-  const systems = includedSystems(systemData);
-  const integration = systems.length > 0
-    ? ` and includes integration with ${joinList(systems)} systems`
-    : '';
-  return `Your project covers ${rooms} ${roomWord}${labelled}${integration}.`;
 }
 
-function globalTypePhrase(type, count) {
+function placePhrase(count, singular, plural, names) {
+  const n = asCount(count);
+  if (n <= 0) return '';
+  const word = n === 1 ? singular : plural;
+  const labelled = names.length > 0 ? ` (${commaList(names)})` : '';
+  return `${n} ${word}${labelled}`;
+}
+
+function roomsAndSystemsSentence(answers, systemData) {
+  const hasExterior = asCount(systemData.exteriorZones) > 0;
+  const rooms = placePhrase(
+    systemData.rooms,
+    hasExterior ? 'interior space' : 'room',
+    hasExterior ? 'interior spaces' : 'rooms',
+    namedList(answers.roomDetails)
+  );
+  const exterior = placePhrase(
+    systemData.exteriorZones,
+    'exterior space',
+    'exterior spaces',
+    namedList(answers.exteriorZoneDetails)
+  );
+  const places = [rooms, exterior].filter(Boolean).join(' and ');
+  const systems = includedSystems(systemData);
+  if (systems.length === 0) return `Your project covers ${places}.`;
+  const bridge = exterior ? ', and includes' : ' and includes';
+  return `Your project covers ${places}${bridge} integration with ${joinList(systems)} systems.`;
+}
+
+const GLOBAL_TYPE_ORDER = [
+  'Phone',
+  'Tablet',
+  'Large Touchscreen',
+  'Small Touchscreen',
+  'iPhone',
+  'iPad',
+  'Touchscreen'
+];
+
+function globalNoun(type, count) {
   const n = asCount(count);
   const nouns = {
+    Phone: n === 1 ? 'phone' : 'phones',
+    Tablet: n === 1 ? 'tablet' : 'tablets',
+    'Large Touchscreen': n === 1 ? 'large touchscreen' : 'large touchscreens',
+    'Small Touchscreen': n === 1 ? 'small touchscreen' : 'small touchscreens',
     iPhone: n === 1 ? 'iPhone' : 'iPhones',
     iPad: n === 1 ? 'iPad' : 'iPads',
     Touchscreen: n === 1 ? 'touchscreen' : 'touchscreens'
   };
-  const noun = nouns[type] || (n === 1 ? type : `${type}s`);
+  return nouns[type] || (n === 1 ? type : `${type}s`);
+}
+
+function globalTypePhrase(type, count) {
+  const n = asCount(count);
   const verb = n === 1 ? 'controls' : 'control';
-  return `${n} ${noun} that ${verb} every room / system`;
+  return `${n} ${globalNoun(type, n)} that ${verb} every room / system`;
 }
 
 function handheldPhrase(count) {
@@ -134,22 +175,40 @@ function handheldPhrase(count) {
 }
 
 function countGlobalTypes(details) {
-  const counts = { iPhone: 0, iPad: 0, Touchscreen: 0 };
+  const counts = new Map();
   for (const item of namedItems(details)) {
     const type = trimmed(item.type);
-    if (Object.hasOwn(counts, type)) counts[type] += 1;
+    if (!type) continue;
+    counts.set(type, (counts.get(type) || 0) + 1);
   }
   return counts;
+}
+
+function orderedGlobalTypes(counts) {
+  const ordered = [];
+  const seen = new Set();
+  for (const type of GLOBAL_TYPE_ORDER) {
+    if ((counts.get(type) || 0) > 0) {
+      ordered.push(type);
+      seen.add(type);
+    }
+  }
+  for (const type of counts.keys()) {
+    if (!seen.has(type)) ordered.push(type);
+  }
+  return ordered;
 }
 
 function controllersSentence(answers, systemData) {
   const typeCounts = countGlobalTypes(answers.globalControllerDetails);
   const phrases = [];
-  for (const type of ['iPhone', 'iPad', 'Touchscreen']) {
-    if (typeCounts[type] > 0) phrases.push(globalTypePhrase(type, typeCounts[type]));
+  let typed = 0;
+  for (const type of orderedGlobalTypes(typeCounts)) {
+    const count = typeCounts.get(type);
+    typed += count;
+    phrases.push(globalTypePhrase(type, count));
   }
-  const untypedGlobals = asCount(systemData.globalControllerCount)
-    - typeCounts.iPhone - typeCounts.iPad - typeCounts.Touchscreen;
+  const untypedGlobals = asCount(systemData.globalControllerCount) - typed;
   if (untypedGlobals > 0) {
     phrases.push(globalTypePhrase('global controller', untypedGlobals));
   }
@@ -258,7 +317,12 @@ function systemSections(answers, systemData) {
       lines: collectLines([
         (lines) => pushCount(lines, systemData.thermostatZones, 'Thermostat Zone'),
         (lines) => pushCount(lines, systemData.heaterZones, 'Heater Zone'),
-        (lines) => pushCount(lines, systemData.fanZones, 'Fan Zone')
+        (lines) => pushCount(lines, systemData.fanZones, 'Fan Zone'),
+        (lines) => {
+          const timers = asCount(systemData.timerZones);
+          if (timers === 1) lines.push('1 timer has been added');
+          else if (timers > 1) lines.push(`${timers} timers have been added`);
+        }
       ])
     },
     {
@@ -298,13 +362,14 @@ function systemSections(answers, systemData) {
 function controllerLines(answers, systemData) {
   const lines = [];
   const typeCounts = countGlobalTypes(answers.globalControllerDetails);
-  for (const type of ['iPhone', 'iPad', 'Touchscreen']) {
-    const line = qtyLine(typeCounts[type], `Global Controller (${type})`);
+  let typed = 0;
+  for (const type of orderedGlobalTypes(typeCounts)) {
+    const count = typeCounts.get(type);
+    typed += count;
+    const line = qtyLine(count, `Global Controller (${type})`);
     if (line) lines.push(line);
   }
-  const untyped = asCount(systemData.globalControllerCount)
-    - typeCounts.iPhone - typeCounts.iPad - typeCounts.Touchscreen;
-  const untypedLine = qtyLine(untyped, 'Global Controller');
+  const untypedLine = qtyLine(asCount(systemData.globalControllerCount) - typed, 'Global Controller');
   if (untypedLine) lines.push(untypedLine);
   const floorplan = qtyLine(systemData.floorplanAddOnCount, 'Floorplan Add-On');
   if (floorplan) lines.push(floorplan);
@@ -316,7 +381,8 @@ function controllerLines(answers, systemData) {
 export function buildProposalContentV2(submission, systemData, hoursData, options = {}) {
   const answers = submission.answers || {};
   const year = options.year ?? new Date().getUTCFullYear();
-  const billedHours = Math.ceil(Number(hoursData.totalProjectHours) || 0);
+  const summary = hoursData.summaryHours
+    || summaryHoursFromBreakdown(hoursData.breakdownHours);
 
   return {
     copyright: `© ${year} Feeny Power and Control Ltd. All Rights Reserved.`,
@@ -344,7 +410,12 @@ export function buildProposalContentV2(submission, systemData, hoursData, option
     },
     totals: {
       title: 'Project Summary',
-      hoursLine: `Total Programming Hours: ${billedHours}`,
+      lines: [
+        `Overhead: ${summary.overhead}`,
+        `Programming: ${summary.programming}`,
+        `Graphics: ${summary.graphics}`
+      ],
+      hoursLine: `Total Hours: ${summary.total}`,
       acceptance: 'I approve this budget and understand that work will commence when Feeny Power and Control Ltd has received a\u00A050% deposit.',
       signatureLabel: 'Client signature',
       printNameLabel: 'Print name',

@@ -233,3 +233,28 @@ change every existing route.
 
 **Revisit if.** The application enables strict routing for other reasons.
 
+---
+
+## ADR-012: Effort model replaces per-zone controller rates (2026.3)
+
+**Decision.** Rate card 2026.3 prices a project as Overhead, Programming and
+Graphics. Programming is full on the first discrete global controller and 20%
+on each further resolution. Graphics are 90% on each further resolution. A
+repeat of the same controller type is a clone at 0 minutes. Room controllers
+are one type and each covers one room. The first room carries full per-room
+overhead; each later room is half. Displays are always discrete. The project
+total is the exact minute sum, billed as `ceil` hours. The PDF shows the three
+parts as whole hours that add up to that billed total.
+
+**Why.** Per-zone rates over-priced lighting-heavy jobs. Deer Park was 138.4
+hours on 2026.2 and 49.7 hours on this model. The small one-room theater stays
+at 6 billed hours.
+
+**Rejected.** Keeping 2026.2 and discounting lighting only. That would leave
+the controller multiplier, which is what made lighting-heavy jobs expensive.
+Recalculating stored submissions was also rejected: an old proposal keeps the
+hours it was given.
+
+**Revisit if.** Lighting still feels light after a few real jobs. Change the
+lighting item counts in 09, not the per-item minutes.
+

@@ -120,6 +120,31 @@ describe('FR-20 audit HTML', () => {
     assert.match(html, /name="robots" content="noindex"/);
   });
 
+  it('shows programming and graphics minutes for a 2026.3 submission', () => {
+    const html = renderAuditHtml(sampleSubmission({
+      rateCardVersion: '2026.3',
+      breakdownHours: { overhead: 12.737, programming: 15.133, graphics: 21.833 },
+      totalProjectHours: 49.703,
+      lineItems: [{
+        section: 'lightingShading',
+        id: 'lightingZones',
+        label: 'Lighting Zones',
+        count: 100,
+        programmingMinutes: 287.3636,
+        graphicsMinutes: 472.9091,
+        minutes: 760.2727,
+        hours: 12.6712
+      }]
+    }));
+    assert.match(html, /Programming minutes/);
+    assert.match(html, /Graphics minutes/);
+    assert.match(html, /data-field="programmingMinutes">287\.3636</);
+    assert.match(html, /data-field="graphicsMinutes">472\.9091</);
+    assert.match(html, /data-field="breakdownOverhead">12\.737</);
+    assert.match(html, /data-field="billedHours">50</);
+    assert.equal(html.includes('Minutes per unit'), false);
+  });
+
   it('escapes values that would otherwise inject markup', () => {
     const html = renderAuditHtml(sampleSubmission({
       reference: 'RTI-<script>alert(1)</script>',

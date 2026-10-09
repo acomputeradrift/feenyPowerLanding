@@ -81,7 +81,7 @@ function answersFromFixture() {
   fillType('audioSourceDetails', 'Streamer');
   fillType('videoSourceDetails', 'Media Player');
   fillType('displayDetails', 'TV');
-  fillType('globalControllerDetails', 'iPhone');
+  fillType('globalControllerDetails', 'Phone');
   return next;
 }
 
@@ -128,6 +128,21 @@ describe('FR-2 FR-3 schema catalogue', () => {
     }
   });
 
+  it('offers phone, tablet and two touchscreen sizes for global controllers', () => {
+    assert.deepEqual(
+      findQuestion('globalControllerDetails').fields.find((field) => field.id === 'type').options,
+      ['Phone', 'Tablet', 'Large Touchscreen', 'Small Touchscreen']
+    );
+    assert.equal(
+      findQuestion('floorplanAddOnCount').help,
+      'Touchscreens and Apple devices only.'
+    );
+    assert.equal(
+      findQuestion('exteriorZones').help,
+      'Include exterior areas that have some sort of control. Each counts as a room.'
+    );
+  });
+
   it('splits Cable and Satellite and drops Tuner from source types', () => {
     assert.deepEqual(
       findQuestion('audioSourceDetails').fields.find((field) => field.id === 'type').options,
@@ -156,7 +171,7 @@ describe('FR-2 FR-3 schema catalogue', () => {
     );
     assert.equal(
       findQuestion('rooms').help,
-      'Include all interior rooms that have some sort of control. Usually audio zones or lighting zones are the determining factor for inclusion. Exterior areas are entered later.'
+      'Count only rooms with something controlled, usually lighting, then audio. Exterior areas are entered later.'
     );
     assert.equal(
       findQuestion('additionalInfo').help,
@@ -364,7 +379,7 @@ describe('FR-8 validation', () => {
     assert.equal(validate(steps, roomOnly).globalControllerCount, undefined);
     assert.equal(validate(steps, roomOnly).roomControllerCount, undefined);
 
-    const globalOnly = { ...bothZero, globalControllerCount: 1, globalControllerDetails: [{ type: 'iPhone' }] };
+    const globalOnly = { ...bothZero, globalControllerCount: 1, globalControllerDetails: [{ type: 'Phone' }] };
     assert.equal(validate(steps, globalOnly).globalControllerCount, undefined);
     assert.equal(validate(steps, globalOnly).roomControllerCount, undefined);
   });

@@ -49,6 +49,12 @@ else can be read on demand.
 - **[07-pdf-document.md](07-pdf-document.md)** - the generated proposal document.
 - **[08-design-system.md](08-design-system.md)** - visual and interaction rules,
   derived from the existing site.
+- **[09-effort-model.md](09-effort-model.md)** - the locked Overhead /
+  Programming / Graphics hours model. Live as rate card 2026.3.
+- **[10-effort-model-implementation-plan.md](10-effort-model-implementation-plan.md)** -
+  step-by-step plan for implementing the effort model as rate card 2026.3.
+- **[11-build-agent-prompt.md](11-build-agent-prompt.md)** - the prompt to
+  hand the effort model build to an agent.
 
 ## Repository context
 

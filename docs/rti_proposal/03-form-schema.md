@@ -210,9 +210,8 @@ Help text:
 
 All required.
 
-- `rooms` - Number of Rooms, **min 1**. "Include all interior rooms that have some sort of
-  control. Usually audio zones or lighting zones are the determining factor for
-  inclusion. Exterior areas are entered later."
+- `rooms` - Number of Rooms, **min 1**. "Count only rooms with something controlled,
+  usually lighting, then audio. Exterior areas are entered later."
 
 Repeat group: `roomDetails` over `rooms`, item label `Room {n}`, one optional
 `name` text field. These name fields render immediately below the rooms count
@@ -220,10 +219,8 @@ and default to "Room 1" through "Room N". Real names remain optional.
 
 - `floors` - Number of Floors, **min 1**. "Include this for calculating the cost of a floor
   plan based UI."
-- `exteriorZones` - Number of Exterior Zones. "Include all exterior areas that
-  have some sort of control. Usually audio zones or lighting zones are the
-  determining factor for inclusion. Examples would be front yard, back yard, side
-  yard etc."
+- `exteriorZones` - Number of Exterior Zones. "Include exterior areas that have
+  some sort of control. Each counts as a room."
 
 Repeat group: `exteriorZoneDetails` over `exteriorZones`, item label
 `Exterior Zone {n}`, one optional `name` text field. Defaults to
@@ -328,15 +325,17 @@ All required. No repeat groups.
 
 ### Step 9 - Controllers
 
-- `globalControllerCount` - Global Controllers, required. "iPhone, iPad,
-  Touchscreens (controls all rooms, all sources)."
+- `globalControllerCount` - Global Controllers, required. "Phone, tablet, large
+  touchscreen or small touchscreen (controls all rooms, all sources)."
 
 Repeat group: `globalControllerDetails` over `globalControllerCount`, immediately
-below the count. Type select is required: iPhone / iPad / Touchscreen.
+below the count. Type select is required: Phone / Tablet / Large Touchscreen /
+Small Touchscreen. Legacy stored answers may still say iPhone, iPad or
+Touchscreen. iPhone maps to Phone and iPad to Tablet for hours. An untyped
+unit or a legacy Touchscreen is its own discrete resolution.
 
 - `floorplanAddOnCount` - Floorplan Add On for Global Controllers, optional.
-  "Include this for each Global Controller (iPad, Touchscreens) that you would
-  like a floorplan interface."
+  "Touchscreens and Apple devices only."
 - `roomControllerCount` - Single Room Controllers, required. "Handheld Remotes,
   Touchscreens (controls single room, local sources)."
 

@@ -12,9 +12,10 @@ export function estimateHours(rawAnswers, rateCard = rates) {
     ? rawAnswers
     : {};
   const systemData = calculateSystemData(answers);
-  const { sectionHours, totalProjectHours } = calculateHoursData(systemData, rateCard);
+  const { sectionHours, breakdownHours, totalProjectHours } = calculateHoursData(systemData, rateCard);
   return {
     sectionHours: { ...sectionHours },
+    breakdownHours: { ...breakdownHours },
     totalProjectHours
   };
 }

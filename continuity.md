@@ -32,11 +32,12 @@ Unit tests (calculator, no server): `cd backend && npm test`
 | `/rti_proposal/` | RTI programming budget form → PDF + email |
 | `/rti_proposal/preview.pdf` | PDF preview — **localhost only** |
 | `/rti_proposal/audit/:reference` | Token-gated rate audit (404 unless env token set) |
+| `/sentinel_lite/` | Sentinel Lite — dealer-side `.apex` compare in the browser (Pyodide). Files never leave the dealer’s machine. |
 | `/idea-feedback/` | Hidden HMAC-signed confirm page for overnight idea thumbs (GET never writes) |
 | `/rti_diagnostics/upload_files/` | RTI log upload |
 | `/rti_diagnostics/process_files/` | Log analysis results |
 
-**API:** `POST /api/upload`, `/api/process`, `/api/retrieve` (diagnostics) · `POST /api/proposal/estimate`, `/api/proposal` (proposal)
+**API:** `POST /api/upload`, `/api/process`, `/api/retrieve` (diagnostics) · `POST /api/proposal/estimate`, `/api/proposal` (proposal) · `GET`/`POST /api/sentinel_lite/compare-count` (count-only Compare beacon; no files)
 
 Entry point: `backend/fpc_server.js`. Every new HTML page needs an `app.get(...)` route there.
 
@@ -44,6 +45,7 @@ Entry point: `backend/fpc_server.js`. Every new HTML page needs an `app.get(...)
 
 ```
 frontend/            HTML, styles/, scripts/, images/
+frontend/sentinel_lite/  Generated Sentinel Lite bundle — do not hand-edit
 backend/
   fpc_server.js      Routes + static mounts
   routes/            Express routers
@@ -69,7 +71,9 @@ Static mounts: `/styles`, `/scripts`, `/images`. Proposal schema also at `/scrip
 
 **RTI proposal form** — Replaced the retired Google Form AutoProposal. Vanilla ES modules, schema-driven. For form/PDF/CSS work, read **`docs/rti_proposal/agent_brief.md` next** — do not load the full spec set for a visual pass. Key: `frontend/rti_proposal.html`, `styles/rti_proposal.css`, `scripts/proposal/`, `backend/proposal/`, `routes/proposal.js`. Deep specs: `docs/rti_proposal/README.md`.
 
-Current product (`SCHEMA_VERSION` `2026.5`, `RATE_CARD_VERSION` `2026.2`): Custom audio/video is **33 min** and never cloned. Audio types are Streamer / Turntable / Custom (no Tuner). Video types are Media Player / Cable / Satellite / Box / Blu-ray Player / Game Console / Custom. Distributed video zones require at least one video source; audio sources may be 0. Motorized lifts/mounts appear under displays (0 allowed; first discrete, rest cloned at the 22/11 device rate). Every help line ends with a period.
+Current product (`SCHEMA_VERSION` `2026.6`, `RATE_CARD_VERSION` `2026.3`): hours split into Overhead, Programming and Graphics. Global controllers are Phone, Tablet, Large Touchscreen and Small Touchscreen. Displays are always discrete. Custom audio/video is never cloned. Audio types are Streamer / Turntable / Custom (no Tuner). Video types are Media Player / Cable / Satellite / Box / Blu-ray Player / Game Console / Custom. Distributed video zones require at least one video source; audio sources may be 0. Motorized lifts/mounts appear under displays (0 allowed; first discrete, rest cloned). Every help line ends with a period. Rate card 2026.2 remains in `backend/proposal/calc/legacy/` for old submissions and the v1 preview.
+
+**Sentinel Lite** — Live at `/sentinel_lite/`. The dealer’s `.apex` files are compared in the browser with Pyodide; this server never receives a file. The only API is `GET`/`POST /api/sentinel_lite/compare-count` (a running total, no body). Static bundle is generated — ship from the sibling **Sentinel (Lite)** repo with `tools/ship.py`. Do not edit `frontend/sentinel_lite/` here. Mount and CSP live in `fpc_server.js`.
 
 **RTI diagnostics** — Dealers upload RTI logs; analysis in `backend/RTI_log_analysis/`. Uploads in `backend/uploads/` (production path hardcoded in `routes/process.js` as `/root/feenyPowerLanding/backend/uploads`).
 

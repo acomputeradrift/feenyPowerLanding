@@ -3,9 +3,9 @@ import { readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { describe, it } from 'node:test';
 
-import { RATE_CARD_VERSION, rates } from './rates.js';
-import { calculateSystemData } from './systemData.js';
-import { calculateHoursData } from './hoursData.js';
+import { RATE_CARD_VERSION, rates } from './legacy/rates.js';
+import { calculateSystemData } from './legacy/systemData.js';
+import { calculateHoursData } from './legacy/hoursData.js';
 
 const fixture = JSON.parse(
   readFileSync(new URL('./fixtures/legacy-golden-master.json', import.meta.url), 'utf8')
@@ -160,9 +160,11 @@ describe('FR-13 section and project totals are sums of line items', () => {
 
 describe('ADR-004 rates are injected', () => {
   it('hoursData does not import rates.js', async () => {
-    const source = await readFile(new URL('./hoursData.js', import.meta.url), 'utf8');
-    assert.equal(source.includes('from \'./rates.js\''), false);
-    assert.equal(source.includes('from "./rates.js"'), false);
+    for (const file of ['./hoursData.js', './legacy/hoursData.js']) {
+      const source = await readFile(new URL(file, import.meta.url), 'utf8');
+      assert.equal(source.includes('from \'./rates.js\''), false, file);
+      assert.equal(source.includes('from "./rates.js"'), false, file);
+    }
   });
 
   it('an alternative rate card changes hours (historical recompute)', () => {
@@ -188,8 +190,7 @@ describe('unused processor rates', () => {
     assert.equal(ids.includes('expansionModule'), false);
   });
 
-  it('exports a rate card version identifier', () => {
-    assert.equal(typeof RATE_CARD_VERSION, 'string');
-    assert.ok(RATE_CARD_VERSION.length > 0);
+  it('exports the frozen 2026.2 rate card version', () => {
+    assert.equal(RATE_CARD_VERSION, '2026.2');
   });
 });

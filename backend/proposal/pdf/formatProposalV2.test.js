@@ -13,7 +13,7 @@ import {
   joinList,
   qtyLine
 } from './formatProposalV2.js';
-import { buildDocDefinitionV2, layoutBand } from './proposalDocumentV2.js';
+import { buildDocDefinitionV2, layoutBand, TITLED_BAND_MIN_Y, bandOriginY } from './proposalDocumentV2.js';
 
 function fullBleedBands(pdfBuffer) {
   return [...pdfBuffer.toString('latin1').matchAll(/0(?:\.0+)? ([\d.]+) 612(?:\.0+)? ([\d.]+) re/g)]
@@ -42,10 +42,10 @@ function highRdAnswers() {
     additionalInfo: 'Owner wants scenes labelled by time of day.'
   });
   answers.globalControllerDetails = [
-    { type: 'iPhone', name: 'Global Controller 1' },
-    { type: 'iPhone', name: 'Global Controller 2' },
-    { type: 'Touchscreen', name: 'Global Controller 3' },
-    { type: 'Touchscreen', name: 'Global Controller 4' }
+    { type: 'Phone', name: 'Global Controller 1' },
+    { type: 'Phone', name: 'Global Controller 2' },
+    { type: 'Large Touchscreen', name: 'Global Controller 3' },
+    { type: 'Large Touchscreen', name: 'Global Controller 4' }
   ];
   answers.audioSourceDetails = [{ type: 'Streamer', name: 'Sonos Port' }];
   answers.videoSourceDetails = [{ type: 'Media Player', name: 'Apple TV' }];
@@ -94,7 +94,7 @@ describe('proposal v2 wording', () => {
     );
     assert.equal(
       content.overview.controllers,
-      'For controllers, there are 2 iPhones that control every room / system, 2 touchscreens that control every room / system and a handheld controller that controls a single room.'
+      'For controllers, there are 2 phones that control every room / system, 2 large touchscreens that control every room / system and a handheld controller that controls a single room.'
     );
     assert.equal(
       content.overview.additional,
@@ -128,16 +128,24 @@ describe('proposal v2 wording', () => {
     assert.equal(content.systems.intro, undefined);
 
     assert.deepEqual(content.controllers.lines, [
-      '2 x Global Controller (iPhone)',
-      '2 x Global Controller (Touchscreen)',
+      '2 x Global Controller (Phone)',
+      '2 x Global Controller (Large Touchscreen)',
       '1 x Room Controller'
     ]);
     assert.equal(content.controllers.intro, undefined);
 
     assert.equal(content.totals.title, 'Project Summary');
+    assert.deepEqual(content.totals.lines, [
+      `Overhead: ${hoursData.summaryHours.overhead}`,
+      `Programming: ${hoursData.summaryHours.programming}`,
+      `Graphics: ${hoursData.summaryHours.graphics}`
+    ]);
+    assert.equal(content.totals.hoursLine, `Total Hours: ${hoursData.summaryHours.total}`);
     assert.equal(
-      content.totals.hoursLine,
-      `Total Programming Hours: ${Math.ceil(hoursData.totalProjectHours)}`
+      hoursData.summaryHours.overhead
+        + hoursData.summaryHours.programming
+        + hoursData.summaryHours.graphics,
+      hoursData.summaryHours.total
     );
     assert.equal(
       content.totals.acceptance,
@@ -278,7 +286,7 @@ describe('proposal v2 wording', () => {
     assert.match(def, /"text":"Lighting\/Shading"[^}]*"decoration":"underline"/);
     assert.match(def, /4 x Lighting Zones/);
     assert.match(def, /1 x Streamer \(Sonos Port\)/);
-    assert.match(def, /2 x Global Controller \(iPhone\)/);
+    assert.match(def, /2 x Global Controller \(Phone\)/);
     assert.match(def, /1 x Room Controller/);
     assert.equal(def.includes('ISR-4'), false);
     assert.match(def, /None Included/);
@@ -286,7 +294,7 @@ describe('proposal v2 wording', () => {
   });
 
   it('sizes each band to its copy and keeps signatures out of the hours band', async () => {
-    const hours = layoutBand([{ text: 'Total Programming Hours: 12', margin: [0, 4, 0, 4] }]);
+    const hours = layoutBand([{ text: 'Total Hours: 50', margin: [0, 4, 0, 4] }]);
     const threeLines = layoutBand([
       { text: '1 x A', margin: [0, 6, 0, 6] },
       { text: '1 x B', margin: [0, 6, 0, 6] },
@@ -306,19 +314,20 @@ describe('proposal v2 wording', () => {
     );
     const def = JSON.stringify(doc.content);
     const hoursToAccept = def.slice(
-      def.indexOf('Total Programming Hours'),
+      def.indexOf('Total Hours'),
       def.indexOf('I approve this budget')
     );
     assert.match(def, /Project PO: HIGH RD/);
     assert.match(def, /Project Client Name: Private Client/);
     assert.match(def, /Project Location: Private Location/);
-    assert.match(def, /Total Programming Hours/);
+    assert.match(def, /Total Hours/);
+    assert.equal(def.includes('Total Programming Hours'), false);
     assert.equal(hoursToAccept.includes('Client signature'), false);
     assert.match(def, /Client signature/);
     assert.equal(JSON.stringify(doc).includes('"background"'), false);
 
     const hoursNode = doc.content.find((node) => (
-      node.table && JSON.stringify(node).includes('Total Programming Hours')
+      node.table && JSON.stringify(node).includes('Total Hours')
     ));
     const sigNode = doc.content.find((node) => (
       node.absolutePosition && JSON.stringify(node).includes('I approve this budget')
@@ -405,5 +414,54 @@ describe('proposal v2 wording', () => {
         `band at y=${band.y} h=${band.height} center=${band.y + band.height / 2}`
       );
     }
+  });
+
+  it('names exterior zones in the project overview', () => {
+    const answers = validAnswers({
+      rooms: 2,
+      exteriorZones: 2,
+      roomControllerCount: 1,
+      lightingZones: 1
+    });
+    answers.exteriorZoneDetails = [{ name: 'Front Patio' }, { name: 'Back Patio' }];
+    const content = buildProposalContentV2(
+      { answers },
+      calculateSystemData(answers),
+      calculateHoursData(calculateSystemData(answers), rates)
+    );
+    assert.equal(
+      content.overview.roomsAndSystems,
+      'Your project covers 2 interior spaces (Room 1, Room 2) and 2 exterior spaces (Front Patio, Back Patio), and includes integration with lighting systems.'
+    );
+  });
+
+  it('puts heater, fan and pump timers under climate and leaves the pool without a timer line', () => {
+    const answers = validAnswers({
+      rooms: 1,
+      roomControllerCount: 1,
+      heaterZones: 1,
+      fanZones: 1,
+      pumpZones: 2,
+      poolZones: 1
+    });
+    const content = buildProposalContentV2(
+      { answers },
+      calculateSystemData(answers),
+      calculateHoursData(calculateSystemData(answers), rates)
+    );
+    const climate = content.systems.sections.find((section) => section.title === 'Climate');
+    const pool = content.systems.sections.find((section) => section.title === 'Pool/Pumps');
+    assert.equal(climate.lines.includes('4 timers have been added'), true);
+    assert.equal(JSON.stringify(pool.lines).includes('timer'), false);
+  });
+
+  it('keeps a long controlled-systems band below the page title', () => {
+    const tall = 700;
+    const shifted = bandOriginY(tall, true);
+    assert.ok(shifted >= TITLED_BAND_MIN_Y);
+    assert.ok(shifted > (792 - tall) / 2);
+    const short = bandOriginY(240, true);
+    assert.equal(short, (792 - 240) / 2);
+    assert.ok(short >= TITLED_BAND_MIN_Y);
   });
 });

@@ -5,8 +5,11 @@ const LineItemSchema = new mongoose.Schema({
   id:             { type: String, required: true },
   label:          { type: String, required: true },
   count:          { type: Number, required: true },
-  minutesPerUnit: { type: Number, required: true },
-  rawHours:       { type: Number, required: true },
+  minutesPerUnit: { type: Number },
+  rawHours:       { type: Number },
+  programmingMinutes: { type: Number },
+  graphicsMinutes:    { type: Number },
+  minutes:        { type: Number },
   hours:          { type: Number, required: true }
 }, { _id: false });
 
@@ -25,6 +28,7 @@ const ProposalSubmissionSchema = new mongoose.Schema({
   rateCardVersion:  { type: String, required: true },
   lineItems:        { type: [LineItemSchema], required: true },
   sectionHours:     { type: mongoose.Schema.Types.Mixed, required: true },
+  breakdownHours:   { type: mongoose.Schema.Types.Mixed },
   totalProjectHours:{ type: Number, required: true },
 
   pdfFilename:      { type: String },

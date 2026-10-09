@@ -1,7 +1,16 @@
 # 04 - Calculations
 
+Rate card **2026.2**, specified in the rest of this document, is legacy. It stays
+in `backend/proposal/calc/legacy/` for the parity test, the v1 preview
+(`GET /rti_proposal/preview.pdf?v=1`), and stored submissions. Stored
+submissions are never recalculated.
+
+The live calculator is rate card **2026.3**. Its minutes, controller rules and
+rounding are in [09-effort-model.md](09-effort-model.md). The 2026.2 parity
+contract below still applies to the legacy modules only.
+
 The hour estimate is the commercially valuable output of this system. This document
-is the authoritative specification of how it is produced.
+is the authoritative specification of how the legacy card is produced.
 
 Read the parity contract at the end before changing anything here.
 

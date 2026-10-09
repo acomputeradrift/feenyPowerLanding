@@ -197,8 +197,9 @@ v2 pages:
    No timeline or hours on the cover.
 2. Project Overview — title stays at the top at 22pt. Dark grey band (`#575759`) is
    sized to the generated paragraph, copy vertically centered in the band, band
-   vertically centered on the page. Body text is left-aligned: *Your project covers
-   N rooms (Room 1, …)* and included systems; controllers *control every room / system*;
+   vertically centered on the page. Body text is left-aligned. With exterior spaces:
+   *Your project covers N interior spaces (Room 1, …) and M exterior spaces (Front Patio, …), and includes integration with … systems.*
+   With none, the sentence stays *N rooms* and omits the exterior clause. Controllers *control every room / system*;
    *Additional Info:* on its own line then the dealer notes (omitted if blank);
    commissioning date.
 3. Controlled Systems Overview — title stays at the top. Green band (`#39b54a`)
@@ -207,12 +208,20 @@ v2 pages:
    Streamer (Sonos Port)`, `1 x Display (TV)`). Audio and video zone counts print
    `N x Distributed Audio Zones` / `N x Distributed Video Zones`. Count-only
    rows stay `N x` (lighting zones, AV receivers, motorized lifts or mounts, I/O). Empty categories print
-   `None Included`.
+   `None Included`. Climate adds "N timers have been added" when heaters, fans
+   or pumps need timers. The pool section has no timer sentence. A long green
+   band is shifted down so it does not cover the page title; shorter bands stay
+   centered.
 4. Controller Overview — title stays at the top. Light grey band (`#a7a9ac`)
-   lists each present global type as `N x Global Controller (iPhone)` and
+   lists each present global type as `N x Global Controller (Phone)` (also
+   Tablet, Large Touchscreen, Small Touchscreen; legacy iPhone, iPad and
+   Touchscreen answers still print as stored). Clones are not called out.
    `N x Room Controller`.
 5. Project Summary — title at the top (22pt, same as the other page titles). Orange band again (color cycle
-   repeats) contains only `Total Programming Hours: N`. Acceptance copy is
+   repeats) contains four lines: `Overhead: N`, `Programming: N`, `Graphics: N`,
+   then `Total Hours: N`. The three parts are whole hours from largest-remainder
+   rounding and they add up to the billed total, which is `ceil` of the exact
+   project hours. Acceptance copy is
    left-aligned: "I approve this budget and understand that work will commence
    when Feeny Power and Control Ltd has received a 50% deposit." Client
    signature, print name, and date sit below in a centered 516pt block

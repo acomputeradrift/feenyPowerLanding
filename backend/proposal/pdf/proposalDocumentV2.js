@@ -45,6 +45,15 @@ const LINE_HEIGHT = 18.75 * 1.25;
 const MEASURE_SLOT = 800;
 const CONTENT_WIDTH = PAGE_WIDTH - BAND_PAD_X * 2;
 const CHARS_PER_LINE = Math.floor(CONTENT_WIDTH / (BAND_FONT_SIZE * 0.52));
+// pdfmake paints a 22pt line at 18.75*(22/16)*1.25, plus the title's 8pt bottom margin.
+const PAGE_TITLE_BLOCK = (18.75 * (22 / 16)) * 1.25 + 8;
+export const TITLED_BAND_MIN_Y = PAGE_MARGIN_TOP + PAGE_TITLE_BLOCK + 16;
+
+export function bandOriginY(height, clearTitle = false) {
+  const centered = (PAGE_HEIGHT - height) / 2;
+  if (!clearTitle) return centered;
+  return Math.max(centered, TITLED_BAND_MIN_Y);
+}
 
 function imageDataUrl(filename) {
   const bytes = readFileSync(path.join(frontendImages, filename));
@@ -189,7 +198,7 @@ async function bleedBands(specs) {
   const heights = await measureBandHeights(tables);
   return tables.map((table, index) => {
     const height = heights[index];
-    const y = (PAGE_HEIGHT - height) / 2;
+    const y = bandOriginY(height, specs[index].clearTitle);
     return {
       box: {
         contentHeight: height - BAND_PAD_Y * 2,
@@ -323,7 +332,8 @@ export async function buildDocDefinitionV2(submission, systemData, hoursData, op
     {
       fillColor: COLORS.green,
       children: systemSectionRows(systems.sections),
-      alignment: 'center'
+      alignment: 'center',
+      clearTitle: true
     },
     {
       fillColor: COLORS.steel,
@@ -332,7 +342,10 @@ export async function buildDocDefinitionV2(submission, systemData, hoursData, op
     },
     {
       fillColor: COLORS.orange,
-      children: [{ text: totals.hoursLine, margin: [0, 4, 0, 4] }],
+      children: [
+        ...(totals.lines || []).map((line) => ({ text: line, margin: [0, 4, 0, 4] })),
+        { text: totals.hoursLine, margin: [0, 4, 0, 4] }
+      ],
       alignment: 'center'
     }
   ]);
