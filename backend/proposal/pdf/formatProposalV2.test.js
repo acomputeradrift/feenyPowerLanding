@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { calculateHoursData } from '../calc/hoursData.js';
+import { calculateHoursData, clientSummaryHours } from '../calc/hoursData.js';
 import { rates } from '../calc/rates.js';
 import { calculateSystemData } from '../calc/systemData.js';
 import { validAnswers } from '../fixtures/validAnswers.js';
@@ -102,7 +102,7 @@ describe('proposal v2 wording', () => {
     );
     assert.equal(
       content.overview.commissioning,
-      'The date of commissioning for this project is September 15, 2026.'
+      'The date of commissioning for this project is TBD.'
     );
 
     assert.deepEqual(
@@ -134,18 +134,18 @@ describe('proposal v2 wording', () => {
     ]);
     assert.equal(content.controllers.intro, undefined);
 
+    const client = clientSummaryHours(hoursData.breakdownHours);
     assert.equal(content.totals.title, 'Project Summary');
     assert.deepEqual(content.totals.lines, [
-      `Overhead: ${hoursData.summaryHours.overhead}`,
-      `Programming: ${hoursData.summaryHours.programming}`,
-      `Graphics: ${hoursData.summaryHours.graphics}`
+      `System: ${client.system}`,
+      `Programming: ${client.programming}`,
+      `Graphics: ${client.graphics}`,
+      `Commissioning: ${client.commissioning}`
     ]);
-    assert.equal(content.totals.hoursLine, `Total Hours: ${hoursData.summaryHours.total}`);
+    assert.equal(content.totals.hoursLine, `Total Hours: ${client.total}`);
     assert.equal(
-      hoursData.summaryHours.overhead
-        + hoursData.summaryHours.programming
-        + hoursData.summaryHours.graphics,
-      hoursData.summaryHours.total
+      client.system + client.programming + client.graphics + client.commissioning,
+      client.total
     );
     assert.equal(
       content.totals.acceptance,
@@ -208,7 +208,7 @@ describe('proposal v2 wording', () => {
     assert.equal(def.includes('No additional information'), false);
   });
 
-  it('lists displays as N x Display (type), grouped by type', () => {
+  it('lists repeated displays as N x type with each name', () => {
     const answers = validAnswers({
       rooms: 1,
       roomControllerCount: 1,
@@ -225,9 +225,117 @@ describe('proposal v2 wording', () => {
       calculateHoursData(calculateSystemData(answers), rates)
     );
     assert.deepEqual(content.systems.sections[1].lines, [
-      '2 x Display (TV)',
+      '2 x TV (Living Room, Bedroom)',
       '1 x Display (Projector)'
     ]);
+  });
+
+  it('collapses repeated source names onto one counted line', () => {
+    const answers = validAnswers({
+      rooms: 1,
+      roomControllerCount: 1,
+      audioDiscreteSourceZones: 2,
+      videoDiscreteSourceZones: 5
+    });
+    answers.audioSourceDetails = [
+      { type: 'Streamer', name: 'Sonos' },
+      { type: 'Streamer', name: 'Sonos 2' }
+    ];
+    answers.videoSourceDetails = [
+      { type: 'Media Player', name: 'Roku' },
+      { type: 'Media Player', name: 'Roku 2' },
+      { type: 'Media Player', name: 'Apple TV' },
+      { type: 'Media Player', name: 'Roku 3' },
+      { type: 'Media Player', name: 'Roku 4' }
+    ];
+    const content = buildProposalContentV2(
+      { answers },
+      calculateSystemData(answers),
+      calculateHoursData(calculateSystemData(answers), rates)
+    );
+    assert.deepEqual(content.systems.sections[1].lines, [
+      '2 x Sonos (Sonos, Sonos 2)',
+      '4 x Roku (Roku, Roku 2, Roku 3, Roku 4)',
+      '1 x Media Player (Apple TV)'
+    ]);
+  });
+
+  it('formats the Deer Park submission', () => {
+    const answers = validAnswers({
+      contractorName: 'Fernando Callender',
+      contractorEmail: 'fcallender@havenandwire.com',
+      projectClientName: 'Private Client',
+      projectPoName: 'DEER PARK',
+      projectAddress: 'California',
+      projectTimeline: '2026-12-08',
+      rooms: 19,
+      floors: 2,
+      exteriorZones: 4,
+      lightingZones: 100,
+      audioZones: 11,
+      audioDiscreteSourceZones: 2,
+      videoDiscreteSourceZones: 4,
+      avReceiverDiscreteZones: 4,
+      displayDiscreteZones: 5,
+      globalControllerCount: 5,
+      roomControllerCount: 4,
+      additionalInfo: ''
+    });
+    answers.roomDetails = [
+      'Main Entrance', 'Main Floor Hall', 'Main Floor Guest Bath', 'Office',
+      'Dining Room', 'Kitchen', 'Family Room', 'Play Room', 'Guest Suite Hall',
+      'Guest Suite', 'Upstairs Hall', 'Upstairs Primary Bedroom',
+      'Upstairs Primary Bath', 'Upstairs Front Guest Bedroom',
+      'Upstairs Back Guest Bedroom', 'Garage', 'Gym', 'Theater', 'Spa'
+    ].map((name) => ({ name }));
+    answers.exteriorZoneDetails = ['Front Patio', 'Back Patio', 'Exterior', 'Landscape']
+      .map((name) => ({ name }));
+    answers.audioSourceDetails = [
+      { type: 'Streamer', name: 'Streamer 1' },
+      { type: 'Streamer', name: 'Streamer 2' }
+    ];
+    answers.videoSourceDetails = [1, 2, 3, 4].map((n) => ({
+      type: 'Media Player',
+      name: `Roku ${n}`
+    }));
+    answers.displayDetails = Array.from({ length: 5 }, () => ({ type: 'TV', name: '' }));
+    answers.globalControllerDetails = [
+      { type: 'Phone' },
+      { type: 'Large Touchscreen' },
+      { type: 'Large Touchscreen' },
+      { type: 'Large Touchscreen' },
+      { type: 'Large Touchscreen' }
+    ];
+    const systemData = calculateSystemData(answers);
+    const hoursData = calculateHoursData(systemData, rates);
+    const content = buildProposalContentV2({ answers }, systemData, hoursData);
+    assert.equal(content.cover.poLine, 'Project PO: DEER PARK');
+    assert.equal(content.cover.clientLine, 'Project Client Name: Private Client');
+    assert.equal(content.cover.locationLine, 'Project Location: California');
+    assert.match(content.overview.roomsAndSystems, /19 interior spaces \(Main Entrance,.*Spa\)/);
+    assert.match(content.overview.roomsAndSystems, /4 exterior spaces \(Front Patio, Back Patio, Exterior, Landscape\)/);
+    assert.equal(content.overview.additional, undefined);
+    assert.equal(content.overview.commissioning, 'The date of commissioning for this project is TBD.');
+    assert.deepEqual(content.systems.sections[0].lines, ['100 x Lighting Zones']);
+    assert.deepEqual(content.systems.sections[1].lines, [
+      '11 x Distributed Audio Zones',
+      '2 x Streamer (Streamer 1, Streamer 2)',
+      '4 x Roku (Roku 1, Roku 2, Roku 3, Roku 4)',
+      '4 x AV Receivers',
+      '5 x Display (TV)'
+    ]);
+    assert.deepEqual(content.controllers.lines, [
+      '1 x Global Controller (Phone)',
+      '4 x Global Controller (Large Touchscreen)',
+      '4 x Room Controller'
+    ]);
+    assert.deepEqual(content.totals.lines, [
+      'System: 12',
+      'Programming: 14',
+      'Graphics: 16',
+      'Commissioning: 10'
+    ]);
+    assert.equal(content.totals.hoursLine, 'Total Hours: 52');
   });
 
   it('lists motorized lifts as a count-only AV row', () => {

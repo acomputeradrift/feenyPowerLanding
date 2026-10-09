@@ -1,4 +1,4 @@
-import { summaryHoursFromBreakdown } from '../calc/hoursData.js';
+import { clientSummaryHours } from '../calc/hoursData.js';
 
 function asCount(value) {
   const n = Number(value);
@@ -41,13 +41,62 @@ function namedItems(items) {
   return Array.isArray(items) ? items : [];
 }
 
-function deviceLine(item, fallbackType) {
-  const name = trimmed(item?.name);
-  const type = trimmed(item?.type) || fallbackType;
-  if (type && name) return qtyLine(1, `${type} (${name})`);
-  if (type) return qtyLine(1, type);
-  if (name) return qtyLine(1, name);
-  return null;
+function nameStem(name) {
+  return name.replace(/\s+\d+$/, '').trim();
+}
+
+function collapsedDeviceLines(items, fallbackType, { groupByType = false } = {}) {
+  const groups = [];
+  const indexByKey = new Map();
+  for (const item of namedItems(items)) {
+    const name = trimmed(item?.name);
+    const type = trimmed(item?.type) || fallbackType;
+    if (!name && !type) continue;
+    const stem = name ? nameStem(name) : '';
+    const key = groupByType
+      ? `type:${type.toLowerCase()}`
+      : (stem ? `stem:${stem.toLowerCase()}` : `type:${type.toLowerCase()}`);
+    let group = indexByKey.get(key);
+    if (!group) {
+      group = { type, stem: stem || type, names: [], unnamed: 0 };
+      indexByKey.set(key, group);
+      groups.push(group);
+    }
+    if (name) group.names.push(name);
+    else group.unnamed += 1;
+  }
+
+  if (groupByType) {
+    const rank = (type) => {
+      const index = ['TV', 'Projector'].indexOf(type);
+      return index === -1 ? 2 : index;
+    };
+    groups.sort((a, b) => rank(a.type) - rank(b.type));
+  }
+
+  const lines = [];
+  for (const group of groups) {
+    const count = group.names.length + group.unnamed;
+    if (groupByType) {
+      if (count > 1 && group.names.length > 0) {
+        lines.push(qtyLine(count, `${group.type} (${group.names.join(', ')})`));
+      } else {
+        const line = qtyLine(count, `Display (${group.type})`);
+        if (line) lines.push(line);
+      }
+      continue;
+    }
+    if (count > 1 && group.names.length > 0) {
+      lines.push(qtyLine(count, `${group.stem} (${group.names.join(', ')})`));
+    } else if (group.names.length === 1 && group.unnamed === 0) {
+      const line = qtyLine(1, `${group.type} (${group.names[0]})`);
+      if (line) lines.push(line);
+    } else {
+      const line = qtyLine(count, group.type);
+      if (line) lines.push(line);
+    }
+  }
+  return lines;
 }
 
 function leftoverCountLine(count, items, singular, plural) {
@@ -226,8 +275,8 @@ function additionalInfo(answers) {
   return value || undefined;
 }
 
-function commissioningSentence(answers) {
-  return `The date of commissioning for this project is ${formatCommissioningDate(answers?.projectTimeline)}.`;
+function commissioningSentence() {
+  return 'The date of commissioning for this project is TBD.';
 }
 
 function collectLines(builders) {
@@ -238,32 +287,8 @@ function collectLines(builders) {
   return lines.length > 0 ? lines : ['None Included'];
 }
 
-function namedDeviceLines(lines, items, fallbackType) {
-  for (const item of namedItems(items)) {
-    const line = deviceLine(item, fallbackType);
-    if (line) lines.push(line);
-  }
-}
-
-function categoryByTypeLines(lines, items, category, typeOrder = []) {
-  const counts = new Map();
-  for (const item of namedItems(items)) {
-    const type = trimmed(item.type);
-    if (!type) continue;
-    counts.set(type, (counts.get(type) || 0) + 1);
-  }
-  const seen = new Set();
-  for (const type of typeOrder) {
-    if (!counts.has(type)) continue;
-    const line = qtyLine(counts.get(type), `${category} (${type})`);
-    if (line) lines.push(line);
-    seen.add(type);
-  }
-  for (const [type, n] of counts) {
-    if (seen.has(type)) continue;
-    const line = qtyLine(n, `${category} (${type})`);
-    if (line) lines.push(line);
-  }
+function pushDeviceLines(lines, items, fallbackType, options) {
+  lines.push(...collapsedDeviceLines(items, fallbackType, options));
 }
 
 function systemSections(answers, systemData) {
@@ -280,7 +305,7 @@ function systemSections(answers, systemData) {
       title: 'Audio/Video',
       lines: collectLines([
         (lines) => pushCount(lines, systemData.audioZones, 'Distributed Audio Zone', 'Distributed Audio Zones'),
-        (lines) => namedDeviceLines(lines, answers.audioSourceDetails, 'Audio Source'),
+        (lines) => pushDeviceLines(lines, answers.audioSourceDetails, 'Audio Source'),
         (lines) => {
           const extra = leftoverCountLine(
             systemData.totalAudioSourceZones,
@@ -290,7 +315,7 @@ function systemSections(answers, systemData) {
           if (extra) lines.push(extra);
         },
         (lines) => pushCount(lines, systemData.videoZones, 'Distributed Video Zone', 'Distributed Video Zones'),
-        (lines) => namedDeviceLines(lines, answers.videoSourceDetails, 'Video Source'),
+        (lines) => pushDeviceLines(lines, answers.videoSourceDetails, 'Video Source'),
         (lines) => {
           const extra = leftoverCountLine(
             systemData.totalVideoSourceZones,
@@ -300,7 +325,7 @@ function systemSections(answers, systemData) {
           if (extra) lines.push(extra);
         },
         (lines) => pushCount(lines, systemData.totalAvReceiverZones, 'AV Receiver'),
-        (lines) => categoryByTypeLines(lines, answers.displayDetails, 'Display', ['TV', 'Projector']),
+        (lines) => pushDeviceLines(lines, answers.displayDetails, 'Display', { groupByType: true }),
         (lines) => {
           const extra = leftoverCountLine(
             systemData.totalDisplayZones,
@@ -330,7 +355,7 @@ function systemSections(answers, systemData) {
       lines: collectLines([
         (lines) => pushCount(lines, systemData.alarmZones, 'Alarm Zone'),
         (lines) => pushCount(lines, systemData.accessZones, 'Access Zone'),
-        (lines) => namedDeviceLines(lines, answers.cameraDetails, 'Camera'),
+        (lines) => pushDeviceLines(lines, answers.cameraDetails, 'Camera'),
         (lines) => {
           const extra = leftoverCountLine(
             systemData.cameraZones,
@@ -381,8 +406,7 @@ function controllerLines(answers, systemData) {
 export function buildProposalContentV2(submission, systemData, hoursData, options = {}) {
   const answers = submission.answers || {};
   const year = options.year ?? new Date().getUTCFullYear();
-  const summary = hoursData.summaryHours
-    || summaryHoursFromBreakdown(hoursData.breakdownHours);
+  const summary = clientSummaryHours(hoursData.breakdownHours);
 
   return {
     copyright: `© ${year} Feeny Power and Control Ltd. All Rights Reserved.`,
@@ -398,7 +422,7 @@ export function buildProposalContentV2(submission, systemData, hoursData, option
       roomsAndSystems: roomsAndSystemsSentence(answers, systemData),
       controllers: controllersSentence(answers, systemData),
       additional: additionalInfo(answers),
-      commissioning: commissioningSentence(answers)
+      commissioning: commissioningSentence()
     },
     systems: {
       title: 'Controlled Systems Overview',
@@ -410,11 +434,14 @@ export function buildProposalContentV2(submission, systemData, hoursData, option
     },
     totals: {
       title: 'Project Summary',
-      lines: [
-        `Overhead: ${summary.overhead}`,
-        `Programming: ${summary.programming}`,
-        `Graphics: ${summary.graphics}`
-      ],
+      lines: Array.isArray(options.summaryLines) && options.summaryLines.length > 0
+        ? options.summaryLines
+        : [
+          `System: ${summary.system}`,
+          `Programming: ${summary.programming}`,
+          `Graphics: ${summary.graphics}`,
+          `Commissioning: ${summary.commissioning}`
+        ],
       hoursLine: `Total Hours: ${summary.total}`,
       acceptance: 'I approve this budget and understand that work will commence when Feeny Power and Control Ltd has received a\u00A050% deposit.',
       signatureLabel: 'Client signature',

@@ -202,6 +202,24 @@ export function summaryHoursFromBreakdown(breakdownHours) {
   };
 }
 
+export function clientSummaryHours(breakdownHours) {
+  const base = summaryHoursFromBreakdown(breakdownHours);
+  const overhead = Number(breakdownHours?.overhead) || 0;
+  const programming = Number(breakdownHours?.programming) || 0;
+  const graphics = Number(breakdownHours?.graphics) || 0;
+  const exactTotal = overhead + programming + graphics;
+  let commissioning = Math.round(exactTotal * 0.2);
+  if (commissioning > base.overhead) commissioning = base.overhead;
+  if (commissioning < 0) commissioning = 0;
+  return {
+    system: base.overhead - commissioning,
+    programming: base.programming,
+    graphics: base.graphics,
+    commissioning,
+    total: base.total
+  };
+}
+
 export function calculateHoursData(systemData, rateCard) {
   const ctx = pricingContext(systemData);
   const overhead = overheadMinutes(systemData, rateCard, ctx);

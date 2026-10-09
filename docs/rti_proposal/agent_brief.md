@@ -54,7 +54,7 @@ Vanilla HTML/CSS/JS. No React, no bundler, no second test framework. Deploy is `
 - Do not re-add a pdfmake `background` canvas behind the colour bands. That made page 3 a giant green slab with the copy sitting high in it.
 - Do not put the cover tagline back (*Unlock Seamless Smart Home Integration…*).
 - Do not drop `N x` counts from systems or controller list lines.
-- Do not list displays as `TV (Living Room)`. They are `N x Display (TV)` / `N x Display (Projector)`, grouped by type.
+- Displays of one type share a line: `N x TV (Living Room, Bedroom)` / `N x Projector (Theater)`. A single display stays `1 x Display (TV)`.
 - Do not put ISR-4 back on the Controller Overview. Room controllers print `N x Room Controller`.
 - Do not preview PDFs in Cursor’s embedded browser. Use Preview or the system browser.
 - Do not reopen or revive **RTI AutoProposal** (Google Form / Apps Script). That system is dead.
@@ -94,7 +94,7 @@ These are current product rules, not a backlog.
 **Defaults (unedited look faded)**
 
 - `projectClientName` prefills `Private Client`. `projectAddress` prefills `Private Location`.
-- Repeat names prefill from `itemLabel` (Room 1, Audio Source 1, …).
+- Repeat names prefill from `itemLabel` (Room 1, Audio Source 1, …). Raising a count restores names and types already entered. Clearing the number while typing a new one does not wipe them.
 - Unedited default text uses class `proposal-value-default` (hint colour `#a7a9ac`). As soon as the dealer types something else, it goes full contrast.
 - Do **not** fade Type selects or `Select…`.
 
@@ -153,9 +153,9 @@ Files: `backend/proposal/pdf/formatProposalV2.js`, `proposalDocumentV2.js`, `pre
 
 1. **Cover** — no tagline. Feeny logo `200×150` (just larger than the visible RTI mark; the RTI PNG is padded). Contractor name 16pt. *Prepared for:* and *An* / *Proposal* are light grey `#a7a9ac` at 11pt. Orange band is PO / client / location only (no timeline or hours). RTI logo stays below the band at `480×76`, with *An* above and *Proposal* below.
 2. **Project Overview** — 22pt title. Left-aligned dark grey band. *Your project covers N interior spaces (Room 1, Room 2, …) and M exterior spaces (Front Patio, …), and includes integration with … systems.* With no exterior spaces the sentence stays *N rooms* and omits the exterior clause. Controllers *control every room / system*. *Additional Info:* on its own line, then the notes (omit the block if blank). Commissioning date last.
-3. **Controlled Systems Overview** — 22pt title. Sources `N x Type (Name)` (e.g. `1 x Streamer (Sonos Port)`). Displays grouped by type: `N x Display (TV)`, `N x Display (Projector)`. Audio/video zone counts are `N x Distributed Audio Zones` / `N x Distributed Video Zones`. Count-only rows stay `N x` (lighting, AV receivers, I/O). Empty categories `None Included`.
+3. **Controlled Systems Overview** — 22pt title. A single source is `1 x Type (Name)` (e.g. `1 x Streamer (Sonos Port)`). Repeated names collapse: `4 x Roku (Roku, Roku 2, Roku 3, Roku 4)`. Displays of one type share a line when there is more than one: `N x TV (Living Room, Bedroom)`. A single display stays `1 x Display (TV)`. Audio/video zone counts are `N x Distributed Audio Zones` / `N x Distributed Video Zones`. Count-only rows stay `N x` (lighting, AV receivers, I/O). Empty categories `None Included`. Commissioning date always prints `TBD`.
 4. **Controller Overview** — 22pt title. `N x Global Controller (Phone)` (and Tablet / Large Touchscreen / Small Touchscreen). `N x Room Controller`. Clones are not called out. No ISR-4. Keep the counts.
-5. **Project Summary** — 22pt title. Orange band is `Overhead: N`, `Programming: N`, `Graphics: N`, then `Total Hours: N`. The three lines are whole hours that add up to the billed total. Acceptance + signature / print name / date in the white space below.
+5. **Project Summary** — 22pt title. Orange band is `System: N`, `Programming: N`, `Graphics: N`, `Commissioning: N`, then `Total Hours: N`. Commissioning is 20% of the exact total, rounded to the nearest hour, and it comes out of overhead. System is the rest of the overhead whole hours. Programming and graphics stay on their existing whole-hour lines. The four lines add up to the billed total. Acceptance + signature / print name / date in the white space below.
 
 Colour bands cycle Feeny logo colours: orange `#fcb040`, dark grey `#575759`, green `#39b54a`, light grey `#a7a9ac`. Dark grey uses white text; others black. Band body is 16pt Roboto, full-bleed table `fillColor`.
 

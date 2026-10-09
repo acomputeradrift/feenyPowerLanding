@@ -86,7 +86,9 @@ Explicitly out of scope. Do not implement these without a new decision.
   count question. Setting the count to N renders N instances; setting it to 0
   renders none.
 - **FR-6** Changing a count preserves values already entered in surviving repeat
-  instances. Reducing the count from 5 to 3 discards only instances 4 and 5.
+  instances. Reducing the count from 5 to 3 shows only the first 3. Raising the
+  count again restores names and types already entered, including values hidden
+  by a lower count or by clearing the number while a new one is typed.
 - **FR-7** Count questions accept non-negative integers only, and are rendered as
   numeric inputs.
 - **FR-8** Validation rules are defined once and enforced both in the browser and

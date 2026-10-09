@@ -42,6 +42,8 @@ arrays of objects:
 
 This object is the sole source of truth for the renderer. Inputs write to it on
 change, and a section re-renders from it. Nothing is read back out of the DOM.
+The project timeline is the exception: its value is stored without rebuilding
+the step, so the native date control can change month and year.
 
 Question ids are stable camelCase identifiers. They are **not** the human labels.
 The legacy system keyed answers by Google Form question title, which meant
@@ -138,8 +140,11 @@ Rules:
 - Instances are stored as an array at the group's `id`, index-aligned with the
   count.
 - **Reducing the count truncates from the end** and preserves surviving instances
-  (FR-6). Going from 5 to 3 discards indices 3 and 4 and leaves 0 through 2
-  untouched. Never re-key or reorder on resize.
+  (FR-6). Going from 5 to 3 shows indices 0 through 2 and hides 3 and 4. Raising
+  the count restores those entered values instead of inventing new defaults.
+  Clearing the number while typing a replacement does not discard them. A
+  committed zero still shows no cards until the count is raised. Never re-key
+  or reorder on resize.
 - `max` caps instances defensively so a mistyped count such as 9999 cannot render
   an unusable page. Enforce on both sides.
 - Repeat groups do not nest. If nesting ever seems necessary, revisit the schema

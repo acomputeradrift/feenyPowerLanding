@@ -135,7 +135,16 @@ function renderField(question, state, value, path, onChange, hintValue) {
 
   input.addEventListener('input', (event) => {
     onChange(readValue(question, event.target), selectionOf(event.target));
+    if (question.kind !== 'date') return;
+    input.removeAttribute('aria-invalid');
+    const error = wrapper.querySelector('.proposal-error');
+    if (error) error.remove();
   });
+  if (question.kind === 'date') {
+    input.addEventListener('change', (event) => {
+      onChange(readValue(question, event.target), null);
+    });
+  }
 
   wrapper.append(label, input);
 

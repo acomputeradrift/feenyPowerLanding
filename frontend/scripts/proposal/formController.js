@@ -69,6 +69,39 @@ function omitError(errors, path) {
   return next;
 }
 
+function repeatQuestions(schemaSteps) {
+  return allQuestions(schemaSteps).filter((question) => question.kind === 'repeat');
+}
+
+function rememberRepeat(history, groupId, items) {
+  if (!Array.isArray(items) || items.length === 0) return;
+  const prior = history.get(groupId) || [];
+  const merged = prior.slice();
+  items.forEach((item, index) => {
+    merged[index] = clone(item);
+  });
+  history.set(groupId, merged);
+}
+
+function rememberRepeats(history, schemaSteps, source) {
+  for (const question of repeatQuestions(schemaSteps)) {
+    rememberRepeat(history, question.id, source[question.id]);
+  }
+}
+
+function withRepeatHistory(history, schemaSteps, answers) {
+  const seeded = { ...answers };
+  for (const question of repeatQuestions(schemaSteps)) {
+    const saved = history.get(question.id);
+    if (!saved || saved.length === 0) continue;
+    const current = Array.isArray(seeded[question.id]) ? seeded[question.id] : [];
+    if (saved.length > current.length) {
+      seeded[question.id] = saved.map((item) => clone(item));
+    }
+  }
+  return seeded;
+}
+
 export function createFormController(options) {
   const {
     steps,
@@ -104,6 +137,7 @@ export function createFormController(options) {
   let submitting = false;
   let submitResult = null;
   let submitError = '';
+  const repeatHistory = new Map();
 
   const formListeners = new Set();
   const estimateListeners = new Set();
@@ -233,11 +267,13 @@ export function createFormController(options) {
     const question = findQuestionInSteps(steps, id);
     const parsed = question?.kind === 'count' ? parseCount(value) : value;
     const previous = answers;
+    rememberRepeats(repeatHistory, steps, previous);
     let next = { ...answers, [id]: parsed };
-    if (question?.kind === 'count') {
-      next = syncRepeatGroups(steps, next);
+    if (question?.kind === 'count' && parsed !== '') {
+      next = syncRepeatGroups(steps, withRepeatHistory(repeatHistory, steps, next));
     }
     answers = next;
+    if (question?.kind === 'count') rememberRepeats(repeatHistory, steps, answers);
     fieldErrors = omitError(fieldErrors, id);
     focusTarget = fieldDomId(id);
     focusSelection = selection;
@@ -259,7 +295,7 @@ export function createFormController(options) {
     }
 
     queueEstimate();
-    notifyForm();
+    if (question?.kind !== 'date') notifyForm();
     return getState();
   }
 
@@ -270,6 +306,7 @@ export function createFormController(options) {
       ))
       : [];
     answers = { ...answers, [groupId]: items };
+    rememberRepeat(repeatHistory, groupId, items);
     const path = `${groupId}[${index}].${fieldId}`;
     fieldErrors = omitError(fieldErrors, path);
     focusTarget = fieldDomId(path);

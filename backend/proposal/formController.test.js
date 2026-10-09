@@ -167,6 +167,49 @@ describe('FR-5 FR-6 count-driven repeats', () => {
     ]);
   });
 
+  it('keeps typed names when a count is cleared and then raised', () => {
+    const form = controller();
+    form.setAnswer('rooms', 5);
+    form.setRepeatField('roomDetails', 0, 'name', 'Kitchen');
+    form.setRepeatField('roomDetails', 2, 'name', 'Office');
+    form.setAnswer('rooms', '');
+    assert.equal(form.getState().answers.rooms, '');
+    assert.equal(form.getState().answers.roomDetails[0].name, 'Kitchen');
+    form.setAnswer('rooms', 6);
+    assert.equal(form.getState().answers.roomDetails.length, 6);
+    assert.equal(form.getState().answers.roomDetails[0].name, 'Kitchen');
+    assert.equal(form.getState().answers.roomDetails[2].name, 'Office');
+    assert.equal(form.getState().answers.roomDetails[4].name, 'Room 5');
+    assert.equal(form.getState().answers.roomDetails[5].name, 'Room 6');
+    assert.equal(form.getSubmitPayload().answers.roomDetails[0].name, 'Kitchen');
+  });
+
+  it('restores names hidden by a lower count when the count grows again', () => {
+    const form = controller();
+    form.setAnswer('rooms', 5);
+    form.setRepeatField('roomDetails', 3, 'name', 'Gym');
+    form.setRepeatField('roomDetails', 4, 'name', 'Theatre');
+    form.setAnswer('rooms', 3);
+    form.setAnswer('rooms', 6);
+    assert.equal(form.getState().answers.roomDetails[3].name, 'Gym');
+    assert.equal(form.getState().answers.roomDetails[4].name, 'Theatre');
+    assert.equal(form.getState().answers.roomDetails[5].name, 'Room 6');
+  });
+
+  it('restores source names and types the same way', () => {
+    const form = controller();
+    form.setAnswer('audioDiscreteSourceZones', 2);
+    form.setRepeatField('audioSourceDetails', 0, 'name', 'Sonos');
+    form.setRepeatField('audioSourceDetails', 0, 'type', 'Streamer');
+    form.setAnswer('audioDiscreteSourceZones', '');
+    form.setAnswer('audioDiscreteSourceZones', 3);
+    assert.deepEqual(form.getState().answers.audioSourceDetails[0], {
+      name: 'Sonos',
+      type: 'Streamer'
+    });
+    assert.equal(form.getState().answers.audioSourceDetails[2].name, 'Audio Source 3');
+  });
+
   it('caps instances at the schema max so a mistyped count cannot explode the page', () => {
     const form = controller();
     form.setAnswer('rooms', 9999);
@@ -180,6 +223,22 @@ describe('FR-5 FR-6 count-driven repeats', () => {
     const state = form.getState();
     assert.match(state.announcement, /2/);
     assert.equal(state.focusTarget, fieldDomId('roomDetails[1].name'));
+  });
+});
+
+describe('project timeline date', () => {
+  it('stores the date without re-rendering the step', () => {
+    const form = controller();
+    let renders = 0;
+    form.subscribe(() => {
+      renders += 1;
+    });
+    const before = renders;
+    form.setAnswer('projectTimeline', '2027-04-01');
+    assert.equal(form.getState().answers.projectTimeline, '2027-04-01');
+    assert.equal(renders, before);
+    form.setAnswer('contractorName', 'Ada');
+    assert.equal(renders, before + 1);
   });
 });
 

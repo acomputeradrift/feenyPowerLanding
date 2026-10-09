@@ -114,7 +114,9 @@ Do not animate; on a form this dense, motion is noise.
 
 **Repeat groups.** Changing a count adds or removes cards immediately, directly
 under the driving count. Reducing a count truncates from the end and preserves
-surviving values (FR-6). Each card is headed by its item label, for example
+surviving values (FR-6). Raising it restores names and types the dealer already
+entered. Clearing the number to type a new one leaves the current cards in
+place. Each card is headed by its item label, for example
 "Audio Source 2", and new name fields default to that label. Because names are
 optional, never present an empty name as an error.
 

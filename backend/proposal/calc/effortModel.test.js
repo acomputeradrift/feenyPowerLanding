@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { calculateHoursData, summaryHoursFromBreakdown } from './hoursData.js';
+import { calculateHoursData, clientSummaryHours, summaryHoursFromBreakdown } from './hoursData.js';
 import { rates } from './rates.js';
 import { calculateSystemData, classifyGlobalControllers } from './systemData.js';
 
@@ -323,5 +323,47 @@ describe('billed hour split', () => {
     });
     assert.equal(split.overhead + split.programming + split.graphics, split.total);
     assert.deepEqual([split.overhead, split.programming, split.graphics, split.total], [13, 15, 22, 50]);
+  });
+
+  it('takes commissioning as 20% of the total and leaves the rest of overhead as system', () => {
+    const theater = clientSummaryHours(minutesOf(smallTheater()).breakdownHours);
+    assert.deepEqual(
+      [theater.system, theater.programming, theater.graphics, theater.commissioning, theater.total],
+      [2, 1, 2, 1, 6]
+    );
+    const quoted = minutesOf({
+      contractorName: 'Fernando Callender',
+      rooms: 19,
+      floors: 2,
+      exteriorZones: 4,
+      lightingZones: 100,
+      audioZones: 11,
+      audioDiscreteSourceZones: 2,
+      audioSourceDetails: [{ type: 'Streamer' }, { type: 'Streamer' }],
+      videoDiscreteSourceZones: 4,
+      videoSourceDetails: [
+        { type: 'Media Player' },
+        { type: 'Media Player' },
+        { type: 'Media Player' },
+        { type: 'Media Player' }
+      ],
+      avReceiverDiscreteZones: 4,
+      displayDiscreteZones: 5,
+      displayDetails: Array.from({ length: 5 }, () => ({ type: 'TV' })),
+      globalControllerCount: 5,
+      globalControllerDetails: [
+        { type: 'Phone' },
+        { type: 'Large Touchscreen' },
+        { type: 'Large Touchscreen' },
+        { type: 'Large Touchscreen' },
+        { type: 'Large Touchscreen' }
+      ],
+      roomControllerCount: 4
+    });
+    const deer = clientSummaryHours(quoted.breakdownHours);
+    assert.deepEqual(
+      [deer.system, deer.programming, deer.graphics, deer.commissioning, deer.total],
+      [12, 14, 16, 10, 52]
+    );
   });
 });

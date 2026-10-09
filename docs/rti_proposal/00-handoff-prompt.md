@@ -134,6 +134,7 @@ Do not add React, a bundler, or a second test framework.
 
 ## Open items still unresolved
 
+- **Commissioning is 20% of the exact total.** It comes out of overhead and the quote does not grow. Resolved in [09-effort-model.md](09-effort-model.md). PDF lines are System, Programming, Graphics, and Commissioning.
 - **Email.** Resend is live. To is always `feeny.jamie@gmail.com`. Reply-To is the dealer. No dealer copy.
 - **Form header copy is invented** and may still be changed. See agent_brief.md.
 - **Backup and retention deliberately deferred.** [05-data-model.md](05-data-model.md).

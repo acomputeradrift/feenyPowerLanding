@@ -201,11 +201,11 @@ v2 pages:
    *Your project covers N interior spaces (Room 1, …) and M exterior spaces (Front Patio, …), and includes integration with … systems.*
    With none, the sentence stays *N rooms* and omits the exterior clause. Controllers *control every room / system*;
    *Additional Info:* on its own line then the dealer notes (omitted if blank);
-   commissioning date.
+   commissioning date, which always prints as TBD.
 3. Controlled Systems Overview — title stays at the top. Green band (`#39b54a`)
    lists every category (Lighting/Shading, Audio/Video, Climate, Security,
    Pool/Pumps, Inputs/Outputs). Typed devices print `N x Type (Name)` (e.g. `1 x
-   Streamer (Sonos Port)`, `1 x Display (TV)`). Audio and video zone counts print
+   Streamer (Sonos Port)`). Repeated names collapse onto one line (`4 x Roku (Roku, Roku 2, Roku 3, Roku 4)`). More than one display of a type lists each name (`2 x TV (Living Room, Bedroom)`); a single display stays `1 x Display (TV)`. Audio and video zone counts print
    `N x Distributed Audio Zones` / `N x Distributed Video Zones`. Count-only
    rows stay `N x` (lighting zones, AV receivers, motorized lifts or mounts, I/O). Empty categories print
    `None Included`. Climate adds "N timers have been added" when heaters, fans
@@ -218,10 +218,13 @@ v2 pages:
    Touchscreen answers still print as stored). Clones are not called out.
    `N x Room Controller`.
 5. Project Summary — title at the top (22pt, same as the other page titles). Orange band again (color cycle
-   repeats) contains four lines: `Overhead: N`, `Programming: N`, `Graphics: N`,
-   then `Total Hours: N`. The three parts are whole hours from largest-remainder
-   rounding and they add up to the billed total, which is `ceil` of the exact
-   project hours. Acceptance copy is
+   repeats) contains `System: N`, `Programming: N`, `Graphics: N`,
+   `Commissioning: N`, then `Total Hours: N`. Commissioning is the nearest
+   whole hour to 20% of the exact project hours, taken out of overhead.
+   System is the remaining overhead whole hours. Programming and graphics
+   keep the whole hours from the three-way largest-remainder split. The four
+   lines add up to the billed total, which is `ceil` of the exact project
+   hours. Acceptance copy is
    left-aligned: "I approve this budget and understand that work will commence
    when Feeny Power and Control Ltd has received a 50% deposit." Client
    signature, print name, and date sit below in a centered 516pt block

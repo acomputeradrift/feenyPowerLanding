@@ -127,6 +127,10 @@
     color: var(--proposal-error);
 }
 
+.proposal-field input[type="date"] {
+    color-scheme: dark;
+}
+
 .proposal-field input,
 .proposal-field select,
 .proposal-field textarea {

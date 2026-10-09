@@ -107,6 +107,13 @@ least 1 when anything is controlled) and C is the number of room controllers.
 - **Per room controller** covers home and navigation pages on that controller.
 - With no global controller, the first room controller takes the fixed, first
   room and additional room First Discrete overhead.
+- **Commissioning comes out of overhead.** The quoted total stays the same.
+  Commissioning is 20% of the exact total, rounded to the nearest hour.
+  System is what remains of the overhead whole hours. Programming and
+  graphics keep their whole-hour lines. Deer Park (19 rooms, 4 exterior,
+  billed 52) prints System 12, Programming 14, Graphics 16, Commissioning 10.
+  A one-room theater (billed 6) prints System 2, Programming 1, Graphics 2,
+  Commissioning 1.
 
 Check jobs: small theater with 1 remote 6.0 h (4 discrete devices, no clones);
 Deer Park (11 rooms, worked example below) 49.7 h; Deer Park as quoted
