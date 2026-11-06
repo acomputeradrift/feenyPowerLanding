@@ -10,6 +10,8 @@ import retrieveRoute from './routes/retrieve.js';
 import proposalRoutes, { handleProposalAudit } from './routes/proposal.js';
 import ideaFeedbackRoutes from './routes/ideaFeedback.js';
 import sentinelLiteCompareCountRoutes from './routes/sentinelLiteCompareCount.js';
+import retailEnquiryRoutes from './routes/retailEnquiry.js';
+import { mountRetailPages } from './routes/retailPages.js';
 import { handleProposalPdfPreview } from './proposal/pdf/preview.js';
 import { requireMongoUri } from './requireMongoUri.js';
 
@@ -27,6 +29,7 @@ app.use('/api/upload', uploadRoutes);
 app.use(processRoute);
 app.use(retrieveRoute);
 app.use('/api/proposal', proposalRoutes);
+app.use('/api/retail-enquiry', retailEnquiryRoutes);
 // Count-only: +1 when a dealer hits Compare. No files, names, paths, or bodies.
 app.use('/api/sentinel_lite/compare-count', sentinelLiteCompareCountRoutes);
 
@@ -116,6 +119,8 @@ app.get('/consultation', (req, res) => {
 app.get('/faq', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/faq.html'));
 });
+
+mountRetailPages(app);
 
 app.get('/rti_proposal', (req, res, next) => {
     // Express is not strict about trailing slashes: `/rti_proposal` and
