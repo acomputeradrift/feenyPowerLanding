@@ -67,7 +67,9 @@ Static mounts: `/styles`, `/scripts`, `/images`. Proposal schema also at `/scrip
 
 ## Components
 
-**Marketing** — `consultation.html`, `faq.html` · shared layout CSS + page CSS (`faq.css`) · Calendly via `consultation.js`.
+**Marketing** — `consultation.html`, `faq.html` · shared layout CSS + page CSS (`faq.css`, `testimonials.css`) · Calendly via `consultation.js`.
+
+**Consultation testimonials** — `/consultation` shows a Happy Clients carousel between the benefits and the bottom Calendly close. One quote at a time. It loops every 8 seconds, pauses on hover or keyboard focus, and builds the dots from each `figure.testimonial`. Styles are `frontend/styles/testimonials.css` and behavior is `frontend/scripts/testimonials.js` (loaded only by `consultation.html`). Add a quote by inserting another figure in the track. Do not put this CSS in `consultation.css`.
 
 **RTI proposal form** — Replaced the retired Google Form AutoProposal. Vanilla ES modules, schema-driven. For form/PDF/CSS work, read **`docs/rti_proposal/agent_brief.md` next** — do not load the full spec set for a visual pass. Key: `frontend/rti_proposal.html`, `styles/rti_proposal.css`, `scripts/proposal/`, `backend/proposal/`, `routes/proposal.js`. Deep specs: `docs/rti_proposal/README.md`.
 
@@ -96,8 +98,12 @@ Local and server each have their own `.env` — not synced via git.
 | | |
 |---|---|
 | SSH | `ssh my-do-server` |
+| Host | DigitalOcean droplet `fpcwebsite-sfo3` |
 | Repo | `/root/feenyPowerLanding` |
+| Node | **22.23.4** — NodeSource `node_22.x`, `/usr/bin/node` |
 | PM2 name | **`FPC Website`** (not `fpc_server`) |
+
+**2026-10-23 — CVE-2026-111497.** Production Node moved from 18.20.5 (end of life, bundled Brotli 1.1.0) to 22.23.4, the release that cherry-picks the Brotli decoder fix. `process.versions.brotli` still prints `1.1.0`; the fix is the 22.23.4 binary, not a Brotli version bump. Apt upgrade plus PM2 resurrect and `pm2 save` only. The git checkout was left at `6978f0c2` (2026-10-09). No commit, no push, no `git pull`. Jamie’s Mac was still Node 22.20.0.
 
 Full deploy: `deployment.md`. Sentinel Lite UI/engine releases: run `tools/ship.py` from the sibling **Sentinel (Lite)** repo — see `deployment.md` § Sentinel Lite.
 

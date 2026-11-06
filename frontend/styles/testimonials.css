@@ -1,0 +1,106 @@
+/* Testimonials on the consultation landing page only. */
+
+.testimonials {
+    padding: 48px 24px 40px;
+    background: #f4f4f5;
+    color: #222;
+    text-align: center;
+}
+
+.testimonials h2 {
+    margin: 0 auto 28px;
+    max-width: 720px;
+    font-size: 1.75rem;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+.testimonial-carousel {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.testimonial-viewport {
+    overflow: hidden;
+    touch-action: pan-y;
+}
+
+.testimonial-track {
+    display: flex;
+    align-items: stretch;
+    text-align: left;
+}
+
+.testimonial-track > .testimonial {
+    flex: 0 0 100%;
+    box-sizing: border-box;
+}
+
+.testimonial-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.testimonial-indicator {
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #a7a9ac;
+    cursor: pointer;
+    appearance: none;
+}
+
+.testimonial-indicator[aria-current="true"] {
+    background: #39b54a;
+}
+
+.testimonial {
+    margin: 0;
+    padding: 24px 24px 20px;
+    background: #fff;
+    border-radius: 8px;
+    border-top: 4px solid #39b54a;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.testimonial blockquote {
+    margin: 0;
+}
+
+.testimonial blockquote p {
+    margin: 0;
+    font-style: italic;
+    font-weight: 300;
+    color: #333;
+}
+
+.testimonial figcaption {
+    margin-top: 16px;
+    font-style: normal;
+    font-weight: 500;
+}
+
+.testimonial-name {
+    display: block;
+    color: #000;
+}
+
+.testimonial-company {
+    display: block;
+    color: #575759;
+    font-weight: 500;
+}
+
+@media only screen and (max-width: 700px) {
+    .testimonials {
+        padding: 36px 16px 28px;
+    }
+
+    .testimonials h2 {
+        font-size: 1.4rem;
+    }
+}
