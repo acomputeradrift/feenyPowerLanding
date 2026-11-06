@@ -29,9 +29,15 @@ export const RETAIL_AREAS = [
   },
 ];
 
+export const RETAIL_FAQ = {
+  path: '/homeowners/faq',
+  file: 'homeowners-faq.html',
+};
+
 export const SITEMAP_PATHS = [
   '/consultation',
   '/faq',
+  RETAIL_FAQ.path,
   ...RETAIL_AREAS.filter((area) => area.indexable).map((area) => area.path),
 ];
 

@@ -4,7 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, it } from 'node:test';
 
-import { PUBLIC_SITE_ORIGIN, RETAIL_AREAS, SITEMAP_PATHS } from './areas.js';
+import { PUBLIC_SITE_ORIGIN, RETAIL_AREAS, RETAIL_FAQ, SITEMAP_PATHS } from './areas.js';
 import { PAID_NOTICE } from './messages.js';
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -66,6 +66,9 @@ describe('homeowner landing pages', () => {
       assert.equal(html.includes('These comments are from integration companies'), true);
       assert.equal(html.includes('They are not homeowner reviews.'), true);
       assert.equal(html.includes('Planning a new system or improving an existing one?'), true);
+      assert.equal(html.includes('scope document'), true);
+      assert.match(html, /programs the agreed design/);
+      assert.equal(html.includes('/homeowners/faq?from=' + slug), true);
       assert.equal(html.includes('name="area" value="' + slug + '"'), true);
       assert.equal(html.includes('name="sourcePath" value="' + area.path + '"'), true);
       assert.equal(html.includes('action="/api/retail-enquiry"'), true);
@@ -97,6 +100,7 @@ describe('homeowner landing pages', () => {
     assert.equal(SITEMAP_PATHS.includes('/homeowners/los-gatos'), true);
     assert.equal(SITEMAP_PATHS.includes('/homeowners/kelowna'), true);
     assert.equal(SITEMAP_PATHS.includes('/homeowners/greater-vancouver'), true);
+    assert.equal(SITEMAP_PATHS.includes(RETAIL_FAQ.path), true);
 
     for (const file of ['homeowners-greater-vancouver.html', 'homeowners-kelowna.html', 'homeowners-los-gatos.html']) {
       const html = await readFile(path.join(root, 'frontend', file), 'utf8');
@@ -109,6 +113,34 @@ describe('homeowner landing pages', () => {
       assert.equal(serialized.includes('telephone'), false);
       assert.equal(serialized.includes('aggregateRating'), false);
       assert.equal(serialized.includes('review'), false);
+    }
+  });
+
+  it('keeps the homeowner FAQ separate from the dealer FAQ and faithful to its answers', async () => {
+    const dealer = await readFile(path.join(root, 'frontend/faq.html'), 'utf8');
+    const faq = await readFile(path.join(root, 'frontend/homeowners-faq.html'), 'utf8');
+    assert.equal(dealer.includes('/homeowners/'), false);
+    assert.equal(dealer.includes('scope document'), false);
+    assert.match(faq, /<title>Homeowner FAQ \| Feeny Power &amp; Control Ltd<\/title>/);
+    assert.match(faq, /rel="canonical" href="https:\/\/www\.feenypowerandcontrol\.com\/homeowners\/faq"/);
+    assert.equal(faq.includes('calendly'), false);
+    assert.equal(faq.includes('free consultation'), false);
+    assert.equal(faq.includes('$'), false);
+    assert.equal(faq.includes('/rti_proposal/'), false);
+    assert.equal(faq.includes('Tell me about your project'), true);
+    for (const slug of ['greater-vancouver', 'kelowna', 'los-gatos']) {
+      assert.equal(faq.includes(`/homeowners/${slug}#project-enquiry`), true);
+    }
+    const json = JSON.parse(faq.match(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/)[1]);
+    assert.equal(json['@type'], 'FAQPage');
+    const visible = faq
+      .replace(/<script[\s\S]*?<\/script>/g, ' ')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ');
+    assert.ok(json.mainEntity.length >= 8);
+    for (const question of json.mainEntity) {
+      assert.equal(visible.includes(question.name), true, question.name);
+      assert.equal(visible.includes(question.acceptedAnswer.text), true, question.name);
     }
   });
 });

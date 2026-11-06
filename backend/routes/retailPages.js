@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { PUBLIC_SITE_ORIGIN, RETAIL_AREAS } from '../retail/areas.js';
+import { PUBLIC_SITE_ORIGIN, RETAIL_AREAS, RETAIL_FAQ } from '../retail/areas.js';
 import { renderRobots, renderSitemap } from '../retail/sitemap.js';
 
 const frontendDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../frontend');
@@ -23,6 +23,17 @@ export function mountRetailPages(app, options = {}) {
       res.sendFile(path.join(pages, area.file));
     });
   }
+
+  app.get(RETAIL_FAQ.path, (req, res) => {
+    const pathOnly = req.originalUrl.split('?')[0];
+    const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+    if (pathOnly !== RETAIL_FAQ.path) {
+      res.redirect(301, RETAIL_FAQ.path + qs);
+      return;
+    }
+    res.set('Link', `<${origin}${RETAIL_FAQ.path}>; rel="canonical"`);
+    res.sendFile(path.join(pages, RETAIL_FAQ.file));
+  });
 
   app.get('/sitemap.xml', (req, res) => {
     res.type('application/xml').send(renderSitemap(origin));

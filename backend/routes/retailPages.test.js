@@ -68,7 +68,22 @@ describe('retail routes', () => {
     assert.match(sitemap, /\/homeowners\/greater-vancouver</);
     assert.match(sitemap, /\/homeowners\/kelowna</);
     assert.match(sitemap, /\/homeowners\/los-gatos</);
+    assert.match(sitemap, /\/homeowners\/faq</);
     assert.match(sitemap, /\/consultation</);
+
+    const faq = await fetch(`${baseUrl}/homeowners/faq?from=los-gatos`);
+    assert.equal(faq.status, 200);
+    assert.equal(faq.headers.get('x-robots-tag'), null);
+    assert.match(faq.headers.get('link'), /<https:\/\/www\.feenypowerandcontrol\.com\/homeowners\/faq>; rel="canonical"/);
+    const faqHtml = await faq.text();
+    assert.match(faqHtml, /Homeowner FAQ/);
+    assert.match(faqHtml, /\/homeowners\/los-gatos#project-enquiry/);
+    assert.equal(faqHtml.includes('Confirm this place name'), false);
+
+    const faqSlash = await fetch(`${baseUrl}/homeowners/faq/?from=kelowna`, { redirect: 'manual' });
+    assert.equal(faqSlash.status, 301);
+    assert.equal(faqSlash.headers.get('location'), '/homeowners/faq?from=kelowna');
+    assert.equal(await (await fetch(`${baseUrl}/faq`)).status, 404);
 
     const robots = await (await fetch(`${baseUrl}/robots.txt`)).text();
     assert.match(robots, /Sitemap: https:\/\/www\.feenypowerandcontrol\.com\/sitemap\.xml/);
