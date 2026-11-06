@@ -72,8 +72,7 @@ describe('homeowner landing pages', () => {
       for (const quote of quotes) assert.equal(html.includes(quote), true, file);
       assert.match(html, /The Home Automation Store, Sydney Australia/);
       assert.match(html, /Blue Ember Solutions, Vancouver Canada/);
-      for (const pattern of [/calendly/i, /independent/i, /happy clients/i, /\$/, /per hour/i, /discovery/i, /authorized/i, /certified/i, /guarantee/i, /el gato, california\./i]) {
-        if (slug === 'los-gatos' && pattern.source.startsWith('el gato')) continue;
+      for (const pattern of [/calendly/i, /independent/i, /happy clients/i, /\$/, /per hour/i, /discovery/i, /authorized/i, /certified/i, /guarantee/i, /el gato/i, /location-assumption/]) {
         assert.equal(pattern.test(html), false, `${file} ${pattern}`);
       }
       forms.push(html.match(/<form[\s\S]*<\/form>/)[0]
@@ -91,19 +90,15 @@ describe('homeowner landing pages', () => {
     assert.equal(forms[1], forms[2]);
   });
 
-  it('holds Los Gatos out of the index until the place name is confirmed', async () => {
+  it('lists confirmed Los Gatos with the other homeowner pages', async () => {
     const losGatos = await readFile(path.join(root, 'frontend/homeowners-los-gatos.html'), 'utf8');
-    const kelowna = await readFile(path.join(root, 'frontend/homeowners-kelowna.html'), 'utf8');
-    assert.match(losGatos, /name="robots" content="noindex"/);
-    assert.match(losGatos, /does not treat El Gato as a municipality/);
-    assert.match(losGatos, /Confirm this place name before publishing/);
-    assert.equal(losGatos.includes('application/ld+json'), false);
-    assert.equal(kelowna.includes('name="robots" content="noindex"'), false);
-    assert.equal(SITEMAP_PATHS.includes('/homeowners/los-gatos'), false);
+    assert.match(losGatos, /name="robots" content="index, follow"/);
+    assert.equal(losGatos.includes('Confirm this place name before publishing'), false);
+    assert.equal(SITEMAP_PATHS.includes('/homeowners/los-gatos'), true);
     assert.equal(SITEMAP_PATHS.includes('/homeowners/kelowna'), true);
     assert.equal(SITEMAP_PATHS.includes('/homeowners/greater-vancouver'), true);
 
-    for (const file of ['homeowners-greater-vancouver.html', 'homeowners-kelowna.html']) {
+    for (const file of ['homeowners-greater-vancouver.html', 'homeowners-kelowna.html', 'homeowners-los-gatos.html']) {
       const html = await readFile(path.join(root, 'frontend', file), 'utf8');
       const json = html.match(/<script type="application\/ld\+json">\s*([\s\S]*?)\s*<\/script>/)[1];
       const data = JSON.parse(json);

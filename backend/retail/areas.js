@@ -1,7 +1,8 @@
 // Public marketing origin from deployment.md. Canonical URLs use this host
 // rather than the request host, so a preview hostname cannot become a second
-// indexed copy. Los Gatos stays out of the sitemap until Jamie confirms the
-// "El Gato, California" place name. See continuity.md.
+// indexed copy. Jamie confirmed Los Gatos, California on 2026-11-06. All three
+// homeowner pages are indexable the same way. Enquiry result pages stay
+// noindex separately. See continuity.md.
 export const PUBLIC_SITE_ORIGIN = 'https://www.feenypowerandcontrol.com';
 
 export const RETAIL_AREAS = [
@@ -24,7 +25,7 @@ export const RETAIL_AREAS = [
     path: '/homeowners/los-gatos',
     label: 'Los Gatos, California',
     file: 'homeowners-los-gatos.html',
-    indexable: false,
+    indexable: true,
   },
 ];
 

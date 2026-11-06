@@ -45,7 +45,7 @@ describe('retail routes', () => {
     });
   });
 
-  it('serves the three pages and a sitemap without Los Gatos', async () => {
+  it('serves the three pages and lists Los Gatos in the sitemap', async () => {
     const kelowna = await fetch(`${baseUrl}/homeowners/kelowna`);
     assert.equal(kelowna.status, 200);
     assert.equal(kelowna.headers.get('x-robots-tag'), null);
@@ -53,10 +53,12 @@ describe('retail routes', () => {
     assert.match(kelownaHtml, /for a Kelowna home before installation/);
     assert.match(kelowna.headers.get('link'), /rel="canonical"/);
 
-    const held = await fetch(`${baseUrl}/homeowners/los-gatos`);
-    assert.equal(held.status, 200);
-    assert.equal(held.headers.get('x-robots-tag'), 'noindex');
-    assert.match(await held.text(), /Confirm this place name before publishing/);
+    const losGatos = await fetch(`${baseUrl}/homeowners/los-gatos`);
+    assert.equal(losGatos.status, 200);
+    assert.equal(losGatos.headers.get('x-robots-tag'), null);
+    const losGatosHtml = await losGatos.text();
+    assert.match(losGatosHtml, /for one Los Gatos house/);
+    assert.equal(losGatosHtml.includes('Confirm this place name before publishing'), false);
 
     const slash = await fetch(`${baseUrl}/homeowners/greater-vancouver/?ref=preview`, { redirect: 'manual' });
     assert.equal(slash.status, 301);
@@ -65,8 +67,8 @@ describe('retail routes', () => {
     const sitemap = await (await fetch(`${baseUrl}/sitemap.xml`)).text();
     assert.match(sitemap, /\/homeowners\/greater-vancouver</);
     assert.match(sitemap, /\/homeowners\/kelowna</);
+    assert.match(sitemap, /\/homeowners\/los-gatos</);
     assert.match(sitemap, /\/consultation</);
-    assert.equal(sitemap.includes('/homeowners/los-gatos'), false);
 
     const robots = await (await fetch(`${baseUrl}/robots.txt`)).text();
     assert.match(robots, /Sitemap: https:\/\/www\.feenypowerandcontrol\.com\/sitemap\.xml/);

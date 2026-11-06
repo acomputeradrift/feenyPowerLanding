@@ -31,7 +31,7 @@ Unit tests (calculator, no server): `cd backend && npm test`
 | `/faq` | Dealer FAQ — accordion, Calendly, links to `/rti_proposal/` |
 | `/homeowners/greater-vancouver` | Homeowner landing — Greater Vancouver. Consulting, design, and specification. Not live until this branch is published. |
 | `/homeowners/kelowna` | Homeowner landing — Kelowna, BC. Same offer. Not live until this branch is published. |
-| `/homeowners/los-gatos` | Homeowner landing — **review only**. Los Gatos stands in for “El Gato, California” until Jamie confirms. `noindex`, not in the sitemap. |
+| `/homeowners/los-gatos` | Homeowner landing — Los Gatos, California. Jamie confirmed this place name on 2026-11-06. Same offer and same sitemap treatment as the other two homeowner pages. Not live until this branch is published. |
 | `/rti_proposal/` | RTI programming budget form → PDF + email |
 | `/rti_proposal/preview.pdf` | PDF preview — **localhost only** |
 | `/rti_proposal/audit/:reference` | Token-gated rate audit (404 unless env token set) |
@@ -121,7 +121,7 @@ Full deploy: `deployment.md`. Sentinel Lite UI/engine releases: run `tools/ship.
 
 ## Homeowner area pages (review, not published)
 
-Added 2026-11-06 on `cursor/retail-area-landing-pages-b76c`. **Do not merge or deploy until Jamie has looked at the three pages and confirmed the Los Gatos place name.** `/` still redirects to `/consultation`. `consultation.html` and `faq.html` were not edited. Docs-only PR #1 (dealer “free consultation” copy, $100 USD/hr, discovery framing) was not applied.
+Added 2026-11-06 on `cursor/retail-area-landing-pages-b76c`. The branch is still unpublished: do not merge or deploy until Jamie asks. `/` still redirects to `/consultation`. `consultation.html` and `faq.html` were not edited. Docs-only PR #1 (dealer “free consultation” copy, $100 USD/hr, discovery framing) was not applied.
 
 **Offer.** Feeny Power and Control Ltd. consults, designs, and specifies Lutron, RTI, and Vantage for homeowners in these areas. A local AV company supplies and installs. We do not install, and the pages do not claim an office, a showroom, or a named install partner in any of the three places. This is a separate funnel from dealer programming. No prices, no turnaround promise, no free installation quote. The form qualifies fit. Paid consulting scope is agreed later.
 
@@ -129,13 +129,13 @@ Added 2026-11-06 on `cursor/retail-area-landing-pages-b76c`. **Do not merge or d
 
 **Social proof.** The two `/consultation` quotes are reprinted verbatim: Daniel, The Home Automation Store, Sydney Australia; Morgan McMillan, Blue Ember Solutions, Vancouver Canada. The pages say these are integration-company comments about programming, not homeowner reviews. Blue Ember is not named as the installer for this funnel. The Vancouver history is Jamie’s own dealer-FAQ account: almost 10 years running an electrical contracting company in Vancouver, BC, in custom homes (lighting control, motorized shading, audio/video), contracting side closed in 2017. There is no Kelowna project list, no Los Gatos project, no local installation photo, and no rating in the repo. The Kelowna string in the proposal PDF tests is fixture data, not a project. None of those gaps were filled with invented quotes.
 
-**Los Gatos assumption — confirm before publication.** Jamie called the area “El Gato, California.” The page uses Los Gatos, California, and says so in a banner. It does not treat El Gato as a municipality and does not cover the rest of California or the Bay Area. It is `noindex`, sends `X-Robots-Tag: noindex`, and is omitted from `/sitemap.xml` (`indexable: false` in `backend/retail/areas.js`). The dealer FAQ line about Bay Area dealers is described as a dealer service, not a Los Gatos office. After Jamie confirms the town: remove the banner, remove `noindex`, set `indexable: true`, and check `/sitemap.xml`. If the town is wrong, replace the page rather than widening it to California.
+**Los Gatos is confirmed.** On 2026-11-06 Jamie said “thats correct” for Los Gatos, California, as the town he meant by “El Gato, California.” The review banner is gone. The page uses the same `index, follow` robots meta as Greater Vancouver and Kelowna, sends no geography `X-Robots-Tag`, and is listed in `/sitemap.xml`. Structured data names the city of Los Gatos only. The page still says it is not a Bay Area-wide or California-wide offer, and it still does not claim a Los Gatos office. The dealer FAQ line about Bay Area dealers stays described as a dealer service. Enquiry result pages stay `noindex` for every area. That is a result-page rule, not a draft hold on the three landings. There is no separate robots block that hides all unlaunched homeowner pages; publication is still “do not merge or deploy until Jamie asks.”
 
 **Enquiry delivery.** `POST /api/retail-enquiry` reuses the existing Resend path. Mail is sent only when `PROPOSAL_EMAIL_ENABLED=true` and both `PROPOSAL_EMAIL_API_KEY` and `PROPOSAL_EMAIL_FROM` are set. The recipient is the existing inbox `feeny.jamie@gmail.com` (same constant as proposal mail). No new account and no secret in git. If mail is not enabled, the API returns 503 `delivery_not_configured` and the page says nothing was sent. Retail enquiries are not written to an outbox and are not stored in Mongo, so a failed or unconfigured send is not queued. Do not post test enquiries against production.
 
-**Checks.** `cd backend && npm test` on 2026-11-06: 194 passed, 0 failed. Enquiry tests use a mock `fetch`. They do not call Resend.
+**Checks.** `cd backend && npm test` on 2026-11-06: 194 passed, 0 failed, including after Los Gatos was marked confirmed. Enquiry tests use a mock `fetch`. They do not call Resend.
 
-**SEO.** Canonical host is `https://www.feenypowerandcontrol.com` (the live host in `deployment.md`). Each page has its own title, description, and H1. Structured data is a `Service` for Greater Vancouver and Kelowna only: organization name, logo, and area served. No street address, phone, review, or rating. `/sitemap.xml` lists `/consultation`, `/faq`, `/homeowners/greater-vancouver`, and `/homeowners/kelowna`. `/robots.txt` allows crawling and points at that sitemap.
+**SEO.** Canonical host is `https://www.feenypowerandcontrol.com` (the live host in `deployment.md`). Each page has its own title, description, and H1. Structured data is a `Service` for Greater Vancouver, Kelowna, and Los Gatos: organization name, logo, and area served. No street address, phone, review, or rating. `/sitemap.xml` lists `/consultation`, `/faq`, `/homeowners/greater-vancouver`, `/homeowners/kelowna`, and `/homeowners/los-gatos`. `/robots.txt` allows crawling and points at that sitemap.
 
 ## Related docs
 
