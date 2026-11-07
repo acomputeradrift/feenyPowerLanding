@@ -104,8 +104,9 @@ Existing v1 brand copy (`symptoms`, `extras`, `credential`) is a starting point,
 
 ## Open items
 
-- Partner logos still needed: **VanReit Automation** (Kelowna) and **Haven and Wire** (Los Gatos).
-  Set `locations[slug].partner.logo` (Blue Ember is done). Until then a lettered tile shows.
+- All three partner logos are in (`locations[slug].partner.logo`). A new partner's logo sits in a
+  96px square tile: make a 400×400 PNG on the logo's own background colour, centred, stacking
+  wide logos (mark above wordmark).
 - Live form test in production (submit once, confirm the email arrives).
 
 ## Working with Jamie

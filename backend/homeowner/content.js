@@ -78,9 +78,11 @@ export const locations = {
         ],
         partner: {
             name: 'VanReit Automation',
+            logo: { src: '/images/vanreit-automation-logo.png', alt: 'VanReit Automation', width: 400, height: 400 },
             note: 'When something needs hands onsite — a dimmer swapped, a keypad replaced, a network sorted out — VanReit Automation can do the physical work from my scope. They quote their own time and materials and contract with you directly.',
         },
         tie: 'I live in Kelowna half the year, so I’m often just down the road.',
+        v2: { tie: null },
     },
     'los-gatos': {
         slug: 'los-gatos',
@@ -146,9 +148,11 @@ export const locations = {
         ],
         partner: {
             name: 'Haven and Wire',
+            logo: { src: '/images/haven-and-wire-logo.png', alt: 'Haven & Wire', width: 400, height: 400 },
             note: 'When something needs hands onsite — a dimmer swapped, a keypad replaced, a network sorted out — Haven and Wire can do the physical work from my scope. They quote their own time and materials and contract with you directly.',
         },
         tie: 'I do all of Haven and Wire’s RTI programming, so we already work together every week.',
+        v2: { tie: null },
     },
 };
 
