@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="{{lang}}">
+<head>
+    <!-- Rendered by backend/homeowner/render.js. Copy lives in backend/homeowner/content.js.
+         Double braces are escaped text; triple braces are pre-built HTML. Not served directly. -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <meta name="description" content="{{description}}">
+    <link rel="canonical" href="{{canonical}}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Feeny Power and Control">
+    <meta property="og:title" content="{{title}}">
+    <meta property="og:description" content="{{description}}">
+    <meta property="og:url" content="{{canonical}}">
+    <meta property="og:locale" content="{{ogLocale}}">
+    <meta property="og:image" content="{{ogImage}}">
+    <meta name="twitter:card" content="summary">
+    <link rel="icon" href="/images/feeny-logo-512-circle-black-back.png" type="image/png">
+    <link rel="stylesheet" href="/styles/global.css">
+    <link rel="stylesheet" href="/styles/testimonials.css">
+    <link rel="stylesheet" href="/styles/homeowner.css">
+    <script type="application/ld+json">{{{jsonLd}}}</script>
+    <script src="/scripts/fpc_analytics.js" defer data-location="{{locationSlug}}" data-brand="{{brandSlug}}"></script>
+    <script src="/scripts/homeowner_form.js" defer></script>
+</head>
+<body class="ho">
+    <header class="ho-header">
+        <a class="ho-header-logo" href="{{path}}" aria-label="Feeny Power and Control — home">
+            <img src="/images/feeny-logo-white.png" alt="Feeny Power and Control" width="150" height="113">
+        </a>
+    </header>
+
+    <main>
+        <section class="ho-hero" aria-labelledby="ho-hero-title">
+            {{{heroBrandMark}}}
+            <h1 id="ho-hero-title"><span class="text-black">{{heroHeadline}}</span> <span class="text-light-grey">{{heroHeadlineTail}}</span></h1>
+            <p class="ho-hero-sub">{{heroSubhead}}</p>
+            <div class="ho-hero-actions">
+                <a class="ho-btn ho-btn-orange" href="#inquiry" data-cta="hero">{{heroPrimaryCta}}</a>
+                <a class="ho-btn ho-btn-outline" href="#how-it-works" data-cta="secondary">{{heroSecondaryCta}}</a>
+            </div>
+            <p class="ho-microline">{{heroMicroline}}</p>
+        </section>
+
+        <section class="ho-trust" aria-label="{{trustLabel}}">
+            <ul class="ho-trust-logos" aria-label="Authorized dealer for">
+                {{{trustLogos}}}
+            </ul>
+            <ul class="ho-trust-items">
+                {{{trustItems}}}
+            </ul>
+        </section>
+
+        <section class="ho-section ho-problem" aria-labelledby="ho-problem-title">
+            <div class="ho-container">
+                <h2 id="ho-problem-title">{{problemHeading}}</h2>
+                <p>{{problemIntro}}</p>
+                <ul class="ho-symptoms">
+                    {{{symptoms}}}
+                </ul>
+                <h3>{{problemAgitateHeading}}</h3>
+                <ul class="ho-agitate">
+                    {{{agitate}}}
+                </ul>
+                <p class="ho-problem-closing">{{problemClosing}}</p>
+            </div>
+        </section>
+
+        <section class="ho-section ho-solution" aria-labelledby="ho-solution-title">
+            <div class="ho-container ho-solution-grid">
+                <div class="ho-solution-copy">
+                    <h2 id="ho-solution-title">{{solutionHeading}}</h2>
+                    <div class="ho-person">
+                        <!-- TODO: replace with a headshot of Jamie Feeny. -->
+                        <div class="ho-avatar" aria-hidden="true">JF</div>
+                        <p class="ho-person-name">Jamie Feeny<span>Feeny Power and Control</span></p>
+                    </div>
+                    {{{solutionBody}}}
+                </div>
+                {{{solutionPhoto}}}
+            </div>
+        </section>
+
+        <section class="ho-section ho-benefits" aria-labelledby="ho-benefits-title">
+            <div class="ho-container">
+                <h2 id="ho-benefits-title">{{benefitsHeading}}</h2>
+                <div class="ho-cards">
+                    {{{benefitCards}}}
+                </div>
+            </div>
+        </section>
+
+        <section class="ho-section ho-services" aria-labelledby="ho-services-title">
+            <div class="ho-container">
+                <h2 id="ho-services-title">{{servicesHeading}}</h2>
+                <ul class="ho-checklist">
+                    {{{services}}}
+                </ul>
+                <h3>{{servicesExtrasHeading}}</h3>
+                <ul class="ho-checklist ho-checklist-extras">
+                    {{{extras}}}
+                </ul>
+            </div>
+        </section>
+
+        <section class="ho-section ho-steps" id="how-it-works" aria-labelledby="ho-steps-title">
+            <div class="ho-container">
+                <h2 id="ho-steps-title">{{stepsHeading}}</h2>
+                <ol class="ho-step-list">
+                    {{{steps}}}
+                </ol>
+            </div>
+        </section>
+
+        <section class="ho-guarantee" aria-labelledby="ho-guarantee-title">
+            <div class="ho-container">
+                <h2 id="ho-guarantee-title">{{guaranteeHeading}}</h2>
+                <p>{{guaranteeText}}</p>
+            </div>
+        </section>
+
+        <section class="ho-section ho-local" aria-labelledby="ho-local-title">
+            <div class="ho-container">
+                <h2 id="ho-local-title">{{localHeading}}</h2>
+                <p>{{localIntro}}</p>
+                {{{areas}}}
+                <div class="ho-partner">
+                    <!-- TODO: replace with the {{partnerName}} logo. -->
+                    {{{partnerLogo}}}
+                    <div>
+                        <h3>{{partnerHeading}}</h3>
+                        <p>{{partnerNote}}</p>
+                        <p class="ho-tie">{{tie}}</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TODO: homeowner testimonials -->
+        <section class="ho-section ho-testimonials" aria-labelledby="ho-testimonials-title">
+            <div class="ho-container">
+                <h2 id="ho-testimonials-title">{{testimonialsHeading}}</h2>
+                <p class="ho-section-intro">{{testimonialsIntro}}</p>
+                <div class="ho-testimonial-grid">
+                    {{{testimonials}}}
+                </div>
+            </div>
+        </section>
+
+        <section class="ho-section ho-faq" aria-labelledby="ho-faq-title">
+            <div class="ho-container">
+                <h2 id="ho-faq-title">{{faqHeading}}</h2>
+                {{{faq}}}
+            </div>
+        </section>
+
+        <section class="ho-final" id="inquiry" aria-labelledby="ho-final-title">
+            <div class="ho-container">
+                <h2 id="ho-final-title">{{finalHeading}}</h2>
+                <p class="ho-final-text">{{finalText}}</p>
+                <form class="ho-form" id="homeowner-form" aria-label="{{formAriaLabel}}" novalidate
+                      data-sending="{{formSending}}" data-success="{{formSuccess}}" data-error="{{formError}}">
+                    <input type="hidden" name="pageLocation" value="{{locationSlug}}">
+                    <input type="hidden" name="pageBrand" value="{{brandSlug}}">
+                    <div class="ho-hp" aria-hidden="true">
+                        <label for="ho-website">Website</label>
+                        <input type="text" id="ho-website" name="website" tabindex="-1" autocomplete="off">
+                    </div>
+                    <div class="ho-form-row">
+                        <div class="ho-field">
+                            <label for="ho-name">{{formName}}</label>
+                            <input type="text" id="ho-name" name="name" autocomplete="name" required maxlength="120">
+                        </div>
+                        <div class="ho-field">
+                            <label for="ho-email">{{formEmail}}</label>
+                            <input type="email" id="ho-email" name="email" autocomplete="email" required maxlength="200">
+                        </div>
+                    </div>
+                    <div class="ho-form-row">
+                        <div class="ho-field">
+                            <label for="ho-phone">{{formPhone}}</label>
+                            <input type="tel" id="ho-phone" name="phone" autocomplete="tel" required maxlength="40">
+                        </div>
+                        <div class="ho-field">
+                            <label for="ho-city">{{formCity}}</label>
+                            <input type="text" id="ho-city" name="city" autocomplete="address-level2" required maxlength="120">
+                        </div>
+                    </div>
+                    <fieldset class="ho-field ho-fieldset">
+                        <legend>{{formBrands}}</legend>
+                        <div class="ho-choices">
+                            {{{brandCheckboxes}}}
+                        </div>
+                    </fieldset>
+                    <div class="ho-field">
+                        <label for="ho-problem">{{formProblem}}</label>
+                        <textarea id="ho-problem" name="problem" rows="5" required maxlength="4000" aria-describedby="ho-problem-hint"></textarea>
+                        <p class="ho-hint" id="ho-problem-hint">{{formProblemHint}}</p>
+                    </div>
+                    <fieldset class="ho-field ho-fieldset">
+                        <legend>{{formHasFile}}</legend>
+                        <div class="ho-choices">
+                            <label class="ho-choice"><input type="radio" name="hasFile" value="yes" required> {{formYes}}</label>
+                            <label class="ho-choice"><input type="radio" name="hasFile" value="no"> {{formNo}}</label>
+                        </div>
+                    </fieldset>
+                    <button type="submit" class="ho-btn ho-btn-dark" data-cta="final">{{formSubmit}}</button>
+                    <p class="ho-form-status" role="status" aria-live="polite"></p>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="ho-footer">
+        <p>{{footerCopyright}}</p>
+        <p><a href="/consultation">{{footerIntegratorLink}}</a></p>
+    </footer>
+</body>
+</html>

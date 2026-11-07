@@ -33,6 +33,8 @@ Unit tests (calculator, no server): `cd backend && npm test`
 | `/rti_proposal/preview.pdf` | PDF preview — **localhost only** |
 | `/rti_proposal/audit/:reference` | Token-gated rate audit (404 unless env token set) |
 | `/sentinel_lite/` | Sentinel Lite — dealer-side `.apex` compare in the browser (Pyodide). Files never leave the dealer’s machine. |
+| `/{location}/{brand}` | Homeowner landing pages (10): `vancouver` and `kelowna` × `lutron`/`vantage`/`rti`/`clipsal-c-bus`, plus `los-gatos` × `lutron`/`rti`. Other combos 404. |
+| `/robots.txt`, `/sitemap.xml` | Generated from the homeowner content data (sitemap lists public pages + the 10 homeowner pages) |
 | `/idea-feedback/` | Hidden HMAC-signed confirm page for overnight idea thumbs (GET never writes) |
 | `/rti_diagnostics/upload_files/` | RTI log upload |
 | `/rti_diagnostics/process_files/` | Log analysis results |
@@ -70,6 +72,8 @@ Static mounts: `/styles`, `/scripts`, `/images`. Proposal schema also at `/scrip
 **Marketing** — `consultation.html`, `faq.html` · shared layout CSS + page CSS (`faq.css`, `testimonials.css`) · Calendly via `consultation.js`.
 
 **Consultation testimonials** — `/consultation` shows a Happy Clients carousel between the benefits and the bottom Calendly close. One quote at a time. It loops every 8 seconds, pauses on hover or keyboard focus, and builds the dots from each `figure.testimonial`. Styles are `frontend/styles/testimonials.css` and behavior is `frontend/scripts/testimonials.js` (loaded only by `consultation.html`). Add a quote by inserting another figure in the track. Do not put this CSS in `consultation.css`.
+
+**Homeowner landing pages** — One template renders all 10 `/{location}/{brand}` pages selling remote programming and troubleshooting to homeowners. **All copy lives in `backend/homeowner/content.js`**: locations, brands, the valid `pages` list, shared copy and FAQ. `backend/homeowner/render.js` fills `frontend/homeowner/service.html` (not served directly), escapes everything, builds the JSON-LD (`ProfessionalService` + `FAQPage`), robots and sitemap, and caches each page. Restart the server after copy edits. Styles are in `styles/homeowner.css` (it reuses `testimonials.css` cards). `scripts/homeowner_form.js` posts to `POST /api/homeowner-inquiry` and sends `fpcTrack` events (`cta_click`, `form_start`, `form_submit`, `faq_open`). The route sits after all specific routes in `fpc_server.js`. To add a page, add its location or brand data and an entry in `pages`. The copy never says the diagnostic fee is credited toward repairs, never promises a fixed repair price, and never mentions HomeWorks.
 
 **RTI proposal form** — Replaced the retired Google Form AutoProposal. Vanilla ES modules, schema-driven. For form/PDF/CSS work, read **`docs/rti_proposal/agent_brief.md` next** — do not load the full spec set for a visual pass. Key: `frontend/rti_proposal.html`, `styles/rti_proposal.css`, `scripts/proposal/`, `backend/proposal/`, `routes/proposal.js`. Deep specs: `docs/rti_proposal/README.md`.
 

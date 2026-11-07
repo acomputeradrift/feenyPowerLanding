@@ -10,6 +10,10 @@ import retrieveRoute from './routes/retrieve.js';
 import proposalRoutes, { handleProposalAudit } from './routes/proposal.js';
 import ideaFeedbackRoutes from './routes/ideaFeedback.js';
 import sentinelLiteCompareCountRoutes from './routes/sentinelLiteCompareCount.js';
+import homeownerInquiryRoutes from './routes/homeownerInquiry.js';
+import analyticsRoutes, { handleAnalyticsDashboard } from './routes/analytics.js';
+import { startWeeklyReportScheduler } from './analytics/scheduler.js';
+import { renderPage as renderHomeownerPage, renderSitemap, renderRobots } from './homeowner/render.js';
 import { handleProposalPdfPreview } from './proposal/pdf/preview.js';
 import { requireMongoUri } from './requireMongoUri.js';
 
@@ -29,6 +33,10 @@ app.use(retrieveRoute);
 app.use('/api/proposal', proposalRoutes);
 // Count-only: +1 when a dealer hits Compare. No files, names, paths, or bodies.
 app.use('/api/sentinel_lite/compare-count', sentinelLiteCompareCountRoutes);
+app.use('/api/homeowner-inquiry', homeownerInquiryRoutes);
+// First-party cookieless analytics + token-gated dashboard (404 unless ANALYTICS_DASHBOARD_TOKEN is set).
+app.use('/api/analytics', analyticsRoutes);
+app.get('/analytics', handleAnalyticsDashboard);
 
 
 
@@ -167,6 +175,27 @@ app.get('/rti_diagnostics/process_files/', (req, res) => {
 
 });
 
+app.get('/robots.txt', (req, res) => {
+    res.type('text/plain').send(renderRobots());
+});
+
+app.get('/sitemap.xml', (req, res) => {
+    res.type('application/xml').send(renderSitemap());
+});
+
+// ✅ Homeowner landing pages — /{location}/{brand}. Keep this after every
+// specific route; unknown combos fall through to 404.
+app.get('/:location/:brand', (req, res, next) => {
+    const html = renderHomeownerPage(req.params.location, req.params.brand);
+    if (!html) return next();
+    if (req.path.endsWith('/')) {
+        const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+        res.redirect(301, `/${req.params.location}/${req.params.brand}${qs}`);
+        return;
+    }
+    res.type('html').send(html);
+});
+
 // ✅ MongoDB Connection
 let dbURI;
 try {
@@ -176,7 +205,10 @@ try {
     process.exit(1);
 }
 mongoose.connect(dbURI)
-    .then(() => console.log('✅ MongoDB connected'))
+    .then(() => {
+        console.log('✅ MongoDB connected');
+        startWeeklyReportScheduler();
+    })
     .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // ✅ Start the server

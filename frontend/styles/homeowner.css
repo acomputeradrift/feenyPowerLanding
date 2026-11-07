@@ -1,0 +1,1003 @@
+/* Homeowner landing pages (/{location}/{brand}). Loaded after global.css and
+   testimonials.css; every selector here is prefixed .ho- so live pages are untouched. */
+
+.ho {
+    --ho-orange: #fcb040;
+    --ho-orange-hover: #FF8C00;
+    --ho-green: #39b54a;
+    --ho-green-hover: #2d9639;
+    --ho-dark: #222;
+    --ho-dark-hover: #444;
+    --ho-dark-grey: #575759;
+    --ho-light-grey: #a7a9ac;
+    --ho-band: #f4f4f5;
+    --ho-pad-y: 48px;
+    --ho-pad-x: 20px;
+}
+
+.ho *,
+.ho *::before,
+.ho *::after {
+    box-sizing: border-box;
+}
+
+:where(.ho) h2 {
+    margin: 0 0 20px;
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 1.25;
+    color: #000;
+}
+
+:where(.ho) h3 {
+    margin: 28px 0 12px;
+    font-size: 1.15rem;
+    font-weight: 500;
+    line-height: 1.3;
+    color: #000;
+}
+
+:where(.ho) p {
+    margin: 0 0 14px;
+    max-width: 65ch;
+}
+
+:where(.ho) strong {
+    font-weight: 500;
+    color: #000;
+}
+
+.ho a:focus-visible,
+.ho button:focus-visible,
+.ho summary:focus-visible,
+.ho input:focus-visible,
+.ho textarea:focus-visible {
+    outline: 3px solid var(--ho-green);
+    outline-offset: 2px;
+}
+
+.ho-container {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.ho-section {
+    padding: var(--ho-pad-y) var(--ho-pad-x);
+}
+
+.ho-section-intro {
+    color: var(--ho-dark-grey);
+}
+
+/* Header */
+
+.ho-header {
+    padding: 16px var(--ho-pad-x) 0;
+    text-align: center;
+}
+
+.ho-header-logo img {
+    display: inline-block;
+    width: 120px;
+    height: auto;
+}
+
+/* Buttons */
+
+.ho-btn {
+    display: inline-block;
+    padding: 14px 26px;
+    border: 2px solid transparent;
+    border-radius: 30px;
+    font: inherit;
+    font-size: 1.05rem;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.ho-btn-orange {
+    background: var(--ho-orange);
+    color: #000;
+}
+
+.ho-btn-orange:hover {
+    background: var(--ho-orange-hover);
+}
+
+.ho-btn-outline {
+    background: transparent;
+    border-color: var(--ho-light-grey);
+    color: var(--ho-dark-grey);
+}
+
+.ho-btn-outline:hover {
+    border-color: var(--ho-dark-grey);
+    color: #000;
+}
+
+.ho-btn-dark {
+    background: var(--ho-dark);
+    color: #fff;
+}
+
+.ho-btn-dark:hover {
+    background: var(--ho-dark-hover);
+}
+
+.ho-btn[disabled] {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+/* Hero */
+
+.ho-hero {
+    padding: 24px var(--ho-pad-x) var(--ho-pad-y);
+    text-align: center;
+}
+
+.ho-hero-brand {
+    display: block;
+    width: 180px;
+    max-width: 60%;
+    height: auto;
+    margin: 0 auto 18px;
+}
+
+.ho-hero h1 {
+    max-width: 22ch;
+    margin: 0 auto 16px;
+    font-size: 1.9rem;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.ho-hero h1 .text-black {
+    font-size: inherit;
+}
+
+.ho-hero-sub {
+    margin: 0 auto 24px;
+    font-size: 1.1rem;
+    color: var(--ho-dark-grey);
+}
+
+.ho-hero-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.ho-microline {
+    margin: 18px auto 0;
+    font-size: 0.95rem;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--ho-dark-grey);
+}
+
+.ho-wordmark {
+    display: inline-block;
+    padding: 6px 14px;
+    border: 2px solid var(--ho-light-grey);
+    border-radius: 8px;
+    font-weight: 500;
+    color: var(--ho-dark-grey);
+    letter-spacing: 0.02em;
+}
+
+p.ho-wordmark {
+    width: auto;
+    max-width: none;
+    font-size: 1.2rem;
+}
+
+/* Trust strip */
+
+.ho-trust {
+    padding: 32px var(--ho-pad-x);
+    background: var(--ho-band);
+}
+
+.ho-trust-logos {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    max-width: 760px;
+    margin: 0 auto 24px;
+    padding: 0;
+    list-style: none;
+}
+
+.ho-trust-logos li {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 56px;
+    padding: 0 12px;
+    background: #fff;
+    border-radius: 8px;
+}
+
+.ho-trust-logos .ho-wordmark {
+    padding: 0;
+    border: 0;
+    white-space: nowrap;
+}
+
+/* Every logo PNG is 1583x250, so equal widths give equal heights. */
+.ho-trust-logos img {
+    display: block;
+    width: 100%;
+    max-width: 150px;
+    height: auto;
+}
+
+.ho-trust-items {
+    display: grid;
+    gap: 12px;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+}
+
+.ho-trust-items li {
+    padding: 14px 16px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.ho-trust-items strong.text-green {
+    color: var(--ho-green);
+}
+
+/* Problem */
+
+.ho-symptoms,
+.ho-agitate {
+    margin: 0 0 18px;
+    padding: 0;
+    list-style: none;
+    max-width: 65ch;
+}
+
+.ho-symptoms li,
+.ho-agitate li {
+    position: relative;
+    padding: 6px 0 6px 28px;
+}
+
+.ho-symptoms li::before,
+.ho-agitate li::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 0.95em;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ho-orange);
+}
+
+.ho-agitate li::before {
+    background: var(--ho-light-grey);
+}
+
+.ho-problem-closing {
+    font-weight: 500;
+    color: #000;
+}
+
+/* Solution */
+
+.ho-solution {
+    background: var(--ho-band);
+}
+
+.ho-solution-grid {
+    display: grid;
+    gap: 28px;
+    align-items: center;
+}
+
+.ho-person {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.ho-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 64px;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--ho-dark-grey);
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.ho-person-name {
+    margin: 0;
+    font-weight: 500;
+    color: #000;
+}
+
+.ho-person-name span {
+    display: block;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ho-dark-grey);
+}
+
+/* The product photos are semi-transparent PNGs; hidden on phones where they crowd the copy. */
+.ho-solution-photo {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .ho-solution-photo {
+        display: flex;
+    }
+}
+
+.ho-solution-photo {
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 320px;
+    padding: 20px;
+    background: #e8e8e8;
+    border: 1px solid var(--ho-light-grey);
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.ho-solution-photo img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 180px;
+}
+
+.ho-photo-placeholder {
+    min-height: 180px;
+    border: 2px dashed var(--ho-light-grey);
+    color: var(--ho-dark-grey);
+    font-size: 1.3rem;
+}
+
+/* Benefits */
+
+.ho-cards {
+    display: grid;
+    gap: 16px;
+}
+
+.ho-card {
+    padding: 22px 22px 8px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    border: 1px solid #ececed;
+}
+
+.ho-card h3 {
+    margin-top: 0;
+    font-size: 1.25rem;
+}
+
+/* Services */
+
+.ho-services {
+    background: var(--ho-band);
+}
+
+.ho-checklist {
+    display: grid;
+    gap: 6px 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.ho-checklist li {
+    position: relative;
+    padding: 6px 0 6px 30px;
+}
+
+.ho-checklist li::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 0.75em;
+    width: 12px;
+    height: 7px;
+    border-left: 3px solid var(--ho-green);
+    border-bottom: 3px solid var(--ho-green);
+    transform: rotate(-45deg);
+}
+
+/* How it works */
+
+.ho-step-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: ho-step;
+}
+
+.ho-step {
+    position: relative;
+    padding: 0 0 24px 58px;
+    counter-increment: ho-step;
+}
+
+.ho-step::before {
+    content: counter(ho-step);
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ho-green);
+    color: #fff;
+    font-weight: 500;
+}
+
+.ho-step h3 {
+    margin: 6px 0 8px;
+}
+
+.ho-step-options {
+    margin: 0;
+    padding-left: 20px;
+    max-width: 62ch;
+}
+
+.ho-step-options li {
+    padding: 3px 0;
+}
+
+/* Guarantee */
+
+.ho-guarantee {
+    padding: 40px var(--ho-pad-x);
+    background: var(--ho-dark-grey);
+    color: #fff;
+    text-align: center;
+}
+
+.ho-guarantee h2 {
+    color: var(--ho-orange);
+    margin-bottom: 10px;
+}
+
+.ho-guarantee p {
+    margin: 0 auto;
+    font-size: 1.3rem;
+    font-weight: 500;
+}
+
+/* Local */
+
+.ho-area-label {
+    margin: 18px 0 8px;
+    font-size: 1rem;
+    color: var(--ho-dark-grey);
+}
+
+.ho-areas {
+    display: grid;
+    gap: 4px 24px;
+    margin: 0 0 8px;
+    padding: 0;
+    list-style: none;
+}
+
+.ho-partner {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 28px;
+    padding: 22px;
+    background: var(--ho-band);
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.ho-partner h3 {
+    margin-top: 0;
+}
+
+.ho-partner-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 96px;
+    align-self: flex-start;
+    width: 96px;
+    min-width: 96px;
+    height: 96px;
+    border: 2px dashed var(--ho-light-grey);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--ho-dark-grey);
+    font-size: 1.4rem;
+}
+
+.ho-partner-logo-image {
+    border: 0;
+    overflow: hidden;
+    background: #000;
+}
+
+.ho-partner-logo-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ho-tie {
+    margin-bottom: 0;
+    font-style: italic;
+    font-weight: 300;
+}
+
+/* Testimonials (card styles come from testimonials.css) */
+
+.ho-testimonials {
+    background: var(--ho-band);
+}
+
+.ho-testimonial-grid {
+    display: grid;
+    gap: 20px;
+}
+
+/* FAQ */
+
+.ho-faq-item {
+    border-bottom: 1px solid #e3e3e5;
+}
+
+.ho-faq-item summary {
+    position: relative;
+    padding: 16px 36px 16px 0;
+    font-weight: 500;
+    color: #000;
+    cursor: pointer;
+    list-style: none;
+}
+
+.ho-faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.ho-faq-item summary::after {
+    content: "+";
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    color: var(--ho-green);
+}
+
+.ho-faq-item[open] summary::after {
+    content: "\2212";
+}
+
+.ho-faq-item p {
+    padding-bottom: 6px;
+}
+
+/* Final CTA + form */
+
+.ho-final {
+    padding: var(--ho-pad-y) var(--ho-pad-x);
+    background: var(--ho-orange);
+    color: #000;
+}
+
+.ho-final h2 {
+    text-align: center;
+}
+
+.ho-final-text {
+    margin: 0 auto 24px;
+    text-align: center;
+}
+
+.ho-form {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 24px 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.ho-form-row {
+    display: grid;
+    gap: 0 16px;
+}
+
+.ho-field {
+    margin: 0 0 16px;
+}
+
+.ho-field label,
+.ho-fieldset legend {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 500;
+    color: #000;
+}
+
+.ho-field input[type="text"],
+.ho-field input[type="email"],
+.ho-field input[type="tel"],
+.ho-field textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--ho-light-grey);
+    border-radius: 8px;
+    font: inherit;
+    font-size: 1rem;
+    color: #333;
+    background: #fff;
+}
+
+.ho-field textarea {
+    resize: vertical;
+}
+
+.ho-field [aria-invalid="true"] {
+    border-color: #c0392b;
+}
+
+.ho-fieldset {
+    padding: 0;
+    border: 0;
+}
+
+.ho-choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+}
+
+.ho-field .ho-choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-weight: 300;
+    color: #333;
+    cursor: pointer;
+}
+
+.ho-choice input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--ho-green);
+}
+
+.ho-hint {
+    margin: 6px 0 0;
+    font-size: 0.9rem;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--ho-dark-grey);
+}
+
+.ho-form .ho-btn-dark {
+    width: 100%;
+}
+
+.ho-form-status {
+    margin: 14px 0 0;
+    min-height: 1.6em;
+    font-weight: 500;
+}
+
+.ho-form-status.is-success {
+    color: #1f7a2c;
+}
+
+.ho-form-status.is-error {
+    color: #b03a2e;
+}
+
+.ho-hp {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Footer */
+
+.ho-footer p {
+    margin: 4px auto;
+    max-width: none;
+}
+
+.ho-footer a {
+    color: var(--ho-orange);
+}
+
+.ho-footer a:hover {
+    color: #fff;
+}
+
+/* Layout v2 */
+
+.ho-submit-note {
+    margin: 10px auto 0;
+    font-size: 0.95rem;
+    font-style: italic;
+    font-weight: 300;
+    text-align: center;
+    color: var(--ho-dark-grey);
+}
+
+/* v2 reorders the sections, so the alternating bands are reassigned. */
+.ho-v2 .ho-testimonials,
+.ho-v2 .ho-solution,
+.ho-v2 .ho-services {
+    background: none;
+}
+
+.ho-v2 .ho-problem,
+.ho-v2 .ho-benefits,
+.ho-v2 .ho-steps,
+.ho-v2 .ho-local {
+    background: var(--ho-band);
+}
+
+.ho-v2 .ho-local .ho-partner {
+    background: #fff;
+}
+
+/* Equipment photos beside the symptom list. The RA2 photo has a white background, so the cards are white too. */
+.ho-equipment {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 150px));
+    gap: 12px;
+    margin: 0 0 22px;
+}
+
+.ho-equipment-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    padding: 12px 10px 10px;
+    background: #fff;
+    border: 1px solid #ececed;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.ho-equipment-card img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: 120px;
+    object-fit: contain;
+}
+
+.ho-equipment-card figcaption {
+    margin-top: 8px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ho-dark-grey);
+    text-align: center;
+}
+
+/* Who am I? */
+.ho-about {
+    display: grid;
+    gap: 20px;
+}
+
+.ho-about-photo {
+    margin: 0;
+    text-align: center;
+}
+
+.ho-about-photo img {
+    display: block;
+    width: 200px;
+    height: 200px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Carousel: testimonials.css stretches every slide to the tallest, so the height never jumps. */
+.ho-v2 .testimonial-carousel {
+    max-width: 720px;
+    margin: 0;
+}
+
+.ho-v2 .testimonial-track > .testimonial {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.ho-v2 .testimonial blockquote p {
+    max-width: none;
+}
+
+.ho-v2 .testimonial blockquote p + p {
+    margin-top: 0.8em;
+}
+
+/* The Clipsal mark is taller than the 1583x250 logos; this keeps its visual weight in line. */
+.ho-trust-logos img[src$="/clipsal-logo.png"] {
+    max-width: 110px;
+}
+
+.ho-hero-brand[src$="/clipsal-logo.png"] {
+    width: 130px;
+}
+
+/* Pinned CTA on phones; homeowner_form.js adds .is-visible when the hero CTA and form are off screen. */
+.ho-sticky-cta {
+    display: none;
+}
+
+@media (max-width: 639.98px) {
+    .ho-sticky-cta {
+        display: block;
+        position: fixed;
+        left: 16px;
+        right: 16px;
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        z-index: 50;
+        text-align: center;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+        visibility: hidden;
+        opacity: 0;
+        transform: translateY(120%);
+        transition: transform 0.2s ease, opacity 0.2s ease, visibility 0s linear 0.2s;
+    }
+
+    .ho-sticky-cta.is-visible {
+        visibility: visible;
+        opacity: 1;
+        transform: none;
+        transition: transform 0.2s ease, opacity 0.2s ease, visibility 0s;
+    }
+
+    body.ho-sticky-shown {
+        padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .ho-v2 .testimonial {
+        padding: 20px 16px 18px;
+    }
+}
+
+/* Larger screens */
+
+@media (min-width: 640px) {
+    .ho-hero-actions {
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .ho-trust-items,
+    .ho-checklist,
+    .ho-form-row,
+    .ho-testimonial-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .ho-areas {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .ho-trust-logos {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .ho-partner {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .ho-form {
+        padding: 32px;
+    }
+}
+
+@media (min-width: 900px) {
+    .ho {
+        --ho-pad-y: 72px;
+    }
+
+    .ho h2 {
+        font-size: 2rem;
+    }
+
+    .ho-hero h1 {
+        font-size: 2.6rem;
+    }
+
+    .ho-trust-items {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .ho-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .ho-solution-grid {
+        grid-template-columns: 3fr 2fr;
+    }
+
+    .ho-solution-photo img {
+        max-height: 320px;
+    }
+
+    .ho-problem-lead {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 32px;
+        align-items: center;
+    }
+
+    .ho-equipment {
+        grid-template-columns: repeat(2, 170px);
+    }
+
+    .ho-equipment-card img {
+        height: 200px;
+    }
+
+    .ho-about {
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 40px;
+        align-items: start;
+    }
+
+    .ho-about-photo img {
+        width: 240px;
+        height: 240px;
+    }
+
+    .ho-areas {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ho-btn,
+    .ho-sticky-cta,
+    .ho-sticky-cta.is-visible {
+        transition: none;
+    }
+}
