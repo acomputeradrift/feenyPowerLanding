@@ -128,3 +128,4 @@ Full deploy: `deployment.md`. Sentinel Lite UI/engine releases: run `tools/ship.
 | `deployment.md` § Sentinel Lite | Releasing `/sentinel_lite/` (from the other repo) |
 | `docs/rti_proposal/agent_brief.md` | Proposal form look, copy, behavior |
 | `docs/rti_proposal/README.md` | Spec index for proposal deep dives |
+| `docs/conversion-evidence-landing.md` | Evidence + rationale for 7 landing-page conversion changes (Nov 2026). Docs only — no live CTA/copy changes. |
