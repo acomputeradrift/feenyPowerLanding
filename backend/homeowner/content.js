@@ -155,9 +155,10 @@ export const locations = {
 export const brands = {
     lutron: {
         slug: 'lutron',
+        published: true,
         layout: 'v2',
         name: 'Lutron',
-        product: 'Lutron RadioRA 2, RadioRA 3 & Caséta',
+        product: 'Lutron RadioRA 2 & RadioRA 3',
         logo: { src: '/images/lutron-logo.png', alt: 'Lutron' },
         photo: { src: '/images/lutron-keypad-25.png', alt: 'Lutron keypad', width: 502, height: 800 },
         symptoms: [
@@ -178,14 +179,15 @@ export const brands = {
         v2: {
             titleName: 'Lutron Lighting Control',
             problemIntro: 'A Lutron lighting control system is supposed to make life easier. Instead:',
+            servicesHeading: 'What can I do for your Lutron lighting control system?',
             equipment: [
-                { src: '/images/lutron-ra2-keypad-7.png', width: 500, height: 470, caption: 'Lutron RadioRA 2', alt: 'White Lutron RadioRA 2 keypad with seven engraved buttons: Welcome, Pathway, Entertain, Evening, Away, All On and All Off' },
-                { src: '/images/lutron-ra3-keypad-engraved.png', width: 502, height: 800, caption: 'Lutron RadioRA 3', alt: 'White Lutron RadioRA 3 keypad with four engraved buttons: Bright, Entertain, Relax and Nightlight' },
+                { src: '/images/lutron-ra2-keypad-7-cutout.png', width: 378, height: 600, caption: 'Lutron RadioRA 2', alt: 'White Lutron RadioRA 2 keypad with seven engraved buttons: Welcome, Pathway, Entertain, Evening, Away, All On and All Off' },
+                { src: '/images/lutron-ra3-keypad-engraved-cutout.png', width: 375, height: 600, caption: 'Lutron RadioRA 3', alt: 'White Lutron RadioRA 3 keypad with four engraved buttons: Bright, Entertain, Relax and Nightlight' },
             ],
             symptoms: [
                 'Lights flicker or buzz since you switched to LED bulbs.',
                 'The Lutron app stopped working after a new router or a change to your Wi-Fi.',
-                'Keypad buttons do the wrong thing — or nothing at all.',
+                'Keypad buttons are not programmed the way you want.',
                 'Schedules turn lights on and off at the wrong times.',
                 'Keypad engraving is half done or not done at all.',
             ],
@@ -281,6 +283,10 @@ export const pages = [
     { location: 'los-gatos', brand: 'lutron' },
     { location: 'los-gatos', brand: 'rti' },
 ];
+
+// Live pages. A brand goes live with `published: true` once Jamie approves it;
+// drafts 404 unless HOMEOWNER_SHOW_DRAFTS=true (local .env only).
+export const publishedPages = pages.filter((p) => brands[p.brand].published);
 
 // Order of brand checkboxes in the form (the page's own brand moves first).
 export const formBrandOrder = ['lutron', 'vantage', 'rti', 'clipsal-c-bus'];
@@ -498,17 +504,23 @@ export const shared = {
 
 // Layout v2 — approved on the Lutron pages 2026-11-07. A brand opts in with
 // `layout: 'v2'` and supplies `v2.symptoms` (and optionally `v2.services`,
-// `v2.titleName` for the page title and `v2.equipment` photos beside the symptoms).
+// `v2.servicesHeading`, `v2.titleName` for the page title and `v2.equipment`
+// photos beside the symptoms).
 // A location may supply `v2.tie` and `v2.excludeAreas`. Rendered by
 // frontend/homeowner/service_v2.html. Anything not overridden here comes from `shared`.
 // v2 copy never says "repair".
 export const sharedV2 = {
     ...shared,
 
+    // JSON-LD business name; v1 uses BUSINESS_NAME.
+    businessName: 'Feeny Power and Control Ltd.',
+
     seo: {
         ...shared.seo,
         title: '{titleName} Troubleshooting | {city}',
         titleShort: '{titleName} Troubleshooting | {city}',
+        description: shared.seo.description.replace('diagnosis in 48 hours', 'diagnosis within 48 hours'),
+        descriptionShort: shared.seo.descriptionShort.replace('diagnosis in 48 hours', 'diagnosis within 48 hours'),
     },
 
     hero: {
@@ -517,19 +529,31 @@ export const sharedV2 = {
         microline: 'I will reply within 24 hours.',
     },
 
-    // A quote may be an array of paragraphs.
+    trust: {
+        ...shared.trust,
+        items: shared.trust.items.map((item) =>
+            (item.lead === 'Remote work' ? { ...item, text: 'with clients in 5 countries and counting!' } : item)),
+    },
+
+    // A quote may be an array of paragraphs. Names read "First L, City Country".
     testimonials: {
         heading: 'What clients say',
         items: [
             {
+                quote: 'Jamie is a professional and was a pleasure to work with. The system he sourced and installed for me went above and beyond my expectations… I highly recommend him.',
+                name: 'Lisa P, Kelowna Canada',
+            },
+            {
+                quote: 'Jamie was great to work with. My house is in a remote location where there are no RTI programmers. Jamie would log on to my system remotely to make changes or other times he walked me through processes over the phone and it was easy troubleshooting problems together. Jamie knows his systems well and it’s always easy working with him. I have no issues recommending him to whoever may need his services.',
+                name: 'Bob G, Whistler Canada',
+            },
+            {
                 quote: 'I had a fantastic experience working with Jamie Feeny and his team for all our Lutron programming needs. Their technical expertise is exceptional… They are professional, efficient, and took the time to ensure everything was functioning flawlessly before wrapping up. Lutron Radio Ra automation has completely transformed many homes, and I couldn\'t be happier with the results from Jamie\'s team. If you are looking for top-tier Lutron programming company, I highly recommend their services!',
-                name: 'Sean S',
-                company: 'Vancouver',
+                name: 'Sean S, Vancouver Canada',
             },
             {
                 quote: 'I am very picky with who I work with as I have very high standards. Jamie meets those standards, is a true professional and more so, is a great person.',
-                name: 'Chris C',
-                company: 'Vancouver',
+                name: 'Chris C, Vancouver Canada',
             },
             {
                 quote: [
@@ -537,11 +561,10 @@ export const sharedV2 = {
                     'What stands out most is how he built the program. Jamie planned for what would come after handover and structured the file so it could be easily modified later. We’ve been making changes to that system from his original file for about four years now, and every change has been simple because of how he set it up. That kind of foresight is rare on a system of that size.',
                     'If you need a programmer who can work independently and leave behind a file that others can actually work with, we’d recommend Jamie without hesitation.',
                 ],
-                name: 'Brad K',
-                company: 'Vancouver',
+                name: 'Brad K, Vancouver Canada',
             },
-            shared.testimonials.items.find((q) => q.name === 'Morgan McMillan'),
-            shared.testimonials.items.find((q) => q.name === 'Daniel'),
+            { quote: shared.testimonials.items.find((q) => q.name === 'Morgan McMillan').quote, name: 'Morgan M, Vancouver Canada' },
+            { quote: shared.testimonials.items.find((q) => q.name === 'Daniel').quote, name: 'Daniel T, Sydney Australia' },
         ],
     },
 
@@ -570,7 +593,11 @@ export const sharedV2 = {
         ...shared.benefits,
         cards: shared.benefits.cards.map((card) => ({
             ...card,
-            text: card.text.replace('before any repair work starts', 'before any work starts'),
+            lead: card.lead === 'Local hands' ? 'Local help' : card.lead,
+            text: card.text
+                .replace('before any repair work starts', 'before any work starts')
+                .replace('a budget at {rate}', 'a budget to complete the work')
+                .replace('If something physical needs doing', 'If something needs to be installed or replaced'),
         })),
     },
 
@@ -594,6 +621,7 @@ export const sharedV2 = {
         heading: shared.steps.heading,
         items: shared.steps.items.map((step, i) => {
             if (i === 0) return { ...step, body: 'Fill in the 2-minute form below. I will reply within 24 hours.' };
+            if (i === 2) return { ...step, body: 'Within 48 hours of receiving your project file, you get a diagnosis and a scope document with specific deliverables and a budget. If I can fix it within the diagnostic price, I just fix it.' };
             if (i === 3) return { ...step, body: step.body.replace('I do the programming remotely.', 'I do the programming and testing remotely.') };
             return step;
         }),
@@ -606,17 +634,35 @@ export const sharedV2 = {
 
     faq: {
         heading: 'Questions you may have',
-        items: shared.faq.items.map((item) => {
+        items: shared.faq.items.flatMap((item) => {
             if (item.q === 'How fast can you help?') {
-                return { ...item, a: 'I will reply within 24 hours. Once I have your project file or remote access, you’ll have a diagnosis within 48 hours.' };
+                return { ...item, a: 'I will reply within 24 hours. Once I have your project file, you’ll have a diagnosis within 48 hours.' };
             }
-            return { ...item, a: item.a.replace('I do the programming remotely', 'I do the programming and testing remotely') };
+            if (item.q === 'Do I need to be home? How do you connect?') {
+                return [
+                    {
+                        q: 'How do you connect to my system to complete the work?',
+                        a: 'I work remotely, through a VPN (I can set one up on Ubiquiti networks), Chrome Remote Desktop or AnyDesk on a laptop at home{connectFaq}.',
+                    },
+                    {
+                        q: 'Do I need to be home, or have someone onsite?',
+                        a: 'For the first session, yes — someone needs to be home to get me connected and test with me. If you’d rather not do the testing yourself, my local partner, {partner}, can be there for it. Physical work, like replacing a device or fixing network hardware, is handled by {partner} — they quote and contract with you directly — or your own electrician. Either way, they work from my scope and I do the programming and testing remotely.',
+                    },
+                ];
+            }
+            if (item.q === 'Do I need someone onsite?') return [];
+            return {
+                ...item,
+                a: item.a
+                    .replace('I do the programming remotely', 'I do the programming and testing remotely')
+                    .replace('a budget based on my hourly rate of {rate}', 'a budget to complete the work'),
+            };
         }),
     },
 
     finalCta: {
         ...shared.finalCta,
-        text: 'Tell me what’s going on. I will reply within 24 hours, and you’ll have a diagnosis within 48 hours of getting me your project file or remote access.',
+        text: 'Tell me what’s going on. I will reply within 24 hours, and you’ll have a diagnosis within 48 hours of getting me your project file.',
     },
 
     form: {

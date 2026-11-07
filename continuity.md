@@ -33,13 +33,14 @@ Unit tests (calculator, no server): `cd backend && npm test`
 | `/rti_proposal/preview.pdf` | PDF preview — **localhost only** |
 | `/rti_proposal/audit/:reference` | Token-gated rate audit (404 unless env token set) |
 | `/sentinel_lite/` | Sentinel Lite — dealer-side `.apex` compare in the browser (Pyodide). Files never leave the dealer’s machine. |
-| `/{location}/{brand}` | Homeowner landing pages (10): `vancouver` and `kelowna` × `lutron`/`vantage`/`rti`/`clipsal-c-bus`, plus `los-gatos` × `lutron`/`rti`. Other combos 404. |
-| `/robots.txt`, `/sitemap.xml` | Generated from the homeowner content data (sitemap lists public pages + the 10 homeowner pages) |
+| `/{location}/{brand}` | Homeowner landing pages: `vancouver` and `kelowna` × `lutron`/`vantage`/`rti`/`clipsal-c-bus`, plus `los-gatos` × `lutron`/`rti`. **Only brands with `published: true` are public (Lutron as of 2026-11-07);** the rest 404 unless `HOMEOWNER_SHOW_DRAFTS=true` (local `.env` only). Other combos 404. |
+| `/analytics` | Token-gated first-party analytics dashboard for the homeowner pages. Open once with `?token=<ANALYTICS_DASHBOARD_TOKEN>` to set a cookie. 404 if the token is unset. |
+| `/robots.txt`, `/sitemap.xml` | Generated from the homeowner content data (sitemap lists public pages + the published homeowner pages) |
 | `/idea-feedback/` | Hidden HMAC-signed confirm page for overnight idea thumbs (GET never writes) |
 | `/rti_diagnostics/upload_files/` | RTI log upload |
 | `/rti_diagnostics/process_files/` | Log analysis results |
 
-**API:** `POST /api/upload`, `/api/process`, `/api/retrieve` (diagnostics) · `POST /api/proposal/estimate`, `/api/proposal` (proposal) · `GET`/`POST /api/sentinel_lite/compare-count` (count-only Compare beacon; no files)
+**API:** `POST /api/upload`, `/api/process`, `/api/retrieve` (diagnostics) · `POST /api/proposal/estimate`, `/api/proposal` (proposal) · `GET`/`POST /api/sentinel_lite/compare-count` (count-only Compare beacon; no files) · `POST /api/homeowner-inquiry` (homeowner form) · `POST /api/analytics/event` (cookieless beacon) and the dashboard's token-gated summary API
 
 Entry point: `backend/fpc_server.js`. Every new HTML page needs an `app.get(...)` route there.
 
@@ -73,7 +74,9 @@ Static mounts: `/styles`, `/scripts`, `/images`. Proposal schema also at `/scrip
 
 **Consultation testimonials** — `/consultation` shows a Happy Clients carousel between the benefits and the bottom Calendly close. One quote at a time. It loops every 8 seconds, pauses on hover or keyboard focus, and builds the dots from each `figure.testimonial`. Styles are `frontend/styles/testimonials.css` and behavior is `frontend/scripts/testimonials.js` (loaded only by `consultation.html`). Add a quote by inserting another figure in the track. Do not put this CSS in `consultation.css`.
 
-**Homeowner landing pages** — One template renders all 10 `/{location}/{brand}` pages selling remote programming and troubleshooting to homeowners. **All copy lives in `backend/homeowner/content.js`**: locations, brands, the valid `pages` list, shared copy and FAQ. `backend/homeowner/render.js` fills `frontend/homeowner/service.html` (not served directly), escapes everything, builds the JSON-LD (`ProfessionalService` + `FAQPage`), robots and sitemap, and caches each page. Restart the server after copy edits. Styles are in `styles/homeowner.css` (it reuses `testimonials.css` cards). `scripts/homeowner_form.js` posts to `POST /api/homeowner-inquiry` and sends `fpcTrack` events (`cta_click`, `form_start`, `form_submit`, `faq_open`). The route sits after all specific routes in `fpc_server.js`. To add a page, add its location or brand data and an entry in `pages`. The copy never says the diagnostic fee is credited toward repairs, never promises a fixed repair price, and never mentions HomeWorks.
+**Homeowner landing pages** — `/{location}/{brand}` pages selling remote programming and troubleshooting to homeowners. **Read `docs/homeowner_pages/README.md` before touching them**: it has the approved v2 layout, the shared rules and the per-brand checklist for bringing RTI, Clipsal C-Bus and Vantage up to the Lutron standard. A ready-made hand-off prompt for the next brand is in `docs/homeowner_pages/rti_agent_prompt.md`. **All copy lives in `backend/homeowner/content.js`**: locations, brands, the valid `pages` list, `publishedPages`, `shared` (v1) and `sharedV2` copy and FAQ. `backend/homeowner/render.js` fills `frontend/homeowner/service_v2.html` for brands with `layout: 'v2'` (Lutron) and `service.html` for the rest (neither is served directly). It escapes everything, builds the JSON-LD (`ProfessionalService` + `FAQPage`), robots and sitemap, and caches each page. Restart the server after copy edits. Styles are in `styles/homeowner.css` (it reuses `testimonials.css` cards). `scripts/homeowner_form.js` posts to `POST /api/homeowner-inquiry` and sends `fpcTrack` events (`cta_click`, `form_start`, `form_submit`, `faq_open`). The route sits after all specific routes in `fpc_server.js`. To add a page, add its location or brand data and an entry in `pages`. The copy never says the diagnostic fee is credited toward repairs, never promises a fixed repair price, and never mentions HomeWorks.
+
+**Homeowner analytics** — First-party and cookieless (no Google or Facebook). `frontend/scripts/fpc_analytics.js` (`window.fpcTrack`) posts to `POST /api/analytics/event`. Code is in `backend/analytics/` and `routes/analytics.js`. The dashboard is `/analytics` (`frontend/analytics.html`), gated by `ANALYTICS_DASHBOARD_TOKEN`. A `node-cron` weekly email goes out Mondays at 07:00 America/Vancouver through Resend (`PROPOSAL_EMAIL_*`), and Mongo guards against double sends. Preview it with `node analytics/weeklyReportCli.js`. Only published pages are counted. With MongoDB down, the dashboard API returns 503 and the site keeps serving.
 
 **RTI proposal form** — Replaced the retired Google Form AutoProposal. Vanilla ES modules, schema-driven. For form/PDF/CSS work, read **`docs/rti_proposal/agent_brief.md` next** — do not load the full spec set for a visual pass. Key: `frontend/rti_proposal.html`, `styles/rti_proposal.css`, `scripts/proposal/`, `backend/proposal/`, `routes/proposal.js`. Deep specs: `docs/rti_proposal/README.md`.
 
@@ -94,6 +97,10 @@ Current product (`SCHEMA_VERSION` `2026.6`, `RATE_CARD_VERSION` `2026.3`): hours
 | `PROPOSAL_AUDIT_TOKEN` | Enables audit route when set |
 | `PROPOSAL_IP_HASH_SALT` | Optional IP hashing on submit |
 | `IDEA_FEEDBACK_HMAC` | Same value as Cursor Cloud Secret; required for `/idea-feedback/` |
+| `ANALYTICS_DASHBOARD_TOKEN` | Enables `/analytics` when set |
+| `ANALYTICS_PUBLIC_URL` | Optional; base URL for links in the weekly email (default production URL) |
+| `ANALYTICS_REPORT_ENABLED` | `false` turns the weekly email off (`ANALYTICS_REPORT_CRON`, `ANALYTICS_REPORT_TZ`, `ANALYTICS_REPORT_TO` optional) |
+| `HOMEOWNER_SHOW_DRAFTS` | `true` renders unpublished homeowner pages. **Local only — never on the server** |
 
 Local and server each have their own `.env` — not synced via git.
 
@@ -127,4 +134,6 @@ Full deploy: `deployment.md`. Sentinel Lite UI/engine releases: run `tools/ship.
 | `deployment.md` | Shipping to production |
 | `deployment.md` § Sentinel Lite | Releasing `/sentinel_lite/` (from the other repo) |
 | `docs/rti_proposal/agent_brief.md` | Proposal form look, copy, behavior |
+| `docs/homeowner_pages/README.md` | Homeowner landing pages — v2 layout, shared rules, per-brand checklist |
+| `docs/homeowner_pages/rti_agent_prompt.md` | Hand-off prompt for the next brand (RTI) |
 | `docs/rti_proposal/README.md` | Spec index for proposal deep dives |

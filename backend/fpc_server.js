@@ -186,7 +186,9 @@ app.get('/sitemap.xml', (req, res) => {
 // ✅ Homeowner landing pages — /{location}/{brand}. Keep this after every
 // specific route; unknown combos fall through to 404.
 app.get('/:location/:brand', (req, res, next) => {
-    const html = renderHomeownerPage(req.params.location, req.params.brand);
+    const html = renderHomeownerPage(req.params.location, req.params.brand, {
+        includeDrafts: process.env.HOMEOWNER_SHOW_DRAFTS === 'true',
+    });
     if (!html) return next();
     if (req.path.endsWith('/')) {
         const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';

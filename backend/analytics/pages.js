@@ -64,7 +64,7 @@ export async function loadPages({ importContent = () => import('../homeowner/con
   } catch {
     content = null;
   }
-  const pages = normalizePages(content && content.pages) || FALLBACK_PAGES;
+  const pages = normalizePages(content && (content.publishedPages || content.pages)) || FALLBACK_PAGES;
   const locations = normalizeList(content && content.locations, FALLBACK_LOCATIONS) || FALLBACK_LOCATIONS;
   const brands = (normalizeList(content && content.brands, FALLBACK_BRANDS) || FALLBACK_BRANDS)
     .map((b) => ({ ...b, short: FALLBACK_BRANDS.find((f) => f.slug === b.slug)?.label || b.short }));

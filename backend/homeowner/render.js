@@ -8,6 +8,7 @@ import {
     locations,
     brands,
     pages,
+    publishedPages,
     formBrandOrder,
     shared,
     sharedV2,
@@ -118,7 +119,7 @@ function buildJsonLd(loc, brand, tokens, canonical, description, c) {
     const business = {
         '@type': 'ProfessionalService',
         '@id': `${canonical}#service`,
-        name: BUSINESS_NAME,
+        name: c.businessName || BUSINESS_NAME,
         url: canonical,
         description,
         image: `${SITE_URL}/images/feeny-logo-512-circle-black-back.png`,
@@ -203,8 +204,8 @@ function buildValues(loc, brand, c = shared) {
         .map((q) => `<figure class="testimonial">
                         <blockquote>${[].concat(q.quote).map((p) => `<p>${escapeHtml(p)}</p>`).join('')}</blockquote>
                         <figcaption>
-                            <span class="testimonial-name">${escapeHtml(q.name)}</span>
-                            <span class="testimonial-company">${escapeHtml(q.company)}</span>
+                            <span class="testimonial-name">${escapeHtml(q.name)}</span>${q.company ? `
+                            <span class="testimonial-company">${escapeHtml(q.company)}</span>` : ''}
                         </figcaption>
                     </figure>`)
         .join('\n');
@@ -338,7 +339,12 @@ function buildValuesV2(loc, brand) {
     const c = {
         ...sharedV2,
         problem: { ...sharedV2.problem, intro: brand.v2.problemIntro || sharedV2.problem.intro },
-        services: { ...sharedV2.services, items: v2Services(brand), extrasHeading: '' },
+        services: {
+            ...sharedV2.services,
+            heading: brand.v2.servicesHeading || sharedV2.services.heading,
+            items: v2Services(brand),
+            extrasHeading: '',
+        },
     };
 
     const values = buildValues(locV2, brandV2, c);
@@ -367,8 +373,13 @@ function applyTemplate(tpl, { raw, text }) {
 }
 
 /** Returns the full HTML for a valid page, or null. Output is cached. */
-export function renderPage(location, brand) {
+export function isPublishedPage(location, brand) {
+    return publishedPages.some((p) => p.location === location && p.brand === brand);
+}
+
+export function renderPage(location, brand, { includeDrafts = false } = {}) {
     if (!isValidPage(location, brand)) return null;
+    if (!includeDrafts && !isPublishedPage(location, brand)) return null;
     const key = `${location}/${brand}`;
     if (cache.has(key)) return cache.get(key);
     const loc = locations[location];
@@ -383,7 +394,7 @@ export function renderPage(location, brand) {
 const PUBLIC_PATHS = ['/consultation', '/faq', '/rti_proposal/', '/sentinel_lite/'];
 
 export function renderSitemap() {
-    const urls = [...PUBLIC_PATHS, ...pages.map((p) => pagePath(p.location, p.brand))];
+    const urls = [...PUBLIC_PATHS, ...publishedPages.map((p) => pagePath(p.location, p.brand))];
     const body = urls.map((u) => `  <url><loc>${escapeHtml(SITE_URL + u)}</loc></url>`).join('\n');
     return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
 }
