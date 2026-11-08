@@ -328,8 +328,10 @@ export const brands = {
     },
     'clipsal-c-bus': {
         slug: 'clipsal-c-bus',
+        published: true,
+        layout: 'v2',
         name: 'Clipsal C-Bus',
-        product: 'Clipsal C-Bus by Schneider Electric',
+        product: 'Clipsal C-Bus control system',
         logo: { src: '/images/clipsal-logo.png', alt: 'Clipsal by Schneider Electric', width: 600, height: 154 },
         photo: null,
         symptoms: [
@@ -343,9 +345,41 @@ export const brands = {
             'Changes and additions to existing C-Bus networks.',
             'An honest upgrade path when you’re ready to plan ahead.',
         ],
-        credential: 'I was one of the only trained Clipsal C-Bus installers in Canada while Clipsal sold C-Bus here, and I still maintain several C-Bus systems today — some directly, some through my network of AV integrators.',
+        credential: 'I was one of the only trained Clipsal C-Bus installers in Canada while Clipsal sold C-Bus here, and I still maintain several C-Bus systems today.',
         connectOption: null,
+        hardwareDevices: 'dimmer or relay module, power supply, keypad, sensor, thermostat or network device',
         fileNote: 'Depending on the system, I can recover the existing programming or rebuild it.',
+        v2: {
+            titleName: 'Clipsal C-Bus Control System',
+            testimonialFirst: 'Morgan M, Vancouver Canada',
+            problemIntro: 'A Clipsal C-Bus control system is supposed to make life easier. Instead:',
+            servicesHeading: 'What can I do for your Clipsal C-Bus control system?',
+            // Real scale: Saturn plates are 116 mm tall, the thermostat 92 × 127 mm.
+            equipmentStage: { width: 340, height: 340, caption: 'Clipsal C-Bus Saturn, Saturn DLT and thermostat' },
+            equipment: [
+                { at: [0, 0, 200], src: '/images/clipsal-saturn-keypad-cutout.png', width: 372, height: 600, caption: 'Clipsal C-Bus Saturn', alt: 'Cream glass Clipsal C-Bus Saturn keypad with six round chrome buttons' },
+                { at: [104, 28, 200], src: '/images/clipsal-saturn-dlt-cutout.png', width: 385, height: 600, caption: 'Clipsal C-Bus Saturn DLT', alt: 'Stainless steel Clipsal C-Bus Saturn DLT keypad with an LCD label panel and five buttons' },
+                { at: [120, 181, 159], src: '/images/clipsal-thermostat-cutout.png', width: 829, height: 600, caption: 'Clipsal C-Bus thermostat', alt: 'Clipsal C-Bus thermostat with a glass front, LCD screen and five buttons' },
+            ],
+            symptoms: [
+                'Lights or scenes aren’t responding, or only work some of the time.',
+                'Keypad buttons are not programmed the way you want.',
+                'The labels on your Saturn DLT keypads are wrong or blank.',
+                'Schedules turn lights on and off at the wrong times.',
+                'Lights flicker or buzz since you switched to LED bulbs.',
+                'Your Wiser or C-Bus app stopped working after a new router or a change to your network.',
+                'Nobody local knows C-Bus, or wants to touch it.',
+            ],
+            services: {
+                replace: {
+                    troubleshooting: 'Troubleshooting — including LED flicker, buzz and dimmer compatibility.',
+                    changes: 'Scene, button and schedule changes.',
+                    engraving: 'New keypad engraving and DLT labels — I coordinate it.',
+                    devices: 'Adding or replacing system devices — dimmer and relay modules, power supplies, Saturn and DLT keypads, sensors and thermostats.',
+                    upgrades: 'Upgrades and migrations, including a clear upgrade path for older C-Bus systems — staged over time if you prefer.',
+                },
+            },
+        },
     },
 };
 

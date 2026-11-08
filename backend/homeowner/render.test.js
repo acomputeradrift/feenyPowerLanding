@@ -9,24 +9,20 @@ test('only published brands render publicly and appear in the sitemap', () => {
     for (const [loc, brand] of v2Pages) assert.ok(renderPage(loc, brand));
     for (const loc of ['vancouver', 'kelowna', 'los-gatos']) assert.ok(renderPage(loc, 'rti'), `${loc}/rti should be public`);
     for (const loc of ['vancouver', 'kelowna']) assert.ok(renderPage(loc, 'vantage'), `${loc}/vantage should be public`);
-    for (const [loc, brand] of [['vancouver', 'clipsal-c-bus'], ['kelowna', 'clipsal-c-bus']]) {
-        assert.equal(renderPage(loc, brand), null, `${loc}/${brand} should be hidden`);
-        assert.ok(draft(loc, brand), `${loc}/${brand} should render as a draft`);
-    }
+    for (const loc of ['vancouver', 'kelowna']) assert.ok(renderPage(loc, 'clipsal-c-bus'), `${loc}/clipsal-c-bus should be public`);
     assert.equal(draft('los-gatos', 'vantage'), null);
+    assert.equal(draft('los-gatos', 'clipsal-c-bus'), null);
     const sitemap = renderSitemap();
     assert.ok(sitemap.includes('/vancouver/lutron'));
     assert.ok(sitemap.includes('/vancouver/rti'));
     assert.ok(sitemap.includes('/kelowna/vantage'));
-    assert.ok(!sitemap.includes('/vancouver/clipsal-c-bus'));
+    assert.ok(sitemap.includes('/kelowna/clipsal-c-bus'));
 });
 
-test('v2 brands render the v2 template; others keep v1', () => {
-    for (const [loc, brand] of v2Pages) assert.match(renderPage(loc, brand), /<body class="ho ho-v2">/);
-    const v1 = draft('vancouver', 'clipsal-c-bus');
-    assert.match(v1, /<body class="ho">/);
-    assert.match(v1, /For integrators &amp; dealers/);
-    assert.match(v1, /within an hour/);
+test('every brand renders the v2 template', () => {
+    for (const [loc, brand] of [...v2Pages, ['vancouver', 'rti'], ['vancouver', 'vantage'], ['kelowna', 'clipsal-c-bus']]) {
+        assert.match(draft(loc, brand), /<body class="ho ho-v2">/);
+    }
 });
 
 test('v2 pages drop retired copy and keep the FAQ JSON-LD in sync', () => {
@@ -72,7 +68,28 @@ test('v2 Lutron pages use the approved title, copy and testimonial order', () =>
         assert.ok(!html.includes('/hr'));
         assert.ok(!/cas[ée]ta/i.test(html));
     }
-    assert.match(draft('vancouver', 'clipsal-c-bus'), /before any repair work starts/);
+});
+
+test('v2 Clipsal C-Bus drafts use the C-Bus title and copy', () => {
+    for (const [loc, city] of [['vancouver', 'Vancouver'], ['kelowna', 'Kelowna']]) {
+        const html = draft(loc, 'clipsal-c-bus');
+        const title = `Clipsal C-Bus Control System Troubleshooting | ${city}`;
+        assert.ok(title.length <= 60);
+        assert.ok(html.includes(`<title>${title}</title>`));
+        assert.ok(html.includes('Remote Clipsal C-Bus control system programming &amp; troubleshooting'));
+        assert.ok(html.includes('What can I do for your Clipsal C-Bus control system?'));
+        assert.ok(html.includes('The labels on your Saturn DLT keypads are wrong or blank.'));
+        assert.ok(html.includes('Scene, button and schedule changes.'));
+        assert.ok(html.includes('iPhone, iPad or Android app setup.'));
+        assert.match(html, /and I still maintain several C-Bus systems today\.<\/p>\s*<p>I work with the system you already have/);
+        assert.ok(!html.includes('AV integrators'));
+        assert.ok(html.includes('a failed dimmer or relay module, power supply, keypad, sensor, thermostat or network device'));
+        assert.ok(html.includes('Fix my Clipsal C-Bus system'));
+        assert.ok(!/repair/i.test(html), `${loc}/clipsal-c-bus says "repair"`);
+        const names = [...html.matchAll(/testimonial-name">(.*?)</g)].map((m) => m[1]);
+        assert.equal(names[0], 'Morgan M, Vancouver Canada');
+        assert.equal(names.length, 7);
+    }
 });
 
 test('v2 Vantage drafts use the Vantage title and copy', () => {

@@ -167,7 +167,7 @@ function buildValues(loc, brand, c = shared) {
         .map((i) => `<li><strong class="text-green">${html(i.lead, t)}</strong> ${html(i.text, t)}</li>`)
         .join('\n');
 
-    const solutionBody = [...c.solution.body, ...(brand.credential ? [brand.credential] : [])]
+    const solutionBody = [...c.solution.body.slice(0, -1), ...(brand.credential ? [brand.credential] : []), ...c.solution.body.slice(-1)]
         .map((p) => (p.list ? `<ul class="ho-checklist">\n${li(p.list, t)}\n</ul>` : `<p>${html(p, t)}</p>`))
         .join('\n');
 

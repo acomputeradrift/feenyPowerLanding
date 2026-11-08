@@ -9,7 +9,7 @@ RTI, Clipsal C-Bus and Vantage up to the same standard. Read `continuity.md` fir
 |---|---|---|---|
 | Lutron | v2 | **Yes** (`published: true`) | vancouver, kelowna, los-gatos |
 | RTI | v2 | **Yes** (2026-11-08) | vancouver, kelowna, los-gatos |
-| Clipsal C-Bus | v1 | No | vancouver, kelowna |
+| Clipsal C-Bus | v2 | **Yes** (2026-11-08) | vancouver, kelowna |
 | Vantage | v2 | **Yes** (2026-11-08) | vancouver, kelowna |
 
 Agreed order of work: **RTI → Clipsal C-Bus → Vantage**, one brand at a time, each approved
@@ -133,6 +133,8 @@ Applied to every v2 brand (live in `52985b7` unless marked):
   decade Vantage and Clipsal C-Bus (a `{ list: [...] }` entry in `solution.body`).
 - Shared `apps` service reads "iPhone, iPad or Android app setup." (was "App, remote and
   touchscreen setup or redesign."; RTI overrides it).
+- A brand `credential` line sits just above the last "Who am I?" paragraph ("I work with the
+  system you already have…"). Only Clipsal C-Bus has one.
 
 ## Open items
 
