@@ -85,7 +85,7 @@ describe('analytics routes', () => {
     assert.equal(res.headers.get('location'), '/analytics?range=7');
     const cookie = res.headers.get('set-cookie');
     assert.match(cookie, /HttpOnly/);
-    assert.match(cookie, /SameSite=Strict/);
+    assert.match(cookie, /SameSite=Lax/);
     assert.equal(res.headers.get('x-robots-tag'), 'noindex, nofollow');
     const pair = cookie.split(';')[0];
     const summary = await fetch(`${baseUrl}/api/analytics/summary?range=7`, { headers: { Cookie: pair } });

@@ -111,7 +111,9 @@ export function createAnalyticsDashboardHandler({ getToken = () => process.env.A
       }
       res.cookie(COOKIE_NAME, cookieValue(expected), {
         httpOnly: true,
-        sameSite: 'strict',
+        // Lax, not Strict: a token link tapped in Mail or Messages is a cross-site
+        // navigation, and Strict would drop the cookie on the redirect below.
+        sameSite: 'lax',
         secure: isSecure(req),
         maxAge: COOKIE_MAX_AGE_MS,
         path: '/'
