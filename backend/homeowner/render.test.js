@@ -7,14 +7,16 @@ const draft = (loc, brand) => renderPage(loc, brand, { includeDrafts: true });
 
 test('only published brands render publicly and appear in the sitemap', () => {
     for (const [loc, brand] of v2Pages) assert.ok(renderPage(loc, brand));
-    for (const [loc, brand] of [['vancouver', 'vantage'], ['kelowna', 'clipsal-c-bus'], ['los-gatos', 'rti']]) {
+    for (const loc of ['vancouver', 'kelowna', 'los-gatos']) assert.ok(renderPage(loc, 'rti'), `${loc}/rti should be public`);
+    for (const [loc, brand] of [['vancouver', 'vantage'], ['kelowna', 'clipsal-c-bus'], ['kelowna', 'vantage']]) {
         assert.equal(renderPage(loc, brand), null, `${loc}/${brand} should be hidden`);
         assert.ok(draft(loc, brand), `${loc}/${brand} should render as a draft`);
     }
     assert.equal(draft('los-gatos', 'vantage'), null);
     const sitemap = renderSitemap();
     assert.ok(sitemap.includes('/vancouver/lutron'));
-    assert.ok(!sitemap.includes('/vancouver/rti'));
+    assert.ok(sitemap.includes('/vancouver/rti'));
+    assert.ok(!sitemap.includes('/vancouver/vantage'));
 });
 
 test('v2 brands render the v2 template; others keep v1', () => {
@@ -51,12 +53,13 @@ test('v2 Lutron pages use the approved title, copy and testimonial order', () =>
         assert.ok(!/repair/i.test(html), `${loc}/${brand} says "repair"`);
         assert.ok(html.includes('Who am I?'));
         assert.ok(html.includes('>Send it!</button>'));
+        assert.ok(html.includes('Fix my Lutron system'));
         assert.ok(html.includes('class="testimonial-carousel"'));
         const names = [...html.matchAll(/testimonial-name">(.*?)</g)].map((m) => m[1]);
         assert.deepEqual(names, [
+            'Sean S, Vancouver Canada',
             'Lisa P, Kelowna Canada',
             'Bob G, Whistler Canada',
-            'Sean S, Vancouver Canada',
             'Chris C, Vancouver Canada',
             'Brad K, Vancouver Canada',
             'Morgan M, Vancouver Canada',
@@ -68,6 +71,70 @@ test('v2 Lutron pages use the approved title, copy and testimonial order', () =>
         assert.ok(!/cas[ée]ta/i.test(html));
     }
     assert.match(draft('vancouver', 'vantage'), /before any repair work starts/);
+});
+
+test('v2 RTI drafts use the RTI title, copy and testimonial order', () => {
+    const cities = { vancouver: 'Vancouver', kelowna: 'Kelowna', 'los-gatos': 'Los Gatos' };
+    for (const loc of Object.keys(cities)) {
+        const html = draft(loc, 'rti');
+        const title = `RTI Control System Troubleshooting | ${cities[loc]}`;
+        assert.ok(title.length <= 60);
+        assert.match(html, /<body class="ho ho-v2">/);
+        assert.ok(html.includes(`<title>${title}</title>`));
+        assert.ok(html.includes('Remote RTI control system programming &amp; troubleshooting'));
+        assert.ok(html.includes('What can I do for your RTI control system?'));
+        assert.ok(html.includes('Fix my RTI system'));
+        assert.ok(!html.includes('{brand}'));
+        assert.ok(html.includes('Modify or add scheduled events to your system.'));
+        assert.ok(html.includes('A custom RTI app for your iPhone and iPad.'));
+        assert.ok(html.includes('/images/rti-ka11-white-cutout.png'));
+        assert.ok(html.includes('/images/rti-t2x-cutout.png'));
+        assert.ok(html.includes('/images/rti-t4x-cutout.png'));
+        assert.ok(html.includes('a failed remote, touchscreen, processor, audio/video component or other network device remotely'));
+        assert.ok(html.includes('a touchscreen swapped, a processor replaced'));
+        assert.ok(!html.includes('dimmer'));
+        assert.ok(!html.includes('electrician'));
+        assert.ok(html.includes('your own AV technician'));
+        assert.ok(!html.includes('keypad engraving'));
+        assert.ok(!html.includes('timeclock'));
+        assert.ok(!/repair/i.test(html), `${loc}/rti says "repair"`);
+        for (const banned of ['guarantee', 'Trusted by integrators', 'within an hour', 'For integrators', 'or remote access', '/hr']) {
+            assert.ok(!html.includes(banned), `${loc}/rti contains "${banned}"`);
+        }
+        const names = [...html.matchAll(/testimonial-name">(.*?)</g)].map((m) => m[1]);
+        assert.deepEqual(names, [
+            'Bob G, Whistler Canada',
+            'Lisa P, Kelowna Canada',
+            'Sean S, Vancouver Canada',
+            'Chris C, Vancouver Canada',
+            'Brad K, Vancouver Canada',
+            'Morgan M, Vancouver Canada',
+            'Daniel T, Sydney Australia',
+        ]);
+    }
+});
+
+test('Lutron and RTI show the overlapping equipment group', () => {
+    for (const [loc, brand] of [...v2Pages, ['vancouver', 'rti']]) {
+        const html = draft(loc, brand);
+        assert.ok(html.includes('class="ho-equipment-stage"'), `${loc}/${brand} has no equipment stage`);
+        assert.equal((html.match(/<img [^>]*style="left:/g) || []).length, 3);
+    }
+});
+
+test('v2 pages list at most 10 services', () => {
+    for (const [loc, brand] of [...v2Pages, ['vancouver', 'rti'], ['kelowna', 'rti'], ['los-gatos', 'rti']]) {
+        const list = draft(loc, brand).match(/<ul class="ho-checklist">(.*?)<\/ul>/s)[1];
+        const count = (list.match(/<li[\s>]/g) || []).length;
+        assert.ok(count > 0 && count <= 10, `${loc}/${brand} lists ${count} services`);
+    }
+});
+
+test('no page leaks an unfilled {token}', () => {
+    for (const p of [...v2Pages, ['vancouver', 'rti'], ['vancouver', 'vantage'], ['kelowna', 'clipsal-c-bus'], ['los-gatos', 'rti']]) {
+        const html = draft(...p);
+        assert.ok(!/\{(localTrade|hardwareDevices|onsiteExamples|brand)\}/.test(html), `${p.join('/')} has an unfilled token`);
+    }
 });
 
 test('every page shows the Clipsal logo in the trust strip', () => {

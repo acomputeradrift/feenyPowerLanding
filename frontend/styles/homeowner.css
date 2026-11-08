@@ -801,6 +801,22 @@ p.ho-wordmark {
     filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.18)) drop-shadow(0 8px 14px rgba(0, 0, 0, 0.14));
 }
 
+.ho-equipment-stage {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.ho-equipment-canvas {
+    position: relative;
+}
+
+.ho-equipment-canvas img {
+    position: absolute;
+    width: auto;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.18)) drop-shadow(0 8px 14px rgba(0, 0, 0, 0.14));
+}
+
+.ho-equipment-stage figcaption,
 .ho-equipment-card figcaption {
     margin-top: 12px;
     font-size: 0.85rem;
@@ -833,7 +849,7 @@ p.ho-wordmark {
 /* Carousel: testimonials.css stretches every slide to the tallest, so the height never jumps. */
 .ho-v2 .testimonial-carousel {
     max-width: 720px;
-    margin: 0;
+    margin: 0 auto;
 }
 
 .ho-v2 .testimonial-track > .testimonial {

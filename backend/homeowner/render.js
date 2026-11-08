@@ -60,6 +60,9 @@ function tokensFor(loc, brand) {
         fileNote: brand.fileNote,
         connectOption: brand.connectOption || '',
         connectFaq: brand.connectFaq || '',
+        hardwareDevices: brand.hardwareDevices || 'dimmer, keypad, controller or network device',
+        onsiteExamples: brand.onsiteExamples || 'a dimmer swapped, a keypad replaced',
+        localTrade: brand.localTrade || 'electrician',
     };
 }
 
@@ -269,7 +272,7 @@ function buildValues(loc, brand, c = shared) {
             heroHeadline: txt(c.hero.headline, t),
             heroHeadlineTail: txt(c.hero.headlineTail, t),
             heroSubhead: txt(c.hero.subhead, t),
-            heroPrimaryCta: c.hero.primaryCta,
+            heroPrimaryCta: txt(c.hero.primaryCta, t),
             heroSecondaryCta: c.hero.secondaryCta,
             heroMicroline: c.hero.microline,
             trustLabel: c.trust.label,
@@ -289,7 +292,7 @@ function buildValues(loc, brand, c = shared) {
             partnerName: loc.partner.name,
             partnerInitials: initials(loc.partner.name),
             partnerHeading: txt(c.local.partnerHeading, t),
-            partnerNote: loc.partner.note,
+            partnerNote: txt(loc.partner.note, t),
             tie: loc.tie,
             testimonialsHeading: c.testimonials.heading,
             testimonialsIntro: c.testimonials.intro,
@@ -326,6 +329,28 @@ function v2Services(brand) {
     ];
 }
 
+// Overlapping product group: `at` is [left, top, height] in px on a stage.width × stage.height
+// canvas, emitted as percentages so the whole group scales down on phones.
+function equipmentStage(stage, items) {
+    const pct = (v, of) => `${+(v / of * 100).toFixed(2)}%`;
+    const imgs = items.map((e) => {
+        const [left, top, height] = e.at;
+        return `<img src="${escapeHtml(e.src)}" alt="${escapeHtml(e.alt)}" width="${e.width}" height="${e.height}" loading="lazy" style="left:${pct(left, stage.width)};top:${pct(top, stage.height)};height:${pct(height, stage.height)}">`;
+    }).join('\n                        ');
+    return `<figure class="ho-equipment-stage" style="width:${stage.width}px">
+                        <div class="ho-equipment-canvas" style="aspect-ratio:${stage.width} / ${stage.height}">
+                        ${imgs}
+                        </div>
+                        <figcaption>${escapeHtml(stage.caption)}</figcaption>
+                    </figure>`;
+}
+
+function v2Testimonials(brand) {
+    const items = sharedV2.testimonials.items;
+    const first = items.find((q) => q.name === brand.v2.testimonialFirst);
+    return first ? [first, ...items.filter((q) => q !== first)] : items;
+}
+
 function buildValuesV2(loc, brand) {
     const v2Loc = loc.v2 || {};
     const excluded = new Set(v2Loc.excludeAreas || []);
@@ -345,18 +370,21 @@ function buildValuesV2(loc, brand) {
             items: v2Services(brand),
             extrasHeading: '',
         },
+        testimonials: { ...sharedV2.testimonials, items: v2Testimonials(brand) },
     };
 
     const values = buildValues(locV2, brandV2, c);
     values.raw.tieLine = locV2.tie ? `<p class="ho-tie">${escapeHtml(locV2.tie)}</p>` : '';
-    values.raw.equipment = (brand.v2.equipment || [])
+    values.raw.equipment = brand.v2.equipmentStage
+        ? equipmentStage(brand.v2.equipmentStage, brand.v2.equipment)
+        : (brand.v2.equipment || [])
         .map((e) => `<figure class="ho-equipment-card">
                         <img src="${escapeHtml(e.src)}" alt="${escapeHtml(e.alt)}" width="${e.width}" height="${e.height}" loading="lazy">
                         <figcaption>${escapeHtml(e.caption)}</figcaption>
                     </figure>`)
         .join('\n');
     values.text.formSubmitNote = c.form.submitNote;
-    values.text.stickyCta = c.stickyCta.label;
+    values.text.stickyCta = c.stickyCta.label.replaceAll('{brand}', brand.name);
     return values;
 }
 

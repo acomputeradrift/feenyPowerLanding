@@ -47,7 +47,7 @@ export const locations = {
         partner: {
             name: 'Blue Ember Solutions',
             logo: { src: '/images/blue-ember-logo.png', alt: 'Blue Ember Solutions', width: 400, height: 400 },
-            note: 'When something needs hands onsite — a dimmer swapped, a keypad replaced, a network sorted out — Blue Ember Solutions can do the physical work from my scope. They quote their own time and materials and contract with you directly.',
+            note: 'When something needs hands onsite — {onsiteExamples}, a network sorted out — Blue Ember Solutions can do the physical work from my scope. They quote their own time and materials and contract with you directly.',
         },
         tie: 'I ran my own electrical contracting company in Vancouver for 10 years, so I know these homes and the systems in them.',
         // v2 layout: the contracting line lives in the trust strip and intro instead.
@@ -79,7 +79,7 @@ export const locations = {
         partner: {
             name: 'VanReit Automation',
             logo: { src: '/images/vanreit-automation-logo.png', alt: 'VanReit Automation', width: 400, height: 400 },
-            note: 'When something needs hands onsite — a dimmer swapped, a keypad replaced, a network sorted out — VanReit Automation can do the physical work from my scope. They quote their own time and materials and contract with you directly.',
+            note: 'When something needs hands onsite — {onsiteExamples}, a network sorted out — VanReit Automation can do the physical work from my scope. They quote their own time and materials and contract with you directly.',
         },
         tie: 'I live in Kelowna half the year, so I’m often just down the road.',
         v2: { tie: null },
@@ -149,7 +149,7 @@ export const locations = {
         partner: {
             name: 'Haven and Wire',
             logo: { src: '/images/haven-and-wire-logo.png', alt: 'Haven & Wire', width: 400, height: 400 },
-            note: 'When something needs hands onsite — a dimmer swapped, a keypad replaced, a network sorted out — Haven and Wire can do the physical work from my scope. They quote their own time and materials and contract with you directly.',
+            note: 'When something needs hands onsite — {onsiteExamples}, a network sorted out — Haven and Wire can do the physical work from my scope. They quote their own time and materials and contract with you directly.',
         },
         tie: 'I do all of Haven and Wire’s RTI programming, so we already work together every week.',
         v2: { tie: null },
@@ -182,11 +182,15 @@ export const brands = {
         connectFaq: ', or Lutron Cloud access for RadioRA 3',
         v2: {
             titleName: 'Lutron Lighting Control',
+            testimonialFirst: 'Sean S, Vancouver Canada',
             problemIntro: 'A Lutron lighting control system is supposed to make life easier. Instead:',
             servicesHeading: 'What can I do for your Lutron lighting control system?',
+            // Real scale: keypads in Designer wallplates are 4.69" tall, the Pico 2.6".
+            equipmentStage: { width: 340, height: 290, caption: 'Lutron RadioRA 2, RadioRA 3 and Pico Remote' },
             equipment: [
-                { src: '/images/lutron-ra2-keypad-7-cutout.png', width: 378, height: 600, caption: 'Lutron RadioRA 2', alt: 'White Lutron RadioRA 2 keypad with seven engraved buttons: Welcome, Pathway, Entertain, Evening, Away, All On and All Off' },
-                { src: '/images/lutron-ra3-keypad-engraved-cutout.png', width: 375, height: 600, caption: 'Lutron RadioRA 3', alt: 'White Lutron RadioRA 3 keypad with four engraved buttons: Bright, Entertain, Relax and Nightlight' },
+                { at: [20, 10, 200], src: '/images/lutron-ra2-keypad-7-cutout.png', width: 378, height: 600, caption: 'Lutron RadioRA 2', alt: 'White Lutron RadioRA 2 keypad with seven engraved buttons: Welcome, Pathway, Entertain, Evening, Away, All On and All Off' },
+                { at: [135, 50, 200], src: '/images/lutron-ra3-keypad-engraved-cutout.png', width: 375, height: 600, caption: 'Lutron RadioRA 3', alt: 'White Lutron RadioRA 3 keypad with four engraved buttons: Bright, Entertain, Relax and Nightlight' },
+                { at: [250, 160, 111], src: '/images/lutron-pico-cutout.png', width: 295, height: 600, caption: 'Pico Remote', alt: 'White Lutron Pico remote with on, raise, favourite, lower and off buttons' },
             ],
             symptoms: [
                 'Lights flicker or buzz since you switched to LED bulbs.',
@@ -232,8 +236,10 @@ export const brands = {
     },
     rti: {
         slug: 'rti',
+        published: true,
+        layout: 'v2',
         name: 'RTI',
-        product: 'RTI',
+        product: 'RTI control system',
         logo: { src: '/images/rti-logo-bigger.png', alt: 'RTI' },
         photo: { src: '/images/rti-panel-50.png', alt: 'RTI touchscreen panel', width: 1018, height: 938 },
         symptoms: [
@@ -250,6 +256,43 @@ export const brands = {
         ],
         credential: null,
         connectOption: null,
+        hardwareDevices: 'remote, touchscreen, processor, audio/video component or other network device',
+        onsiteExamples: 'a touchscreen swapped, a processor replaced',
+        localTrade: 'AV technician',
+        v2: {
+            titleName: 'RTI Control System',
+            testimonialFirst: 'Bob G, Whistler Canada',
+            problemIntro: 'An RTI control system is supposed to make life easier. Instead:',
+            servicesHeading: 'What can I do for your RTI control system?',
+            // Remotes to real scale with each other (T2x 10.0", T4x 8.3"); the KA11 is not.
+            equipmentStage: { width: 340, height: 290, caption: 'RTI KA11, T4x and T2x' },
+            equipment: [
+                { at: [0, 10, 190], src: '/images/rti-ka11-white-cutout.png', width: 933, height: 600, caption: 'RTI KA11', alt: 'White RTI KA11 touchscreen showing the Family Room home page with weather and a music player' },
+                { at: [280, 70, 210], src: '/images/rti-t2x-cutout.png', width: 136, height: 600, caption: 'RTI T2x', alt: 'Black RTI T2x handheld remote with a colour screen showing Family Room sources: Apple TV, Blu-ray, Movie Server and Fire TV' },
+                { at: [216, 106, 174], src: '/images/rti-t4x-cutout.png', width: 169, height: 600, caption: 'RTI T4x', alt: 'Black RTI T4x handheld remote with a large screen showing Theater Room sources: Apple TV, Blu-ray, Movie Server, Cable TV and Fire TV' },
+            ],
+            symptoms: [
+                'The handheld remote stopped working, or only works some of the time.',
+                'Things stopped responding after a new router or a change to your network.',
+                'You used to have an RTI app on your phone or iPad, but it doesn’t load anymore.',
+                'Music won’t play in some rooms.',
+                'Lights or shades don’t work from the remote or touchscreen.',
+                'Buttons on the remote or touchscreen aren’t set up the way you want.',
+            ],
+            services: {
+                replace: {
+                    troubleshooting: 'Troubleshooting — including remotes that stop responding and network problems.',
+                    changes: 'Button, scene and activity changes on your remotes, touchscreens and keypads.',
+                    engraving: 'Modify or add scheduled events to your system.',
+                    devices: 'Adding or replacing system devices — processors, handheld remotes, touchscreens and keypads.',
+                    integrations: 'Integrations with your lighting, shades, music, TVs, security and climate.',
+                    apps: 'Remote and touchscreen redesign — layouts everyone in the house can use.',
+                },
+                add: [
+                    'A custom RTI app for your iPhone and iPad.',
+                ],
+            },
+        },
         fileNote: 'Depending on the system, I can recover the existing programming or rebuild it.',
     },
     'clipsal-c-bus': {
@@ -338,7 +381,7 @@ export const shared = {
         heading: 'A remote specialist who works with what you already have',
         body: [
             'I’m Jamie Feeny. I program and troubleshoot {brand} systems remotely — for homeowners, and for the integrators who install them.',
-            'I work with your existing system, not against it, and with whoever is onsite — my local partner or your own electrician. No rip-and-replace sales pitch. No disappearing act.',
+            'I work with your existing system, not against it, and with whoever is onsite — my local partner or your own {localTrade}. No rip-and-replace sales pitch. No disappearing act.',
         ],
     },
 
@@ -358,7 +401,7 @@ export const shared = {
             {
                 lead: 'Local hands',
                 rest: 'when needed',
-                text: 'If something physical needs doing, my partner tech in {region} — or your own electrician — handles it, working from my scope.',
+                text: 'If something physical needs doing, my partner tech in {region} — or your own {localTrade} — handles it, working from my scope.',
             },
         ],
     },
@@ -402,7 +445,7 @@ export const shared = {
             },
             {
                 title: 'The fix',
-                body: 'I do the programming remotely. If something physical needs doing, my local partner tech handles it — they quote their own time and materials and contract with you directly, working from my scope. Or your own electrician or integrator can do it.',
+                body: 'I do the programming remotely. If something physical needs doing, my local partner tech handles it — they quote their own time and materials and contract with you directly, working from my scope. Or your own {localTrade} or integrator can do it.',
             },
             {
                 title: 'Handover',
@@ -448,7 +491,7 @@ export const shared = {
             },
             {
                 q: 'What if it’s a hardware problem?',
-                a: 'I can usually pinpoint a failed dimmer, keypad, controller or network device remotely. My local partner or your own electrician replaces it, and I program the new device.',
+                a: 'I can usually pinpoint a failed {hardwareDevices} remotely. My local partner or your own {localTrade} replaces it, and I program the new device.',
             },
             {
                 q: 'Will I lose my scenes and settings?',
@@ -472,7 +515,7 @@ export const shared = {
             },
             {
                 q: 'Do I need someone onsite?',
-                a: 'Only for physical work, like replacing a device or fixing network hardware. My local partner, {partner}, can handle it — they quote and contract with you directly — or your own electrician or integrator can. Either way, they work from my scope and I do the programming remotely.',
+                a: 'Only for physical work, like replacing a device or fixing network hardware. My local partner, {partner}, can handle it — they quote and contract with you directly — or your own {localTrade} or integrator can. Either way, they work from my scope and I do the programming remotely.',
             },
         ],
     },
@@ -529,7 +572,7 @@ export const sharedV2 = {
 
     hero: {
         ...shared.hero,
-        primaryCta: 'Tell me what’s wrong',
+        primaryCta: 'Fix my {brand} system',
         microline: 'I will reply within 24 hours.',
     },
 
@@ -562,7 +605,6 @@ export const sharedV2 = {
             {
                 quote: [
                     'We worked with Jamie Feeny as our Lutron programmer on a very large HomeWorks lighting and shading system for a large estate. There was limited documentation to work from, and Jamie took it on independently. He thought outside the box and made sound decisions without needing to be walked through each one.',
-                    'What stands out most is how he built the program. Jamie planned for what would come after handover and structured the file so it could be easily modified later. We’ve been making changes to that system from his original file for about four years now, and every change has been simple because of how he set it up. That kind of foresight is rare on a system of that size.',
                     'If you need a programmer who can work independently and leave behind a file that others can actually work with, we’d recommend Jamie without hesitation.',
                 ],
                 name: 'Brad K, Vancouver Canada',
@@ -589,7 +631,7 @@ export const sharedV2 = {
         body: [
             'I’m Jamie Feeny. For 10 years I ran a custom-home electrical contracting company in Vancouver that specialized in smart home technology. Since 2017 I’ve focused on programming control systems, and since COVID I’ve done that work remotely.',
             'I’m an authorized dealer for Lutron, Vantage, RTI and Clipsal C-Bus, which means I’ve completed each manufacturer’s training. I’ve programmed hundreds of systems, including remote jobs in Whistler, Barbados, Israel, Australia and across the US.',
-            'I work with the system you already have, not against it, and with whoever is onsite — my local partner or your own electrician. No rip-and-replace sales pitch. No disappearing act.',
+            'I work with the system you already have, not against it, and with whoever is onsite — my local partner or your own {localTrade}. No rip-and-replace sales pitch. No disappearing act.',
         ],
     },
 
@@ -633,7 +675,7 @@ export const sharedV2 = {
 
     local: {
         ...shared.local,
-        intro: 'I do the programming and testing remotely, and I have local help for anything that needs hands onsite across:',
+        intro: 'I do the programming and testing remotely, and I have trusted local help for anything that needs to be done onsite across:',
     },
 
     faq: {
@@ -650,7 +692,7 @@ export const sharedV2 = {
                     },
                     {
                         q: 'Do I need to be home, or have someone onsite?',
-                        a: 'For the first session, yes — someone needs to be home to get me connected and test with me. If you’d rather not do the testing yourself, my local partner, {partner}, can be there for it. Physical work, like replacing a device or fixing network hardware, is handled by {partner} — they quote and contract with you directly — or your own electrician. Either way, they work from my scope and I do the programming and testing remotely.',
+                        a: 'For the first session, yes — someone needs to be home to get me connected and test with me. If you’d rather not do the testing yourself, my local partner, {partner}, can be there for it. Physical work, like replacing a device or fixing network hardware, is handled by {partner} — they quote and contract with you directly — or your own {localTrade}. Either way, they work from my scope and I do the programming and testing remotely.',
                     },
                 ];
             }
@@ -678,6 +720,6 @@ export const sharedV2 = {
     },
 
     stickyCta: {
-        label: 'Tell me what’s wrong',
+        label: 'Fix my {brand} system',
     },
 };

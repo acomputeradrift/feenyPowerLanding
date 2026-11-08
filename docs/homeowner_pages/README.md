@@ -8,7 +8,7 @@ RTI, Clipsal C-Bus and Vantage up to the same standard. Read `continuity.md` fir
 | Brand | Layout | Live | Pages |
 |---|---|---|---|
 | Lutron | v2 | **Yes** (`published: true`) | vancouver, kelowna, los-gatos |
-| RTI | v1 | No (404 in production) | vancouver, kelowna, los-gatos |
+| RTI | v2 | **Yes** (2026-11-08) | vancouver, kelowna, los-gatos |
 | Clipsal C-Bus | v1 | No | vancouver, kelowna |
 | Vantage | v1 | No | vancouver, kelowna |
 
@@ -55,7 +55,8 @@ These live in `sharedV2` / `service_v2.html` / `homeowner.css` and apply automat
   (carousel) → Sound familiar? (+ equipment photos) → Who am I? (photo) → What you get →
   What can I do… → How it works → Questions you may have → Let's get your {Brand} system working
   again + form → Serving {Region} + local partner (below the form, for SEO) → footer.
-- **One CTA:** hero button "Tell me what's wrong" jumps to the form; submit reads "Send it!";
+- **One CTA:** hero button "Fix my {Brand} system" jumps to the form (the phone sticky button
+  uses the same label); submit reads "Send it!";
   "I will reply within 24 hours." under both. Sticky CTA button on phones. No other mid-page CTAs.
 - **Promises:** reply within 24 hours; diagnosis within 48 hours **of receiving the project file**
   (never "or remote access"). Fixed-price diagnostic ($349 CAD / $249 USD). No hourly rate anywhere
@@ -73,11 +74,15 @@ These live in `sharedV2` / `service_v2.html` / `homeowner.css` and apply automat
 - **FAQ** (h3 styling, body-text answers): cost; hardware problem; lose my scenes; installer has
   the file; worth fixing or upgrade; "How do you connect to my system to complete the work?";
   "Do I need to be home, or have someone onsite?" (partner can do first-session testing);
-  how fast. Brand hooks: `connectFaq`, `fileNote`.
+  how fast. Brand hooks: `connectFaq`, `fileNote`, `hardwareDevices` (hardware FAQ: "a failed
+  {hardwareDevices}") and `onsiteExamples` (partner note: "hands onsite — {onsiteExamples}, a
+  network sorted out"). Both default to the lighting wording (dimmer/keypad).
 - **Testimonials:** "First L, City Country", no company. One list for all v2 brands today
-  (Lisa P, Bob G, Sean S, Chris C, Brad K, Morgan M, Daniel T). If a brand needs a different
-  order (e.g. Bob G first for RTI — he is an RTI client), add a per-brand override; ask Jamie.
+  (Lisa P, Bob G, Sean S, Chris C, Brad K, Morgan M, Daniel T). Every page shows all of them;
+  a brand may only pick its lead quote with `v2.testimonialFirst` (ask Jamie which one).
 - **Vancouver** area list excludes Bowen Island (`locations.vancouver.v2.excludeAreas`).
+- **Local partner block:** each location shows its partner's logo tile (Blue Ember, VanReit,
+  Haven & Wire) with no italic tagline under it (`locations[slug].v2.tie: null` everywhere).
 
 ## Needs Jamie's input per brand (ask one question at a time)
 
@@ -91,18 +96,45 @@ These live in `sharedV2` / `service_v2.html` / `homeowner.css` and apply automat
 7. **Testimonial order** for that brand.
 8. **Credential** line (Clipsal has one about being one of the few trained C-Bus installers in Canada).
 9. **Connect options** (`connectOption` / `connectFaq`), e.g. a brand cloud service.
+10. **Hardware wording** (`hardwareDevices`, `onsiteExamples`) if dimmers/keypads don't fit the brand.
 
 Existing v1 brand copy (`symptoms`, `extras`, `credential`) is a starting point, not approved copy.
 
 ## Photos
 
-- Equipment: transparent PNG cut-outs cropped tight to the device, both saved at **600px tall**
-  with a rounded-corner alpha mask, shown at equal height (150px phone / 200px desktop) with a soft
-  drop-shadow — no white boxes. Keep originals; save as `*-cutout.png`. Pillow venv: `/tmp/imgvenv`
+- Equipment: transparent PNG cut-outs cropped tight to the device, saved at **600px tall**
+  with a rounded-corner alpha mask and a soft drop-shadow — no white boxes. Keep originals; save
+  as `*-cutout.png`.
+- Layout (approved 2026-11-08, Lutron and RTI): an overlapping product group beside the symptoms
+  (`v2.equipmentStage` = 340×290 canvas + one caption; each item's `at: [left, top, height]`).
+  Devices of the same kind are drawn to real scale with each other (Lutron keypads 4.69" vs Pico
+  2.6"; RTI T2x 10.0" = 210px vs T4x 8.3" = 174px). The RTI KA11 is not scaled to the remotes.
+  Brands without `equipmentStage` fall back to the plain equal-height row. Pillow venv: `/tmp/imgvenv`
   (recreate with `python3 -m venv /tmp/imgvenv && /tmp/imgvenv/bin/pip install pillow` if missing).
 - Engraving text on keypads: grey `(102,102,102)`, not black.
 
+## Shared changes pending for Lutron (decided during RTI, 2026-11-08)
+
+Already applied to Lutron at Jamie's request (unpublished locally until deployed):
+
+- Brad K's quote trimmed to its first and last paragraphs (shared — every v2 brand).
+- Every page shows every testimonial in the shared order, except the lead quote:
+  `v2.testimonialFirst` moves one quote to the front (Lutron: Sean S; RTI: Bob G).
+- Lutron's equipment has a third photo, Pico Remote (`lutron-pico-cutout.png`), and uses the
+  overlapping product group (see Photos).
+- **Services list max 10 items** per brand (enforced by `render.test.js`; Lutron is at 10).
+- Hero and sticky CTA read "Fix my {Brand} system" (was "Tell me what's wrong").
+- Testimonial carousel is centred in the column (was pinned left).
+- "Serving {Region}" intro says "anything that needs to be done onsite" — "hands onsite" is
+  used once per page, in the partner note.
+- "Your own electrician" is the `localTrade` brand hook (RTI: "AV technician").
+
 ## Open items
+
+- **Local partner approvals and coverage (2026-11-08).** Blue Ember (Vancouver) approved all
+  brands. VanReit (Kelowna) does RTI, Vantage and Clipsal but **not Lutron**; Jamie sends him the
+  live Kelowna RTI page for review. Haven & Wire (Los Gatos) does Lutron and RTI, not Vantage or
+  Clipsal. The live Kelowna Lutron page still names VanReit as the local partner — needs a decision.
 
 - All three partner logos are in (`locations[slug].partner.logo`). A new partner's logo sits in a
   96px square tile: make a 400×400 PNG on the logo's own background colour, centred, stacking

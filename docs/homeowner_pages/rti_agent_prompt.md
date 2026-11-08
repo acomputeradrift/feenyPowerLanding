@@ -19,6 +19,7 @@ You're picking up the homeowner landing pages on my website (feenyPowerLanding).
 5. Check the pages locally at http://localhost:3000/vancouver/rti (drafts render locally because `HOMEOWNER_SHOW_DRAFTS=true` is in my local `backend/.env`). Restart the server after every content.js change. Show me screenshots of visual changes.
 6. Lutron must not change. Check before and after that the three Lutron pages render byte-identical, unless I ask for a shared change.
 7. If a decision applies to every brand, put it in `sharedV2` and add it to the README so Clipsal and Vantage get it.
+8. Today the testimonial list is shared by every v2 brand. If RTI needs a different order, add a per-brand override and keep Lutron's order unchanged.
 
 **Rules:**
 - Don't commit, push or deploy until I ask. When I do, follow `deployment.md`, set `published: true` on RTI, and confirm the pages return 200 in production.

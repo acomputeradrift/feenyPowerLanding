@@ -33,8 +33,8 @@ Unit tests (calculator, no server): `cd backend && npm test`
 | `/rti_proposal/preview.pdf` | PDF preview — **localhost only** |
 | `/rti_proposal/audit/:reference` | Token-gated rate audit (404 unless env token set) |
 | `/sentinel_lite/` | Sentinel Lite — dealer-side `.apex` compare in the browser (Pyodide). Files never leave the dealer’s machine. |
-| `/{location}/{brand}` | Homeowner landing pages: `vancouver` and `kelowna` × `lutron`/`vantage`/`rti`/`clipsal-c-bus`, plus `los-gatos` × `lutron`/`rti`. **Only brands with `published: true` are public (Lutron as of 2026-11-07);** the rest 404 unless `HOMEOWNER_SHOW_DRAFTS=true` (local `.env` only). Other combos 404. |
-| `/analytics` | Token-gated first-party analytics dashboard for the homeowner pages. Open once with `?token=<ANALYTICS_DASHBOARD_TOKEN>` to set a cookie. 404 if the token is unset. |
+| `/{location}/{brand}` | Homeowner landing pages: `vancouver` and `kelowna` × `lutron`/`vantage`/`rti`/`clipsal-c-bus`, plus `los-gatos` × `lutron`/`rti`. **Only brands with `published: true` are public (Lutron as of 2026-11-07, RTI as of 2026-11-08);** the rest 404 unless `HOMEOWNER_SHOW_DRAFTS=true` (local `.env` only). Other combos 404. |
+| `/analytics` | Token-gated first-party analytics dashboard for the homeowner pages. No login screen: open once per device with `?token=<ANALYTICS_DASHBOARD_TOKEN>` to set a 90-day cookie (Jamie keeps the link in 1Password). Without the cookie it returns an empty 404, which looks like a **blank white page**. |
 | `/robots.txt`, `/sitemap.xml` | Generated from the homeowner content data (sitemap lists public pages + the published homeowner pages) |
 | `/idea-feedback/` | Hidden HMAC-signed confirm page for overnight idea thumbs (GET never writes) |
 | `/rti_diagnostics/upload_files/` | RTI log upload |
@@ -76,7 +76,7 @@ Static mounts: `/styles`, `/scripts`, `/images`. Proposal schema also at `/scrip
 
 **Homeowner landing pages** — `/{location}/{brand}` pages selling remote programming and troubleshooting to homeowners. **Read `docs/homeowner_pages/README.md` before touching them**: it has the approved v2 layout, the shared rules and the per-brand checklist for bringing RTI, Clipsal C-Bus and Vantage up to the Lutron standard. A ready-made hand-off prompt for the next brand is in `docs/homeowner_pages/rti_agent_prompt.md`. **All copy lives in `backend/homeowner/content.js`**: locations, brands, the valid `pages` list, `publishedPages`, `shared` (v1) and `sharedV2` copy and FAQ. `backend/homeowner/render.js` fills `frontend/homeowner/service_v2.html` for brands with `layout: 'v2'` (Lutron) and `service.html` for the rest (neither is served directly). It escapes everything, builds the JSON-LD (`ProfessionalService` + `FAQPage`), robots and sitemap, and caches each page. Restart the server after copy edits. Styles are in `styles/homeowner.css` (it reuses `testimonials.css` cards). `scripts/homeowner_form.js` posts to `POST /api/homeowner-inquiry` and sends `fpcTrack` events (`cta_click`, `form_start`, `form_submit`, `faq_open`). The route sits after all specific routes in `fpc_server.js`. To add a page, add its location or brand data and an entry in `pages`. The copy never says the diagnostic fee is credited toward repairs, never promises a fixed repair price, and never mentions HomeWorks.
 
-**Homeowner analytics** — First-party and cookieless (no Google or Facebook). `frontend/scripts/fpc_analytics.js` (`window.fpcTrack`) posts to `POST /api/analytics/event`. Code is in `backend/analytics/` and `routes/analytics.js`. The dashboard is `/analytics` (`frontend/analytics.html`), gated by `ANALYTICS_DASHBOARD_TOKEN`. A `node-cron` weekly email goes out Mondays at 07:00 America/Vancouver through Resend (`PROPOSAL_EMAIL_*`), and Mongo guards against double sends. Preview it with `node analytics/weeklyReportCli.js`. Only published pages are counted. With MongoDB down, the dashboard API returns 503 and the site keeps serving.
+**Homeowner analytics** — First-party and cookieless (no Google or Facebook). `frontend/scripts/fpc_analytics.js` (`window.fpcTrack`) posts to `POST /api/analytics/event`. Code is in `backend/analytics/` and `routes/analytics.js`. The dashboard is `/analytics` (`frontend/analytics.html`), gated by `ANALYTICS_DASHBOARD_TOKEN`. A `node-cron` weekly email goes out Mondays at 07:00 America/Vancouver through Resend (`PROPOSAL_EMAIL_*`), and Mongo guards against double sends. Preview it with `node analytics/weeklyReportCli.js`. Only published pages are counted. With MongoDB down, the dashboard API returns 503 and the site keeps serving. The dashboard cookie must stay `SameSite=Lax`: with Strict, a token link tapped in Mail or Messages lands on a blank page. Live since 2026-11-07. Never print the token in chat. It lives only in the server's `backend/.env`.
 
 **RTI proposal form** — Replaced the retired Google Form AutoProposal. Vanilla ES modules, schema-driven. For form/PDF/CSS work, read **`docs/rti_proposal/agent_brief.md` next** — do not load the full spec set for a visual pass. Key: `frontend/rti_proposal.html`, `styles/rti_proposal.css`, `scripts/proposal/`, `backend/proposal/`, `routes/proposal.js`. Deep specs: `docs/rti_proposal/README.md`.
 
@@ -113,6 +113,13 @@ Local and server each have their own `.env` — not synced via git.
 | Repo | `/root/feenyPowerLanding` |
 | Node | **22.23.4** — NodeSource `node_22.x`, `/usr/bin/node` |
 | PM2 name | **`FPC Website`** (not `fpc_server`) |
+
+**Deploy notes (2026-11-07).**
+- `backend/node_modules` is tracked in git, so a pull brings new packages. Don't run `npm install` on the server unless a package needs a native build.
+- The server checkout has old uncommitted edits in `backend/RTI_log_analysis/` and some untracked images. Leave them alone, and use `git pull --ff-only`.
+- Don't commit `.DS_Store` or `.cursor/`.
+- Locally, after `kill`, wait a second before restarting, or the new process hits `EADDRINUSE` on port 3000.
+- Deploy `bd7a26a` put the Lutron homeowner pages and the analytics dashboard live; the 2026-11-08 deploy added the RTI pages and the shared v2 changes listed in `docs/homeowner_pages/README.md`.
 
 **2026-10-23 — CVE-2026-111497.** Production Node moved from 18.20.5 (end of life, bundled Brotli 1.1.0) to 22.23.4, the release that cherry-picks the Brotli decoder fix. `process.versions.brotli` still prints `1.1.0`; the fix is the 22.23.4 binary, not a Brotli version bump. Apt upgrade plus PM2 resurrect and `pm2 save` only. The git checkout was left at `6978f0c2` (2026-10-09). No commit, no push, no `git pull`. Jamie’s Mac was still Node 22.20.0.
 
