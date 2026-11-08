@@ -332,6 +332,7 @@ export const brands = {
         layout: 'v2',
         name: 'Clipsal C-Bus',
         product: 'Clipsal C-Bus control system',
+        diagnosticPrice: { CAD: 499 },
         logo: { src: '/images/clipsal-logo.png', alt: 'Clipsal by Schneider Electric', width: 600, height: 154 },
         photo: null,
         symptoms: [
@@ -345,7 +346,7 @@ export const brands = {
             'Changes and additions to existing C-Bus networks.',
             'An honest upgrade path when you’re ready to plan ahead.',
         ],
-        credential: 'I was one of the only trained Clipsal C-Bus installers in Canada while Clipsal sold C-Bus here, and I still maintain several C-Bus systems today.',
+        credential: 'I was actually one of the only trained Clipsal C-Bus installers in Canada while Clipsal sold C-Bus here, and I still maintain several C-Bus systems today.',
         connectOption: null,
         hardwareDevices: 'dimmer or relay module, power supply, keypad, sensor, thermostat or network device',
         fileNote: 'Depending on the system, I can recover the existing programming or rebuild it.',
@@ -631,8 +632,8 @@ export const sharedV2 = {
         ...shared.seo,
         title: '{titleName} Troubleshooting | {city}',
         titleShort: '{titleName} Troubleshooting | {city}',
-        description: shared.seo.description.replace('diagnosis in 48 hours', 'diagnosis within 48 hours'),
-        descriptionShort: shared.seo.descriptionShort.replace('diagnosis in 48 hours', 'diagnosis within 48 hours'),
+        description: 'Remote {brand} troubleshooting & programming for {city} homeowners. {price} fixed-price diagnosis.',
+        descriptionShort: 'Remote {brand} troubleshooting & programming in {city}. {price} fixed-price diagnosis.',
     },
 
     hero: {
@@ -703,7 +704,7 @@ export const sharedV2 = {
                 ],
             },
             'Since 2017 I’ve focused on programming control systems, and since COVID I’ve done that work remotely.',
-            'I’m an authorized dealer for Lutron, Vantage, RTI and Clipsal C-Bus, which means I’ve completed each manufacturer’s training. I’ve programmed hundreds of systems, including remote jobs in Whistler, Barbados, Israel, Australia and across the US.',
+            'I’m an authorized dealer for Lutron, Vantage, RTI and Clipsal C-Bus, which means I’ve completed each manufacturer’s training.{credential} Through these brands, I’ve programmed hundreds of systems, including remote jobs in Whistler, Barbados, Israel, Australia and across the US.',
             'I work with the system you already have, not against it, and with whoever is onsite — my local partner or your own {localTrade}. No rip-and-replace sales pitch. No disappearing act.',
         ],
     },

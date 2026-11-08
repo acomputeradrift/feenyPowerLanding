@@ -47,6 +47,10 @@ function money(amount, currency) {
     return `$${amount} ${currency}`;
 }
 
+function diagnosticPrice(loc, brand) {
+    return (brand.diagnosticPrice && brand.diagnosticPrice[loc.currency]) || loc.diagnosticPrice;
+}
+
 function tokensFor(loc, brand) {
     return {
         brand: brand.name,
@@ -54,11 +58,12 @@ function tokensFor(loc, brand) {
         product: brand.product,
         region: loc.region,
         city: loc.city,
-        price: money(loc.diagnosticPrice, loc.currency),
+        price: money(diagnosticPrice(loc, brand), loc.currency),
         rate: `${money(loc.hourlyRate, loc.currency)}/hr`,
         partner: loc.partner.name,
         fileNote: brand.fileNote,
         connectOption: brand.connectOption || '',
+        credential: brand.credential ? ` ${brand.credential}` : '',
         connectFaq: brand.connectFaq || '',
         hardwareDevices: brand.hardwareDevices || 'dimmer, keypad, controller or network device',
         onsiteExamples: brand.onsiteExamples || 'a dimmer swapped, a keypad replaced',
@@ -134,7 +139,7 @@ function buildJsonLd(loc, brand, tokens, canonical, description, c) {
             '@type': 'Offer',
             name: `Remote ${brand.name} diagnostic`,
             description: txt(c.steps.items[2].body, tokens),
-            price: String(loc.diagnosticPrice),
+            price: String(diagnosticPrice(loc, brand)),
             priceCurrency: loc.currency,
             areaServed,
         },
@@ -167,7 +172,7 @@ function buildValues(loc, brand, c = shared) {
         .map((i) => `<li><strong class="text-green">${html(i.lead, t)}</strong> ${html(i.text, t)}</li>`)
         .join('\n');
 
-    const solutionBody = [...c.solution.body.slice(0, -1), ...(brand.credential ? [brand.credential] : []), ...c.solution.body.slice(-1)]
+    const solutionBody = c.solution.body
         .map((p) => (p.list ? `<ul class="ho-checklist">\n${li(p.list, t)}\n</ul>` : `<p>${html(p, t)}</p>`))
         .join('\n');
 

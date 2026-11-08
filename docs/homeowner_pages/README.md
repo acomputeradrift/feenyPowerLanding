@@ -59,7 +59,8 @@ These live in `sharedV2` / `service_v2.html` / `homeowner.css` and apply automat
   uses the same label); submit reads "Send it!";
   "You will get a reply within 24 hours." under both. Sticky CTA button on phones. No other mid-page CTAs.
 - **Promises:** reply within 24 hours; diagnosis within 48 hours **of receiving the project file**
-  (never "or remote access"). Fixed-price diagnostic ($349 CAD / $249 USD). No hourly rate anywhere
+  (never "or remote access"). Fixed-price diagnostic ($349 CAD / $249 USD; Clipsal C-Bus $499 CAD via
+  `brand.diagnosticPrice`). No hourly rate anywhere
   on the page — budgets are "a budget to complete the work". No guarantee. Never "repair".
   Never say the fee is credited toward the work. Never mention HomeWorks.
 - **Voice:** first person "I". "I do the programming and testing remotely." No integrator/dealer
@@ -133,8 +134,9 @@ Applied to every v2 brand (live in `52985b7` unless marked):
   decade Vantage and Clipsal C-Bus (a `{ list: [...] }` entry in `solution.body`).
 - Shared `apps` service reads "iPhone, iPad or Android app setup." (was "App, remote and
   touchscreen setup or redesign."; RTI overrides it).
-- A brand `credential` line sits just above the last "Who am I?" paragraph ("I work with the
-  system you already have…"). Only Clipsal C-Bus has one.
+- A brand `credential` sentence is the `{credential}` token inside the "authorized dealer"
+  paragraph of "Who am I?" (between "…manufacturer's training." and "Through these brands…").
+  Only Clipsal C-Bus has one.
 
 ## Open items
 

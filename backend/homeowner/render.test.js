@@ -52,6 +52,8 @@ test('v2 Lutron pages use the approved title, copy and testimonial order', () =>
         assert.ok(html.includes('Who am I?'));
         assert.ok(html.includes('>Send it!</button>'));
         assert.equal(html.split('You will get a reply within 24 hours.').length - 1, 2);
+        assert.ok(html.includes('each manufacturer’s training. Through these brands, I’ve programmed hundreds of systems'));
+        assert.ok(html.includes(`<meta name="description" content="Remote Lutron troubleshooting &amp; programming for ${cities[loc]} homeowners. ${loc === 'los-gatos' ? '$249 USD' : '$349 CAD'} fixed-price diagnosis.">`));
         assert.ok(html.includes('Fix my Lutron system'));
         assert.ok(html.includes('class="testimonial-carousel"'));
         const names = [...html.matchAll(/testimonial-name">(.*?)</g)].map((m) => m[1]);
@@ -82,10 +84,13 @@ test('v2 Clipsal C-Bus drafts use the C-Bus title and copy', () => {
         assert.ok(html.includes('The labels on your Saturn DLT keypads are wrong or blank.'));
         assert.ok(html.includes('Scene, button and schedule changes.'));
         assert.ok(html.includes('iPhone, iPad or Android app setup.'));
-        assert.match(html, /and I still maintain several C-Bus systems today\.<\/p>\s*<p>I work with the system you already have/);
+        assert.ok(html.includes('each manufacturer’s training. I was actually one of the only trained Clipsal C-Bus installers in Canada while Clipsal sold C-Bus here, and I still maintain several C-Bus systems today. Through these brands, I’ve programmed hundreds of systems'));
         assert.ok(!html.includes('AV integrators'));
         assert.ok(html.includes('a failed dimmer or relay module, power supply, keypad, sensor, thermostat or network device'));
         assert.ok(html.includes('Fix my Clipsal C-Bus system'));
+        assert.ok(html.includes('$499 CAD fixed-price diagnosis.'));
+        assert.ok(html.includes('"price":"499"'));
+        assert.ok(!html.includes('$349'));
         assert.ok(!/repair/i.test(html), `${loc}/clipsal-c-bus says "repair"`);
         const names = [...html.matchAll(/testimonial-name">(.*?)</g)].map((m) => m[1]);
         assert.equal(names[0], 'Morgan M, Vancouver Canada');
