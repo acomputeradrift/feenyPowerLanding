@@ -638,7 +638,7 @@ export const sharedV2 = {
     hero: {
         ...shared.hero,
         primaryCta: 'Fix my {brand} system',
-        microline: 'I will reply within 24 hours.',
+        microline: 'You will get a reply within 24 hours.',
     },
 
     trust: {
@@ -788,7 +788,7 @@ export const sharedV2 = {
         ...shared.form,
         ariaLabel: 'Tell me what’s wrong',
         submit: 'Send it!',
-        submitNote: 'I will reply within 24 hours.',
+        submitNote: 'You will get a reply within 24 hours.',
         success: 'Thanks — I’ll reply within 24 hours.',
     },
 

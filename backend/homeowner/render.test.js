@@ -51,6 +51,7 @@ test('v2 Lutron pages use the approved title, copy and testimonial order', () =>
         assert.ok(!/repair/i.test(html), `${loc}/${brand} says "repair"`);
         assert.ok(html.includes('Who am I?'));
         assert.ok(html.includes('>Send it!</button>'));
+        assert.equal(html.split('You will get a reply within 24 hours.').length - 1, 2);
         assert.ok(html.includes('Fix my Lutron system'));
         assert.ok(html.includes('class="testimonial-carousel"'));
         const names = [...html.matchAll(/testimonial-name">(.*?)</g)].map((m) => m[1]);

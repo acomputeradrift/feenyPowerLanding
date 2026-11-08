@@ -57,7 +57,7 @@ These live in `sharedV2` / `service_v2.html` / `homeowner.css` and apply automat
   again + form → Serving {Region} + local partner (below the form, for SEO) → footer.
 - **One CTA:** hero button "Fix my {Brand} system" jumps to the form (the phone sticky button
   uses the same label); submit reads "Send it!";
-  "I will reply within 24 hours." under both. Sticky CTA button on phones. No other mid-page CTAs.
+  "You will get a reply within 24 hours." under both. Sticky CTA button on phones. No other mid-page CTAs.
 - **Promises:** reply within 24 hours; diagnosis within 48 hours **of receiving the project file**
   (never "or remote access"). Fixed-price diagnostic ($349 CAD / $249 USD). No hourly rate anywhere
   on the page — budgets are "a budget to complete the work". No guarantee. Never "repair".
