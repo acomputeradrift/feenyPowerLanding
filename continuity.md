@@ -33,7 +33,7 @@ Unit tests (calculator, no server): `cd backend && npm test`
 | `/rti_proposal/preview.pdf` | PDF preview — **localhost only** |
 | `/rti_proposal/audit/:reference` | Token-gated rate audit (404 unless env token set) |
 | `/sentinel_lite/` | Sentinel Lite — dealer-side `.apex` compare in the browser (Pyodide). Files never leave the dealer’s machine. |
-| `/{location}/{brand}` | Homeowner landing pages: `vancouver` and `kelowna` × `lutron`/`vantage`/`rti`/`clipsal-c-bus`, plus `los-gatos` × `lutron`/`rti`. **Only brands with `published: true` are public (Lutron as of 2026-11-07, RTI as of 2026-11-08);** the rest 404 unless `HOMEOWNER_SHOW_DRAFTS=true` (local `.env` only). Other combos 404. |
+| `/{location}/{brand}` | Homeowner landing pages: `vancouver` and `kelowna` × `lutron`/`vantage`/`rti`/`clipsal-c-bus`, plus `los-gatos` × `lutron`/`rti`. **Only brands with `published: true` are public (Lutron as of 2026-11-07, RTI and Vantage as of 2026-11-08);** the rest 404 unless `HOMEOWNER_SHOW_DRAFTS=true` (local `.env` only). Other combos 404. |
 | `/analytics` | Token-gated first-party analytics dashboard for the homeowner pages. No login screen: open once per device with `?token=<ANALYTICS_DASHBOARD_TOKEN>` to set a 90-day cookie (Jamie keeps the link in 1Password). Without the cookie it returns an empty 404, which looks like a **blank white page**. |
 | `/robots.txt`, `/sitemap.xml` | Generated from the homeowner content data (sitemap lists public pages + the published homeowner pages) |
 | `/idea-feedback/` | Hidden HMAC-signed confirm page for overnight idea thumbs (GET never writes) |
@@ -119,7 +119,7 @@ Local and server each have their own `.env` — not synced via git.
 - The server checkout has old uncommitted edits in `backend/RTI_log_analysis/` and some untracked images. Leave them alone, and use `git pull --ff-only`.
 - Don't commit `.DS_Store` or `.cursor/`.
 - Locally, after `kill`, wait a second before restarting, or the new process hits `EADDRINUSE` on port 3000.
-- Deploy `bd7a26a` put the Lutron homeowner pages and the analytics dashboard live; the 2026-11-08 deploy added the RTI pages and the shared v2 changes listed in `docs/homeowner_pages/README.md`.
+- Deploy `bd7a26a` put the Lutron homeowner pages and the analytics dashboard live; the 2026-11-08 deploys added the RTI pages (`52985b7`), then the Vantage pages, plus the shared v2 changes listed in `docs/homeowner_pages/README.md`.
 
 **2026-10-23 — CVE-2026-111497.** Production Node moved from 18.20.5 (end of life, bundled Brotli 1.1.0) to 22.23.4, the release that cherry-picks the Brotli decoder fix. `process.versions.brotli` still prints `1.1.0`; the fix is the 22.23.4 binary, not a Brotli version bump. Apt upgrade plus PM2 resurrect and `pm2 save` only. The git checkout was left at `6978f0c2` (2026-10-09). No commit, no push, no `git pull`. Jamie’s Mac was still Node 22.20.0.
 

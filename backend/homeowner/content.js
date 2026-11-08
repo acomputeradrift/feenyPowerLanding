@@ -214,8 +214,10 @@ export const brands = {
     },
     vantage: {
         slug: 'vantage',
+        published: true,
+        layout: 'v2',
         name: 'Vantage',
-        product: 'Vantage InFusion & Equinox',
+        product: 'Vantage lighting control',
         logo: { src: '/images/vantage-logo.png', alt: 'Vantage' },
         photo: { src: '/images/vantage-keypad-25.png', alt: 'Vantage keypad', width: 491, height: 800 },
         symptoms: [
@@ -232,7 +234,36 @@ export const brands = {
         ],
         credential: null,
         connectOption: null,
+        hardwareDevices: 'dimmer, keypad, touchscreen, power module, controller or network device',
         fileNote: 'Depending on the system, I can recover the existing programming or rebuild it.',
+        v2: {
+            titleName: 'Vantage Lighting Control',
+            testimonialFirst: 'Morgan M, Vancouver Canada',
+            problemIntro: 'A Vantage lighting control system is supposed to make life easier. Instead:',
+            servicesHeading: 'What can I do for your Vantage lighting control system?',
+            // Real scale: 1-gang keypad wallplates are 4.62" tall, the Equinox 41 4.9".
+            equipmentStage: { width: 340, height: 290, caption: 'Vantage RP-Touch, EasyTouch II and Equinox 41' },
+            equipment: [
+                { at: [0, 0, 200], src: '/images/vantage-rp-keypad-cutout.png', width: 375, height: 600, caption: 'Vantage RP-Touch', alt: 'White Vantage RP-Touch keypad with eight engraved buttons: Home, Sconces, Pathway, Lamps, Accent, Rope LED, Garden and Away' },
+                { at: [100, 39, 200], src: '/images/vantage-easytouch-keypad-cutout.png', width: 373, height: 600, caption: 'Vantage EasyTouch II', alt: 'White Vantage EasyTouch II keypad with five engraved buttons: Home, Pathway, Accent, Garden and Away' },
+                { at: [193, 78, 212], src: '/images/vantage-eq41-touchscreen-cutout.png', width: 416, height: 600, caption: 'Vantage Equinox 41', alt: 'Black Vantage Equinox 41 wall screen showing climate, scenes and music controls' },
+            ],
+            symptoms: [
+                'Lights flicker or buzz since you switched to LED bulbs.',
+                'The Vantage app or touchscreen stopped working after a new router or a change to your Wi-Fi.',
+                'Keypad buttons are not programmed the way you want.',
+                'Schedules turn lights on and off at the wrong times.',
+                'Keypad engraving is half done or not done at all.',
+            ],
+            services: {
+                replace: {
+                    troubleshooting: 'Troubleshooting — including LED flicker, buzz and dimmer compatibility.',
+                    changes: 'Scene, button, timer and touchscreen changes.',
+                    devices: 'Adding or replacing system devices — InFusion controllers, power modules, dimmers, keypads and touchscreens.',
+                    upgrades: 'Upgrades and migrations, including a clear upgrade path for older Vantage controllers — staged over time if you prefer.',
+                },
+            },
+        },
     },
     rti: {
         slug: 'rti',
@@ -629,7 +660,15 @@ export const sharedV2 = {
     solution: {
         heading: 'Who am I?',
         body: [
-            'I’m Jamie Feeny. For 10 years I ran a custom-home electrical contracting company in Vancouver that specialized in smart home technology. Since 2017 I’ve focused on programming control systems, and since COVID I’ve done that work remotely.',
+            'I’m Jamie Feeny. Not only did I run a custom-home electrical contracting company in Vancouver for 10 years, specializing in smart home technology, but I also have:',
+            {
+                list: [
+                    '16 years of experience with Lutron',
+                    '16 years with RTI',
+                    'Over a decade of experience with Vantage and Clipsal C-Bus',
+                ],
+            },
+            'Since 2017 I’ve focused on programming control systems, and since COVID I’ve done that work remotely.',
             'I’m an authorized dealer for Lutron, Vantage, RTI and Clipsal C-Bus, which means I’ve completed each manufacturer’s training. I’ve programmed hundreds of systems, including remote jobs in Whistler, Barbados, Israel, Australia and across the US.',
             'I work with the system you already have, not against it, and with whoever is onsite — my local partner or your own {localTrade}. No rip-and-replace sales pitch. No disappearing act.',
         ],
@@ -659,7 +698,7 @@ export const sharedV2 = {
             { key: 'upgrades', text: 'Upgrades and migrations, with a clear upgrade path for older gear.' },
             { key: 'integrations', text: 'Integrations with 3rd party systems.' },
             { key: 'documentation', text: 'Documentation and a proper handover.' },
-            { key: 'apps', text: 'App, remote and touchscreen setup or redesign.' },
+            { key: 'apps', text: 'iPhone, iPad or Android app setup.' },
         ],
     },
 

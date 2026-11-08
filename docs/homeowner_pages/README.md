@@ -10,7 +10,7 @@ RTI, Clipsal C-Bus and Vantage up to the same standard. Read `continuity.md` fir
 | Lutron | v2 | **Yes** (`published: true`) | vancouver, kelowna, los-gatos |
 | RTI | v2 | **Yes** (2026-11-08) | vancouver, kelowna, los-gatos |
 | Clipsal C-Bus | v1 | No | vancouver, kelowna |
-| Vantage | v1 | No | vancouver, kelowna |
+| Vantage | v2 | **Yes** (2026-11-08) | vancouver, kelowna |
 
 Agreed order of work: **RTI → Clipsal C-Bus → Vantage**, one brand at a time, each approved
 by Jamie before it is published.
@@ -108,14 +108,15 @@ Existing v1 brand copy (`symptoms`, `extras`, `credential`) is a starting point,
 - Layout (approved 2026-11-08, Lutron and RTI): an overlapping product group beside the symptoms
   (`v2.equipmentStage` = 340×290 canvas + one caption; each item's `at: [left, top, height]`).
   Devices of the same kind are drawn to real scale with each other (Lutron keypads 4.69" vs Pico
-  2.6"; RTI T2x 10.0" = 210px vs T4x 8.3" = 174px). The RTI KA11 is not scaled to the remotes.
+  2.6"; RTI T2x 10.0" = 210px vs T4x 8.3" = 174px; Vantage 1-gang plates 4.62" = 200px vs
+  Equinox 41 4.9" = 212px). The RTI KA11 is not scaled to the remotes.
   Brands without `equipmentStage` fall back to the plain equal-height row. Pillow venv: `/tmp/imgvenv`
   (recreate with `python3 -m venv /tmp/imgvenv && /tmp/imgvenv/bin/pip install pillow` if missing).
 - Engraving text on keypads: grey `(102,102,102)`, not black.
 
-## Shared changes pending for Lutron (decided during RTI, 2026-11-08)
+## Shared v2 changes made during RTI (2026-11-08)
 
-Already applied to Lutron at Jamie's request (unpublished locally until deployed):
+Applied to every v2 brand (live in `52985b7` unless marked):
 
 - Brad K's quote trimmed to its first and last paragraphs (shared — every v2 brand).
 - Every page shows every testimonial in the shared order, except the lead quote:
@@ -128,13 +129,17 @@ Already applied to Lutron at Jamie's request (unpublished locally until deployed
 - "Serving {Region}" intro says "anything that needs to be done onsite" — "hands onsite" is
   used once per page, in the partner note.
 - "Your own electrician" is the `localTrade` brand hook (RTI: "AV technician").
+- "Who am I?" lists brand experience as a checklist: 16 years Lutron, 16 years RTI, over a
+  decade Vantage and Clipsal C-Bus (a `{ list: [...] }` entry in `solution.body`).
+- Shared `apps` service reads "iPhone, iPad or Android app setup." (was "App, remote and
+  touchscreen setup or redesign."; RTI overrides it).
 
 ## Open items
 
 - **Local partner approvals and coverage (2026-11-08).** Blue Ember (Vancouver) approved all
   brands. VanReit (Kelowna) does RTI, Vantage and Clipsal but **not Lutron**; Jamie sends him the
   live Kelowna RTI page for review. Haven & Wire (Los Gatos) does Lutron and RTI, not Vantage or
-  Clipsal. The live Kelowna Lutron page still names VanReit as the local partner — needs a decision.
+  Clipsal. The live Kelowna Lutron page still names VanReit as the local partner — Jamie: keep it for now.
 
 - All three partner logos are in (`locations[slug].partner.logo`). A new partner's logo sits in a
   96px square tile: make a 400×400 PNG on the logo's own background colour, centred, stacking

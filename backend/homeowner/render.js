@@ -168,7 +168,7 @@ function buildValues(loc, brand, c = shared) {
         .join('\n');
 
     const solutionBody = [...c.solution.body, ...(brand.credential ? [brand.credential] : [])]
-        .map((p) => `<p>${html(p, t)}</p>`)
+        .map((p) => (p.list ? `<ul class="ho-checklist">\n${li(p.list, t)}\n</ul>` : `<p>${html(p, t)}</p>`))
         .join('\n');
 
     const solutionPhoto = brand.photo

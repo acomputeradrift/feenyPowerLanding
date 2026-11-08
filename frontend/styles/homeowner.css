@@ -428,6 +428,12 @@ p.ho-wordmark {
     transform: rotate(-45deg);
 }
 
+.ho-solution-copy .ho-checklist {
+    grid-template-columns: 1fr;
+    gap: 0;
+    margin: 0 0 1em;
+}
+
 /* How it works */
 
 .ho-step-list {
