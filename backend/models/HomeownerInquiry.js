@@ -6,7 +6,7 @@ export const HOMEOWNER_LOCATIONS = ['vancouver', 'kelowna', 'los-gatos'];
 const HomeownerInquirySchema = new mongoose.Schema({
   name:         { type: String, required: true },
   email:        { type: String, required: true },
-  phone:        { type: String, required: true },
+  phone:        { type: String, default: '' },
   city:         { type: String, required: true },
   brands:       {
                   type: [{ type: String, enum: HOMEOWNER_BRANDS }],

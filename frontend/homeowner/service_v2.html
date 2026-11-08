@@ -101,6 +101,10 @@
                         {{{solutionBody}}}
                     </div>
                 </div>
+                <div class="ho-mid-cta">
+                    <a class="ho-btn ho-btn-orange" href="#inquiry" data-cta="mid">{{midCta}}</a>
+                    <p class="ho-microline">{{midCtaMicroline}}</p>
+                </div>
             </div>
         </section>
 
@@ -160,16 +164,6 @@
                             <input type="email" id="ho-email" name="email" autocomplete="email" required maxlength="200">
                         </div>
                     </div>
-                    <div class="ho-form-row">
-                        <div class="ho-field">
-                            <label for="ho-phone">{{formPhone}}</label>
-                            <input type="tel" id="ho-phone" name="phone" autocomplete="tel" required maxlength="40">
-                        </div>
-                        <div class="ho-field">
-                            <label for="ho-city">{{formCity}}</label>
-                            <input type="text" id="ho-city" name="city" autocomplete="address-level2" required maxlength="120">
-                        </div>
-                    </div>
                     <fieldset class="ho-field ho-fieldset">
                         <legend>{{formBrands}}</legend>
                         <div class="ho-choices">
@@ -181,12 +175,13 @@
                         <textarea id="ho-problem" name="problem" rows="5" required maxlength="4000" aria-describedby="ho-problem-hint"></textarea>
                         <p class="ho-hint" id="ho-problem-hint">{{formProblemHint}}</p>
                     </div>
-                    <fieldset class="ho-field ho-fieldset">
+                    <fieldset class="ho-field ho-fieldset" aria-describedby="ho-file-hint">
                         <legend>{{formHasFile}}</legend>
                         <div class="ho-choices">
                             <label class="ho-choice"><input type="radio" name="hasFile" value="yes" required> {{formYes}}</label>
                             <label class="ho-choice"><input type="radio" name="hasFile" value="no"> {{formNo}}</label>
                         </div>
+                        <p class="ho-hint" id="ho-file-hint">{{formHasFileHint}}</p>
                     </fieldset>
                     <button type="submit" class="ho-btn ho-btn-dark" data-cta="final">{{formSubmit}}</button>
                     <p class="ho-submit-note">{{formSubmitNote}}</p>

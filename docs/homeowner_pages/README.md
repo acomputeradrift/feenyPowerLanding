@@ -27,7 +27,9 @@ by Jamie before it is published.
 - **Publishing:** a brand is public only with `published: true`. Everything else returns 404, is
   left out of `sitemap.xml` and out of the analytics dashboard. Locally, `HOMEOWNER_SHOW_DRAFTS=true`
   in `backend/.env` renders drafts. **Never set that on the server.**
-- **Form:** `POST /api/homeowner-inquiry` (all fields required, honeypot, rate limit, Resend email).
+- **Form:** `POST /api/homeowner-inquiry` — name, email, systems, problem and has-file, all required
+  (2026-11-08: no phone or city; the API fills `city` from the page's location). Honeypot, rate
+  limit, Resend email. The has-file question has the hint "Select No if you are not sure."
 - **Analytics:** cookieless beacon → `POST /api/analytics/event`; dashboard at `/analytics`
   (token-gated); weekly email Mondays 07:00 America/Vancouver.
 - Node does not hot-reload: **restart the server after every content.js edit**, hard-refresh after CSS.
@@ -55,9 +57,11 @@ These live in `sharedV2` / `service_v2.html` / `homeowner.css` and apply automat
   (carousel) → Sound familiar? (+ equipment photos) → Who am I? (photo) → What you get →
   What can I do… → How it works → Questions you may have → Let's get your {Brand} system working
   again + form → Serving {Region} + local partner (below the form, for SEO) → footer.
-- **One CTA:** hero button "Fix my {Brand} system" jumps to the form (the phone sticky button
-  uses the same label); submit reads "Send it!";
-  "You will get a reply within 24 hours." under both. Sticky CTA button on phones. No other mid-page CTAs.
+- **One CTA, three places:** "Fix my {Brand} system" jumps to the form from the hero, from the end of
+  "Who am I?" (about halfway down — not after How it works, which sits right above the form), and
+  from the phone sticky button (hidden while either of the others or the form is on screen). Hero
+  and mid-page buttons carry "{price} fixed-price diagnosis. You will get a reply within 24 hours."
+  Submit reads "Send it!" with "You will get a reply within 24 hours." No other CTAs.
 - **Promises:** reply within 24 hours; diagnosis within 48 hours **of receiving the project file**
   (never "or remote access"). Fixed-price diagnostic ($349 CAD / $249 USD; Clipsal C-Bus $499 CAD via
   `brand.diagnosticPrice`). No hourly rate anywhere
@@ -149,6 +153,10 @@ Applied to every v2 brand (live in `52985b7` unless marked):
   96px square tile: make a 400×400 PNG on the logo's own background colour, centred, stacking
   wide logos (mark above wordmark).
 - Live form test in production (submit once, confirm the email arrives).
+- **CRO and SEO audits (2026-11-08)** — `docs/cro_audit.md`, `docs/seo_audit.md`. What's done and
+  what's left is in `docs/landing_pages_todo.md`. Brad K's quote mentions HomeWorks (breaks the rule
+  above; needs Brad's OK to change). These are single-purpose pages: **never link them to
+  `/consultation` or to each other.**
 
 ## Working with Jamie
 

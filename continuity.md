@@ -119,7 +119,7 @@ Local and server each have their own `.env` — not synced via git.
 - The server checkout has old uncommitted edits in `backend/RTI_log_analysis/` and some untracked images. Leave them alone, and use `git pull --ff-only`.
 - Don't commit `.DS_Store` or `.cursor/`.
 - Locally, after `kill`, wait a second before restarting, or the new process hits `EADDRINUSE` on port 3000.
-- Deploy `bd7a26a` put the Lutron homeowner pages and the analytics dashboard live; the 2026-11-08 deploys added the RTI pages (`52985b7`), then the Vantage pages (`45fe7f8`), then the Clipsal C-Bus pages, plus the shared v2 changes listed in `docs/homeowner_pages/README.md`.
+- Deploy `bd7a26a` put the Lutron homeowner pages and the analytics dashboard live; the 2026-11-08 deploys added the RTI pages (`52985b7`), then the Vantage pages (`45fe7f8`), then the Clipsal C-Bus pages, plus the shared v2 changes listed in `docs/homeowner_pages/README.md`. A later 2026-11-08 deploy added the audit changes in `docs/landing_pages_todo.md`: price beside the hero CTA, a mid-page CTA after "Who am I?", no phone or city on the form, the project-file hint, longer meta descriptions, WebP cutouts and one shared business entity in the JSON-LD.
 
 **2026-10-23 — CVE-2026-111497.** Production Node moved from 18.20.5 (end of life, bundled Brotli 1.1.0) to 22.23.4, the release that cherry-picks the Brotli decoder fix. `process.versions.brotli` still prints `1.1.0`; the fix is the 22.23.4 binary, not a Brotli version bump. Apt upgrade plus PM2 resurrect and `pm2 save` only. The git checkout was left at `6978f0c2` (2026-10-09). No commit, no push, no `git pull`. Jamie’s Mac was still Node 22.20.0.
 
@@ -143,4 +143,7 @@ Full deploy: `deployment.md`. Sentinel Lite UI/engine releases: run `tools/ship.
 | `docs/rti_proposal/agent_brief.md` | Proposal form look, copy, behavior |
 | `docs/homeowner_pages/README.md` | Homeowner landing pages — v2 layout, shared rules, per-brand checklist |
 | `docs/homeowner_pages/rti_agent_prompt.md` | Hand-off prompt for the next brand (RTI) |
+| `docs/cro_audit.md` | Conversion audit of `/consultation` and the homeowner pages (2026-11-08) |
+| `docs/seo_audit.md` | SEO audit of the same pages (2026-11-08). Homeowner pages get **no internal links** (Jamie's decision) |
+| `docs/landing_pages_todo.md` | **Start here** for landing-page work: what's done from both audits and what's left |
 | `docs/rti_proposal/README.md` | Spec index for proposal deep dives |

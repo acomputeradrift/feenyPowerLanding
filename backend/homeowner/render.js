@@ -122,26 +122,36 @@ function initials(name) {
         .slice(0, 3);
 }
 
+// One business entity shared by every page (same @id), plus a Service per page that points to it.
 function buildJsonLd(loc, brand, tokens, canonical, description, c) {
-    const areaServed = loc.areaGroups.flatMap((g) => g.places.map((p) => ({ '@type': 'City', name: p.name })));
+    const region = loc.adminArea ? { containedInPlace: { '@type': 'AdministrativeArea', name: loc.adminArea } } : {};
+    const areaServed = loc.areaGroups.flatMap((g) => g.places.map((p) => ({ '@type': 'City', name: p.name, ...region })));
+    const businessId = `${SITE_URL}/#business`;
     const business = {
         '@type': 'ProfessionalService',
-        '@id': `${canonical}#service`,
+        '@id': businessId,
         name: c.businessName || BUSINESS_NAME,
-        url: canonical,
-        description,
+        url: `${SITE_URL}/`,
         image: `${SITE_URL}/images/feeny-logo-512-circle-black-back.png`,
         logo: `${SITE_URL}/images/feeny-logo-512-circle-black-back.png`,
         founder: { '@type': 'Person', name: FOUNDER },
+        knowsAbout: [...Object.values(brands).map((b) => b.product), 'Smart home programming', 'Lighting control troubleshooting'],
+    };
+    const service = {
+        '@type': 'Service',
+        '@id': `${canonical}#service`,
+        name: `Remote ${brand.name} programming & troubleshooting`,
+        serviceType: `${brand.product} programming and troubleshooting`,
+        url: canonical,
+        description,
+        provider: { '@id': businessId },
         areaServed,
-        knowsAbout: [brand.product, 'Smart home programming', 'Lighting control troubleshooting'],
-        makesOffer: {
+        offers: {
             '@type': 'Offer',
             name: `Remote ${brand.name} diagnostic`,
             description: txt(c.steps.items[2].body, tokens),
             price: String(diagnosticPrice(loc, brand)),
             priceCurrency: loc.currency,
-            areaServed,
         },
     };
     const faqPage = {
@@ -153,7 +163,7 @@ function buildJsonLd(loc, brand, tokens, canonical, description, c) {
             acceptedAnswer: { '@type': 'Answer', text: stripBold(txt(item.a, tokens)) },
         })),
     };
-    const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': [business, faqPage] });
+    const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': [business, service, faqPage] });
     // Keep "</script>" and friends from ever closing the tag early.
     return json.replace(/</g, '\\u003c').replace(/>/g, '\\u003e').replace(/&/g, '\\u0026');
 }
@@ -279,7 +289,7 @@ function buildValues(loc, brand, c = shared) {
             heroSubhead: txt(c.hero.subhead, t),
             heroPrimaryCta: txt(c.hero.primaryCta, t),
             heroSecondaryCta: c.hero.secondaryCta,
-            heroMicroline: c.hero.microline,
+            heroMicroline: txt(c.hero.microline, t),
             trustLabel: c.trust.label,
             problemHeading: txt(c.problem.heading, t),
             problemIntro: txt(c.problem.intro, t),
@@ -334,13 +344,20 @@ function v2Services(brand) {
     ];
 }
 
+// Every *-cutout.png has a .webp twin beside it (cwebp -q 90 -alpha_q 100); the PNG is the fallback.
+function equipmentImg(e, style = '') {
+    const img = `<img src="${escapeHtml(e.src)}" alt="${escapeHtml(e.alt)}" width="${e.width}" height="${e.height}" loading="lazy"${style ? ` style="${style}"` : ''}>`;
+    if (!e.src.endsWith('-cutout.png')) return img;
+    return `<picture><source srcset="${escapeHtml(e.src.replace(/\.png$/, '.webp'))}" type="image/webp">${img}</picture>`;
+}
+
 // Overlapping product group: `at` is [left, top, height] in px on a stage.width × stage.height
 // canvas, emitted as percentages so the whole group scales down on phones.
 function equipmentStage(stage, items) {
     const pct = (v, of) => `${+(v / of * 100).toFixed(2)}%`;
     const imgs = items.map((e) => {
         const [left, top, height] = e.at;
-        return `<img src="${escapeHtml(e.src)}" alt="${escapeHtml(e.alt)}" width="${e.width}" height="${e.height}" loading="lazy" style="left:${pct(left, stage.width)};top:${pct(top, stage.height)};height:${pct(height, stage.height)}">`;
+        return equipmentImg(e, `left:${pct(left, stage.width)};top:${pct(top, stage.height)};height:${pct(height, stage.height)}`);
     }).join('\n                        ');
     return `<figure class="ho-equipment-stage" style="width:${stage.width}px">
                         <div class="ho-equipment-canvas" style="aspect-ratio:${stage.width} / ${stage.height}">
@@ -384,12 +401,15 @@ function buildValuesV2(loc, brand) {
         ? equipmentStage(brand.v2.equipmentStage, brand.v2.equipment)
         : (brand.v2.equipment || [])
         .map((e) => `<figure class="ho-equipment-card">
-                        <img src="${escapeHtml(e.src)}" alt="${escapeHtml(e.alt)}" width="${e.width}" height="${e.height}" loading="lazy">
+                        ${equipmentImg(e)}
                         <figcaption>${escapeHtml(e.caption)}</figcaption>
                     </figure>`)
         .join('\n');
     values.text.formSubmitNote = c.form.submitNote;
+    values.text.formHasFileHint = c.form.hasFileHint;
     values.text.stickyCta = c.stickyCta.label.replaceAll('{brand}', brand.name);
+    values.text.midCta = txt(c.midCta.label, tokensFor(locV2, brandV2));
+    values.text.midCtaMicroline = txt(c.midCta.microline, tokensFor(locV2, brandV2));
     return values;
 }
 

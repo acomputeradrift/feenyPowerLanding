@@ -92,12 +92,15 @@ describe('homeowner inquiry route', () => {
     assert.equal(saved.length, 0);
   });
 
-  it('requires phone and caps it at 40 characters', async () => {
-    for (const phone of [undefined, '', '   ']) {
-      const res = await post({ ...valid, phone });
-      assert.equal(res.status, 400);
-      assert.equal((await res.json()).field, 'phone');
-    }
+  it('takes city from the page when phone and city are left out', async () => {
+    const { phone, city, ...rest } = valid;
+    const res = await post({ ...rest, pageLocation: 'kelowna' });
+    assert.equal(res.status, 200);
+    assert.equal(saved[0].phone, '');
+    assert.equal(saved[0].city, 'Kelowna');
+  });
+
+  it('caps an optional phone at 40 characters', async () => {
     const long = await post({ ...valid, phone: '1'.repeat(41) });
     assert.equal(long.status, 400);
     assert.equal((await long.json()).field, 'phone');

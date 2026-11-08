@@ -16,6 +16,7 @@ export const locations = {
         slug: 'vancouver',
         region: 'Greater Vancouver',
         city: 'Vancouver',
+        adminArea: 'British Columbia',
         lang: 'en-CA',
         ogLocale: 'en_CA',
         currency: 'CAD',
@@ -57,6 +58,7 @@ export const locations = {
         slug: 'kelowna',
         region: 'Kelowna & the Central Okanagan',
         city: 'Kelowna',
+        adminArea: 'British Columbia',
         lang: 'en-CA',
         ogLocale: 'en_CA',
         currency: 'CAD',
@@ -88,6 +90,7 @@ export const locations = {
         slug: 'los-gatos',
         region: 'Los Gatos, Silicon Valley & the Monterey Bay',
         city: 'Los Gatos',
+        adminArea: 'California',
         lang: 'en-US',
         ogLocale: 'en_US',
         currency: 'USD',
@@ -632,14 +635,20 @@ export const sharedV2 = {
         ...shared.seo,
         title: '{titleName} Troubleshooting | {city}',
         titleShort: '{titleName} Troubleshooting | {city}',
-        description: 'Remote {brand} troubleshooting & programming for {city} homeowners. {price} fixed-price diagnosis.',
-        descriptionShort: 'Remote {brand} troubleshooting & programming in {city}. {price} fixed-price diagnosis.',
+        description: 'Remote {brand} troubleshooting & programming for {city} homeowners. {price} fixed-price diagnosis, reply within 24 hours. You own the file.',
+        descriptionShort: 'Remote {brand} troubleshooting & programming in {city}. {price} fixed-price diagnosis, reply within 24 hours.',
     },
 
     hero: {
         ...shared.hero,
         primaryCta: 'Fix my {brand} system',
-        microline: 'You will get a reply within 24 hours.',
+        microline: '{price} fixed-price diagnosis. You will get a reply within 24 hours.',
+    },
+
+    // Repeats the hero CTA at the end of How it works.
+    midCta: {
+        label: 'Fix my {brand} system',
+        microline: '{price} fixed-price diagnosis. You will get a reply within 24 hours.',
     },
 
     trust: {
@@ -788,6 +797,7 @@ export const sharedV2 = {
     form: {
         ...shared.form,
         ariaLabel: 'Tell me what’s wrong',
+        hasFileHint: 'Select No if you are not sure.',
         submit: 'Send it!',
         submitNote: 'You will get a reply within 24 hours.',
         success: 'Thanks — I’ll reply within 24 hours.',

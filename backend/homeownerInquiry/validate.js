@@ -1,4 +1,5 @@
 import { HOMEOWNER_BRANDS, HOMEOWNER_LOCATIONS } from '../models/HomeownerInquiry.js';
+import { locations } from '../homeowner/content.js';
 
 export const LIMITS = {
   name: 100,
@@ -52,8 +53,6 @@ export function validateInquiry(body) {
   if (!text.name) return fail('name', 'Please enter your name.');
   if (!text.email) return fail('email', 'Please enter your email.');
   if (!EMAIL_RE.test(text.email)) return fail('email', 'Please enter a valid email address.');
-  if (!text.phone) return fail('phone', 'Please enter your phone number.');
-  if (!text.city) return fail('city', 'Please enter your city.');
   if (!text.problem) return fail('problem', 'Please describe the problem.');
 
   if (!Array.isArray(body.brands) || body.brands.length === 0) {
@@ -89,8 +88,9 @@ export function validateInquiry(body) {
     value: {
       name: text.name,
       email: text.email,
+      // The form no longer asks for phone or city; city comes from the page.
       phone: text.phone,
-      city: text.city,
+      city: text.city || locations[body.pageLocation].city,
       brands,
       problem: text.problem,
       hasFile: body.hasFile,

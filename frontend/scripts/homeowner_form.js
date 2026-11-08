@@ -5,11 +5,11 @@
         if (window.fpcTrack) window.fpcTrack(name, props);
     }
 
-    // v2 pages: pinned phone CTA, shown only while neither the hero CTA nor the form is on screen.
+    // v2 pages: pinned phone CTA, shown only while no other CTA and not the form is on screen.
     function initStickyCta() {
         const sticky = document.querySelector(".ho-sticky-cta");
         if (!sticky || !("IntersectionObserver" in window)) return;
-        const watched = [document.querySelector("[data-cta=hero]"), document.getElementById("inquiry")]
+        const watched = [document.querySelector("[data-cta=hero]"), document.querySelector("[data-cta=mid]"), document.getElementById("inquiry")]
             .filter(Boolean);
         const inView = new Set();
         const observer = new IntersectionObserver(function (entries) {
@@ -68,7 +68,7 @@
 
         function validate() {
             let firstInvalid = null;
-            ["name", "email", "phone", "city", "problem"].forEach(function (name) {
+            ["name", "email", "problem"].forEach(function (name) {
                 const field = form.elements[name];
                 const ok = field.value.trim() !== "" && field.checkValidity();
                 field.setAttribute("aria-invalid", ok ? "false" : "true");
@@ -96,8 +96,6 @@
             const body = {
                 name: value("name"),
                 email: value("email"),
-                phone: value("phone"),
-                city: value("city"),
                 brands: Array.prototype.map.call(
                     form.querySelectorAll("input[name=brands]:checked"),
                     function (b) { return b.value; }

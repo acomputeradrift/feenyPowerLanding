@@ -780,6 +780,11 @@ p.ho-wordmark {
     background: var(--ho-band);
 }
 
+.ho-v2 .ho-mid-cta {
+    margin-top: 36px;
+    text-align: center;
+}
+
 .ho-v2 .ho-local .ho-partner {
     background: #fff;
 }
