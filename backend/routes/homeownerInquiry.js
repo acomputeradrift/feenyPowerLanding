@@ -2,6 +2,7 @@ import express from 'express';
 import { HomeownerInquiry } from '../models/HomeownerInquiry.js';
 import { isHoneypotFilled, validateInquiry } from '../homeownerInquiry/validate.js';
 import { sendInquiryEmail } from '../homeownerInquiry/email.js';
+import { isOwnerRequest } from './analytics.js';
 
 const WINDOW_MS = 15 * 60_000;
 const MAX_PER_WINDOW = 5;
@@ -61,6 +62,7 @@ export function createHomeownerInquiryRouter(deps = {}) {
   const save = deps.save || saveInquiry;
   const sendEmail = deps.sendEmail || sendInquiryEmail;
   const mark = deps.markEmail || markEmail;
+  const isOwner = deps.isOwner || isOwnerRequest;
 
   router.post('/', async (req, res) => {
     res.setHeader('Cache-Control', 'no-store');
@@ -80,6 +82,8 @@ export function createHomeownerInquiryRouter(deps = {}) {
       res.status(400).json({ error: result.error, field: result.field });
       return;
     }
+
+    if (isOwner(req)) result.value.test = true;
 
     let doc;
     try {

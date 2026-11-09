@@ -25,12 +25,14 @@ describe('homeowner inquiry route', () => {
   let saved;
   let emailed;
   let allowed;
+  let owner = false;
 
   before(async () => {
     const app = express();
     app.use(express.json());
     app.use('/api/homeowner-inquiry', createHomeownerInquiryRouter({
       allowHit: () => allowed,
+      isOwner: () => owner,
       async save(value) {
         saved.push(value);
         return { ...value, createdAt: new Date() };
@@ -70,8 +72,22 @@ describe('homeowner inquiry route', () => {
     assert.equal(saved[0].name, 'Pat Homeowner');
     assert.deepEqual(saved[0].brands, ['lutron', 'rti']);
     assert.equal('website' in saved[0], false);
+    assert.equal(saved[0].test, undefined);
     await new Promise((r) => setImmediate(r));
     assert.equal(emailed.length, 1);
+  });
+
+  it('flags an inquiry from the dashboard owner as test and still emails it', async () => {
+    owner = true;
+    try {
+      assert.equal((await post(valid)).status, 200);
+    } finally {
+      owner = false;
+    }
+    assert.equal(saved[0].test, true);
+    await new Promise((r) => setImmediate(r));
+    assert.equal(emailed.length, 1);
+    assert.match(buildInquiryEmail({ ...emailed[0], createdAt: new Date() }).subject, /^\[TEST\] New Lutron lead/);
   });
 
   it('rejects missing fields, bad email, bad brand, bad page', async () => {

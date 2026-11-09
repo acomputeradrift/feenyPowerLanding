@@ -17,6 +17,8 @@ const HomeownerInquirySchema = new mongoose.Schema({
   pageLocation: { type: String, enum: HOMEOWNER_LOCATIONS, required: true },
   pageBrand:    { type: String, enum: HOMEOWNER_BRANDS, required: true },
   sessionId:    { type: String, default: null },
+  // Sent from a device holding the analytics dashboard cookie; left out of analytics.
+  test:         { type: Boolean, default: false },
 
   emailStatus:  {
                   type: String,

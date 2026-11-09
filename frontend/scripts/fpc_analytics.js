@@ -61,7 +61,7 @@
         body: body,
         headers: { 'Content-Type': 'text/plain' },
         keepalive: true,
-        credentials: 'omit'
+        credentials: 'same-origin'
       }).catch(function () {});
     } catch (e) { /* analytics must never break the page */ }
   }

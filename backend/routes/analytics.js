@@ -89,6 +89,12 @@ function isAuthorized(req, expected) {
   return Boolean(cookie) && tokensEqual(cookie, cookieValue(expected));
 }
 
+/** True when the request comes from a device that has opened the dashboard (Jamie's own testing). */
+export function isOwnerRequest(req, getToken = () => process.env.ANALYTICS_DASHBOARD_TOKEN) {
+  const expected = getToken();
+  return typeof expected === 'string' && Boolean(expected) && isAuthorized(req, expected);
+}
+
 function privateHeaders(res) {
   res.set('X-Robots-Tag', 'noindex, nofollow');
   res.set('Cache-Control', 'no-store');
@@ -175,6 +181,7 @@ export function createAnalyticsRouter(deps = {}) {
         res.status(400).json({ error: result.error });
         return;
       }
+      if (isOwnerRequest(req, getToken)) result.doc.test = true;
       res.status(204).end();
       persist(result.doc, req).catch(logSaveFailure);
     } catch (error) {

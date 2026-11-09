@@ -64,7 +64,7 @@ export function buildInquiryEmail(inquiry) {
     ['Session', inquiry.sessionId || '—']
   ];
 
-  const subject = `New ${brandLabel} lead — ${locationLabel} — ${subjectName}`;
+  const subject = `${inquiry.test ? '[TEST] ' : ''}New ${brandLabel} lead — ${locationLabel} — ${subjectName}`;
 
   const text = [
     `New homeowner lead from ${pageUrl}`,

@@ -22,7 +22,7 @@ const EVENT_PROJECTION = {
 
 export async function fetchEvents(start, end) {
   requireDb();
-  return AnalyticsEvent.find({ ts: { $gte: start, $lt: end } }, EVENT_PROJECTION).lean();
+  return AnalyticsEvent.find({ ts: { $gte: start, $lt: end }, test: { $ne: true } }, EVENT_PROJECTION).lean();
 }
 
 export function parseRange(value) {

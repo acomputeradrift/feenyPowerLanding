@@ -24,7 +24,9 @@ const AnalyticsEventSchema = new mongoose.Schema({
   engagedSec: { type: Number },
   scrollPct:  { type: Number },
   props:      { type: mongoose.Schema.Types.Mixed },
-  seed:       { type: Boolean }
+  seed:       { type: Boolean },
+  // Sent from a device holding the dashboard cookie; left out of the dashboard and weekly email.
+  test:       { type: Boolean }
 }, { versionKey: false });
 
 AnalyticsEventSchema.index({ ts: 1 }, { expireAfterSeconds: 400 * 24 * 60 * 60 });

@@ -93,6 +93,22 @@ describe('analytics routes', () => {
     assert.deepEqual(await summary.json(), { ok: true, range: '7' });
   });
 
+  it('flags events from a device holding the dashboard cookie as test', async () => {
+    const login = await fetch(`${baseUrl}/analytics?token=secret-token`, { redirect: 'manual' });
+    const pair = login.headers.get('set-cookie').split(';')[0];
+    const send = (headers) => fetch(`${baseUrl}/api/analytics/event`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain', 'User-Agent': UA, ...headers },
+      body: JSON.stringify({ n: 'pageview', sid: 'abcdef0123456789', loc: 'vancouver', brand: 'rti' })
+    });
+    await send({ Cookie: pair });
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    assert.equal(saved.at(-1).test, true);
+    await send({ Cookie: 'fpc_analytics=forged' });
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    assert.equal(saved.at(-1).test, undefined);
+  });
+
   it('404s everything when the token env is unset', async () => {
     token = '';
     assert.equal((await fetch(`${baseUrl}/analytics?token=secret-token`)).status, 404);
