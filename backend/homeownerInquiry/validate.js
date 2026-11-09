@@ -88,7 +88,7 @@ export function validateInquiry(body) {
     value: {
       name: text.name,
       email: text.email,
-      // The form no longer asks for phone or city; city comes from the page.
+      // Phone is optional. The form doesn't ask for city; it comes from the page.
       phone: text.phone,
       city: text.city || locations[body.pageLocation].city,
       brands,

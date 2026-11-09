@@ -96,6 +96,7 @@
             const body = {
                 name: value("name"),
                 email: value("email"),
+                phone: value("phone"),
                 brands: Array.prototype.map.call(
                     form.querySelectorAll("input[name=brands]:checked"),
                     function (b) { return b.value; }

@@ -60,7 +60,8 @@ function tokensFor(loc, brand) {
         city: loc.city,
         price: money(diagnosticPrice(loc, brand), loc.currency),
         rate: `${money(loc.hourlyRate, loc.currency)}/hr`,
-        partner: loc.partner.name,
+        partner: loc.partner ? loc.partner.name : 'my local partner',
+        partnerIntro: loc.partner ? `my local partner, ${loc.partner.name},` : 'my local partner',
         fileNote: brand.fileNote,
         connectOption: brand.connectOption || '',
         credential: brand.credential ? ` ${brand.credential}` : '',
@@ -120,6 +121,23 @@ function initials(name) {
         .map((w) => w[0])
         .join('')
         .slice(0, 3);
+}
+
+// A location without a partner shows no partner tile; only its tie line, if any.
+function partnerBlock(loc, c, tokens, tieHtml) {
+    if (!loc.partner) return tieHtml;
+    const p = loc.partner;
+    const logo = p.logo
+        ? `<div class="ho-partner-logo ho-partner-logo-image"><img src="${escapeHtml(p.logo.src)}" alt="${escapeHtml(p.logo.alt)}" width="${p.logo.width}" height="${p.logo.height}" loading="lazy"></div>`
+        : `<div class="ho-partner-logo" aria-hidden="true">${escapeHtml(initials(p.name))}</div>`;
+    return `<div class="ho-partner">
+                    ${logo}
+                    <div>
+                        <h3>${escapeHtml(txt(c.local.partnerHeading, tokens))}</h3>
+                        <p>${escapeHtml(txt(p.note, tokens))}</p>
+                        ${tieHtml}
+                    </div>
+                </div>`;
 }
 
 // One business entity shared by every page (same @id), plus a Service per page that points to it.
@@ -256,9 +274,7 @@ function buildValues(loc, brand, c = shared) {
         raw: {
             jsonLd: buildJsonLd(loc, brand, t, canonical, description, c),
             heroBrandMark,
-            partnerLogo: loc.partner.logo
-                ? `<div class="ho-partner-logo ho-partner-logo-image"><img src="${escapeHtml(loc.partner.logo.src)}" alt="${escapeHtml(loc.partner.logo.alt)}" width="${loc.partner.logo.width}" height="${loc.partner.logo.height}" loading="lazy"></div>`
-                : `<div class="ho-partner-logo" aria-hidden="true">${escapeHtml(initials(loc.partner.name))}</div>`,
+            partnerBlock: partnerBlock(loc, c, t, loc.tie ? `<p class="ho-tie">${escapeHtml(loc.tie)}</p>` : ''),
             trustLogos,
             trustItems,
             symptoms: li(brand.symptoms, t),
@@ -304,11 +320,6 @@ function buildValues(loc, brand, c = shared) {
             guaranteeText: c.guarantee.text,
             localHeading: txt(c.local.heading, t),
             localIntro: txt(c.local.intro, t),
-            partnerName: loc.partner.name,
-            partnerInitials: initials(loc.partner.name),
-            partnerHeading: txt(c.local.partnerHeading, t),
-            partnerNote: txt(loc.partner.note, t),
-            tie: loc.tie,
             testimonialsHeading: c.testimonials.heading,
             testimonialsIntro: c.testimonials.intro,
             faqHeading: c.faq.heading,
@@ -396,7 +407,8 @@ function buildValuesV2(loc, brand) {
     };
 
     const values = buildValues(locV2, brandV2, c);
-    values.raw.tieLine = locV2.tie ? `<p class="ho-tie">${escapeHtml(locV2.tie)}</p>` : '';
+    const tieLine = locV2.tie ? `<p class="ho-tie">${escapeHtml(locV2.tie)}</p>` : '';
+    values.raw.partnerBlock = partnerBlock(locV2, c, tokensFor(locV2, brandV2), tieLine);
     values.raw.equipment = brand.v2.equipmentStage
         ? equipmentStage(brand.v2.equipmentStage, brand.v2.equipment)
         : (brand.v2.equipment || [])

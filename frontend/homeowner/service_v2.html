@@ -163,6 +163,10 @@
                             <label for="ho-email">{{formEmail}}</label>
                             <input type="email" id="ho-email" name="email" autocomplete="email" required maxlength="200">
                         </div>
+                        <div class="ho-field">
+                            <label for="ho-phone">{{formPhone}}</label>
+                            <input type="tel" id="ho-phone" name="phone" autocomplete="tel" maxlength="40">
+                        </div>
                     </div>
                     <fieldset class="ho-field ho-fieldset">
                         <legend>{{formBrands}}</legend>
@@ -195,15 +199,7 @@
                 <h2 id="ho-local-title">{{localHeading}}</h2>
                 <p>{{localIntro}}</p>
                 {{{areas}}}
-                <div class="ho-partner">
-                    <!-- TODO: replace with the {{partnerName}} logo. -->
-                    {{{partnerLogo}}}
-                    <div>
-                        <h3>{{partnerHeading}}</h3>
-                        <p>{{partnerNote}}</p>
-                        {{{tieLine}}}
-                    </div>
-                </div>
+                {{{partnerBlock}}}
             </div>
         </section>
     </main>

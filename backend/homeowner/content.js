@@ -1,6 +1,8 @@
 // All homeowner landing-page copy lives here. One template renders every
 // /{location}/{brand} page, so shared copy is written once and filled in with
 // these tokens: {brand} {product} {region} {city} {price} {rate} {partner}.
+// A location may set `partner: null`: no partner tile, and {partner} / {partnerIntro}
+// read "my local partner" with no name.
 // `**text**` renders as <strong>. Everything else is escaped as plain text.
 //
 // Rules for this copy: first person (Jamie), plain language, no false claims.
@@ -78,11 +80,7 @@ export const locations = {
                 ],
             },
         ],
-        partner: {
-            name: 'VanReit Automation',
-            logo: { src: '/images/vanreit-automation-logo.png', alt: 'VanReit Automation', width: 400, height: 400 },
-            note: 'When something needs hands onsite — {onsiteExamples}, a network sorted out — VanReit Automation can do the physical work from my scope. They quote their own time and materials and contract with you directly.',
-        },
+        partner: null,
         tie: 'I live in Kelowna half the year, so I’m often just down the road.',
         v2: { tie: null },
     },
@@ -775,7 +773,7 @@ export const sharedV2 = {
                     },
                     {
                         q: 'Do I need to be home, or have someone onsite?',
-                        a: 'For the first session, yes — someone needs to be home to get me connected and test with me. If you’d rather not do the testing yourself, my local partner, {partner}, can be there for it. Physical work, like replacing a device or fixing network hardware, is handled by {partner} — they quote and contract with you directly — or your own {localTrade}. Either way, they work from my scope and I do the programming and testing remotely.',
+                        a: 'For the first session, yes — someone needs to be home to get me connected and test with me. If you’d rather not do the testing yourself, {partnerIntro} can be there for it. Physical work, like replacing a device or fixing network hardware, is handled by {partner} — they quote and contract with you directly — or your own {localTrade}. Either way, they work from my scope and I do the programming and testing remotely.',
                     },
                 ];
             }
@@ -797,6 +795,7 @@ export const sharedV2 = {
     form: {
         ...shared.form,
         ariaLabel: 'Tell me what’s wrong',
+        phone: 'Phone (optional)',
         hasFileHint: 'Select No if you are not sure.',
         submit: 'Send it!',
         submitNote: 'You will get a reply within 24 hours.',

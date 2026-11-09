@@ -27,8 +27,9 @@ by Jamie before it is published.
 - **Publishing:** a brand is public only with `published: true`. Everything else returns 404, is
   left out of `sitemap.xml` and out of the analytics dashboard. Locally, `HOMEOWNER_SHOW_DRAFTS=true`
   in `backend/.env` renders drafts. **Never set that on the server.**
-- **Form:** `POST /api/homeowner-inquiry` — name, email, systems, problem and has-file, all required
-  (2026-11-08: no phone or city; the API fills `city` from the page's location). Honeypot, rate
+- **Form:** `POST /api/homeowner-inquiry` — name, email, systems, problem and has-file, all required,
+  plus an optional phone ("Phone (optional)", back 2026-11-09). No city field; the API fills `city`
+  from the page's location. Honeypot, rate
   limit, Resend email. The has-file question has the hint "Select No if you are not sure."
 - **Analytics:** cookieless beacon → `POST /api/analytics/event`; dashboard at `/analytics`
   (token-gated); weekly email Mondays 07:00 America/Vancouver.
@@ -86,8 +87,10 @@ These live in `sharedV2` / `service_v2.html` / `homeowner.css` and apply automat
   (Lisa P, Bob G, Sean S, Chris C, Brad K, Morgan M, Daniel T). Every page shows all of them;
   a brand may only pick its lead quote with `v2.testimonialFirst` (ask Jamie which one).
 - **Vancouver** area list excludes Bowen Island (`locations.vancouver.v2.excludeAreas`).
-- **Local partner block:** each location shows its partner's logo tile (Blue Ember, VanReit,
+- **Local partner block:** Vancouver and Los Gatos show their partner's logo tile (Blue Ember,
   Haven & Wire) with no italic tagline under it (`locations[slug].v2.tie: null` everywhere).
+  **Kelowna has no named partner** (`partner: null`, Jamie 2026-11-09): no tile, and the copy says
+  "my local partner" without a name. Do not add a Kelowna partner back.
 
 ## Needs Jamie's input per brand (ask one question at a time)
 
@@ -145,9 +148,8 @@ Applied to every v2 brand (live in `52985b7` unless marked):
 ## Open items
 
 - **Local partner approvals and coverage (2026-11-08).** Blue Ember (Vancouver) approved all
-  brands. VanReit (Kelowna) does RTI, Vantage and Clipsal but **not Lutron**; Jamie sends him the
-  live Kelowna RTI page for review. Haven & Wire (Los Gatos) does Lutron and RTI, not Vantage or
-  Clipsal. The live Kelowna Lutron page still names VanReit as the local partner — Jamie: keep it for now.
+  brands. Kelowna has no named partner (see Local partner block). Haven & Wire (Los Gatos) does
+  Lutron and RTI, not Vantage or Clipsal.
 
 - All three partner logos are in (`locations[slug].partner.logo`). A new partner's logo sits in a
   96px square tile: make a 400×400 PNG on the logo's own background colour, centred, stacking

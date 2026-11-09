@@ -22,9 +22,9 @@ Homeowner pages only:
   "Who am I?" — about halfway down, well clear of the form (`data-cta="mid"`, `sharedV2.midCta`).
   Not after How it works: that sits right above the form. The phone sticky CTA hides while it's on
   screen.
-- **Form: phone and city removed** (Jamie). The API no longer requires them; `city` is filled from
-  the page's location (`validate.js`), so lead emails and the dashboard still show it. `phone` is
-  optional in the model (old cached pages may still send it).
+- **Form: city removed, phone optional** (Jamie). `city` is filled from the page's location
+  (`validate.js`), so lead emails and the dashboard still show it. Phone was removed on 2026-11-08
+  and put back on 2026-11-09 as "Phone (optional)"; email stays required.
 - **Project-file hint:** "Select No if you are not sure." (`sharedV2.form.hasFileHint`).
 
 Jamie approved all of the above 2026-11-08; `docs/homeowner_pages/README.md` is updated to match.
@@ -37,8 +37,6 @@ Jamie approved all of the above 2026-11-08; `docs/homeowner_pages/README.md` is 
 - **Unique local content per city** — top SEO item. City pages are near-duplicates (doorway-page
   risk), and with no internal links each must rank on its own. Ideas: local lead testimonial (Lisa P
   on Kelowna), the existing `tie` lines (now `null` in v2), local examples.
-- **Kelowna Lutron partner** names VanReit, who doesn't do Lutron. Jamie: keep for now.
-
 ### Copy-only quick wins
 - Put "If I can fix it within the diagnostic price, I just fix it" near the price / submit button.
 - Post-submit message with a next step, e.g. "I'll email you within 24 hours. If you can, find out
@@ -47,7 +45,7 @@ Jamie approved all of the above 2026-11-08; `docs/homeowner_pages/README.md` is 
 ### Off-site (no code)
 - Submit `sitemap.xml` in Google Search Console.
 - Google Business Profile website link → main city page.
-- Ask Blue Ember, VanReit and Haven & Wire to link to their city's page.
+- Ask Blue Ember and Haven & Wire to link to their city's page.
 - Directory and manufacturer dealer-locator listings.
 
 ### Smaller SEO items

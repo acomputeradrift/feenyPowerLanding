@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { renderPage, renderSitemap } from './render.js';
+import { locations } from './content.js';
 
 const v2Pages = [['vancouver', 'lutron'], ['kelowna', 'lutron'], ['los-gatos', 'lutron']];
 const draft = (loc, brand) => renderPage(loc, brand, { includeDrafts: true });
@@ -123,6 +124,22 @@ test('v2 Vantage drafts use the Vantage title and copy', () => {
     }
 });
 
+test('v2 form requires email and has an optional phone', () => {
+    const html = draft('vancouver', 'lutron');
+    assert.match(html, /<input type="email" id="ho-email" name="email"[^>]* required/);
+    assert.match(html, /<label for="ho-phone">Phone \(optional\)<\/label>/);
+    assert.ok(!/<input type="tel" id="ho-phone"[^>]* required/.test(html));
+});
+
+test('Kelowna has no partner tile and never names one', () => {
+    for (const brand of ['lutron', 'rti', 'vantage', 'clipsal-c-bus']) {
+        const html = draft('kelowna', brand);
+        assert.ok(!html.includes('class="ho-partner"'));
+        assert.ok(!/vanreit/i.test(html));
+        assert.ok(html.includes('If you’d rather not do the testing yourself, my local partner can be there for it.'));
+    }
+});
+
 test('v2 RTI drafts use the RTI title, copy and testimonial order', () => {
     const cities = { vancouver: 'Vancouver', kelowna: 'Kelowna', 'los-gatos': 'Los Gatos' };
     for (const loc of Object.keys(cities)) {
@@ -141,7 +158,7 @@ test('v2 RTI drafts use the RTI title, copy and testimonial order', () => {
         assert.ok(html.includes('/images/rti-t2x-cutout.png'));
         assert.ok(html.includes('/images/rti-t4x-cutout.png'));
         assert.ok(html.includes('a failed remote, touchscreen, processor, audio/video component or other network device remotely'));
-        assert.ok(html.includes('a touchscreen swapped, a processor replaced'));
+        if (locations[loc].partner) assert.ok(html.includes('a touchscreen swapped, a processor replaced'));
         assert.ok(!html.includes('dimmer'));
         assert.ok(!html.includes('electrician'));
         assert.ok(html.includes('your own AV technician'));
