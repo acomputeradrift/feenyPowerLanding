@@ -3,7 +3,16 @@
 What's left from `docs/cro_audit.md` and `docs/seo_audit.md` (both 2026-11-08). Those docs have the
 reasoning; this is the to-do list. Homeowner pages first, `/consultation` last.
 
-## Done on localhost 2026-11-08 (not committed or deployed)
+## Done and deployed 2026-11-09
+
+- **Kelowna has no named local partner** (Jamie). No partner tile on the four Kelowna pages; the
+  copy says "my local partner" with no name (`locations.kelowna.partner: null`). Commit `268c3eb`.
+- **Optional phone back on the form**, labelled "Phone (optional)"; email stays required. Same commit.
+- **Jamie's own traffic is left out of analytics.** Events and leads from a device holding the
+  dashboard cookie are saved with `test: true` and skipped by the dashboard and weekly email; test
+  lead emails say "[TEST]". The pre-launch test data (20 events, 1 lead) was deleted. Commit `21896bb`.
+
+## Done and deployed 2026-11-08
 
 Homeowner pages only:
 

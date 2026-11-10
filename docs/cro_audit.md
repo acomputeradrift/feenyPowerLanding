@@ -36,8 +36,7 @@ in `backend/homeowner/content.js`.
 - **Post-submit next step.** The form just resets with one line. Say what happens next, e.g. "I'll
   email you within 24 hours. If you can, find out who installed your system — it helps me get the
   project file."
-- **Kelowna Lutron partner.** Names VanReit, who doesn't do Lutron. Trust risk if a homeowner relies
-  on it. Jamie said keep it for now.
+- **Kelowna partner.** Resolved 2026-11-09: Kelowna pages no longer name a local partner.
 
 ### Test ideas
 - Lead quote matched to the visitor; the carousel auto-rotates so most people read only the first.

@@ -148,11 +148,12 @@ export const locations = {
             },
         ],
         partner: {
-            name: 'Haven and Wire',
+            name: 'Haven & Wire',
+            url: 'https://www.havenandwire.com/',
             logo: { src: '/images/haven-and-wire-logo.png', alt: 'Haven & Wire', width: 400, height: 400 },
-            note: 'When something needs hands onsite — {onsiteExamples}, a network sorted out — Haven and Wire can do the physical work from my scope. They quote their own time and materials and contract with you directly.',
+            note: 'When something needs hands onsite — {onsiteExamples}, a network sorted out — Haven & Wire can do the physical work from my scope. They quote their own time and materials and contract with you directly.',
         },
-        tie: 'I do all of Haven and Wire’s RTI programming, so we already work together every week.',
+        tie: 'I do all of Haven & Wire’s RTI programming, so we already work together every week.',
         v2: { tie: null },
     },
 };

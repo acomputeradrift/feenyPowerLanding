@@ -32,7 +32,8 @@ by Jamie before it is published.
   from the page's location. Honeypot, rate
   limit, Resend email. The has-file question has the hint "Select No if you are not sure."
 - **Analytics:** cookieless beacon → `POST /api/analytics/event`; dashboard at `/analytics`
-  (token-gated); weekly email Mondays 07:00 America/Vancouver.
+  (token-gated); weekly email Mondays 07:00 America/Vancouver. Visits and inquiries from a device
+  holding the dashboard cookie are flagged `test: true` and left out (test lead emails say "[TEST]").
 - Node does not hot-reload: **restart the server after every content.js edit**, hard-refresh after CSS.
 
 ### Moving a brand to v2

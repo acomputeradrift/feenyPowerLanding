@@ -11,7 +11,8 @@ lists every published page) and from outside links:
 
 - Submit `sitemap.xml` in Google Search Console.
 - Google Business Profile website link → main city page.
-- Local partners (Blue Ember, VanReit, Haven & Wire) linking to their city's page from their sites.
+- Local partners (Blue Ember, Haven & Wire) linking to their city's page from their sites. Kelowna
+  has no named partner (2026-11-09).
 - Directory and manufacturer dealer-locator listings.
 
 ## Scores

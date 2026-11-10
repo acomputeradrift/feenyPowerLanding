@@ -546,6 +546,13 @@ p.ho-wordmark {
     font-size: 1.4rem;
 }
 
+.ho-partner-logo-link {
+    flex: 0 0 96px;
+    align-self: flex-start;
+    text-decoration: none;
+    color: inherit;
+}
+
 .ho-partner-logo-image {
     border: 0;
     overflow: hidden;

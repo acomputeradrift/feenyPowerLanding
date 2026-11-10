@@ -127,9 +127,15 @@ function initials(name) {
 function partnerBlock(loc, c, tokens, tieHtml) {
     if (!loc.partner) return tieHtml;
     const p = loc.partner;
-    const logo = p.logo
-        ? `<div class="ho-partner-logo ho-partner-logo-image"><img src="${escapeHtml(p.logo.src)}" alt="${escapeHtml(p.logo.alt)}" width="${p.logo.width}" height="${p.logo.height}" loading="lazy"></div>`
+    const img = p.logo
+        ? `<img src="${escapeHtml(p.logo.src)}" alt="${escapeHtml(p.logo.alt)}" width="${p.logo.width}" height="${p.logo.height}" loading="lazy">`
+        : '';
+    const logoInner = p.logo
+        ? `<div class="ho-partner-logo ho-partner-logo-image">${img}</div>`
         : `<div class="ho-partner-logo" aria-hidden="true">${escapeHtml(initials(p.name))}</div>`;
+    const logo = p.url && p.logo
+        ? `<a class="ho-partner-logo-link" href="${escapeHtml(p.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(p.logo.alt || p.name)} (opens in a new tab)">${logoInner}</a>`
+        : logoInner;
     return `<div class="ho-partner">
                     ${logo}
                     <div>
