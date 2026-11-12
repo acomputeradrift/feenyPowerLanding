@@ -159,4 +159,4 @@ Full deploy: `deployment.md`. Sentinel Lite UI/engine releases: run `tools/ship.
 
 The Nov 8 spike lines up with the homeowner launch and sitemap work: more recrawling surfaced long-standing gaps on dealer static HTML. **Not a penalty** — Google is saying it found duplicate or near-duplicate URLs and you did not pick the primary URL. RTI diagnostics was **retired 2026-11-12** (410 + `robots.txt`); request removal in GSC for the upload URL after deploy if it still shows as indexed.
 
-**Fixes (tracked, not shipped):** `docs/seo_audit.md` §5 and `docs/landing_pages_todo.md` (`/consultation` head tags + non-www → www 301 in nginx). `/faq` needs the same canonical pattern when those items are done. Homeowner pages already self-canonical to `https://www.feenypowerandcontrol.com/...`.
+**Fixes shipped 2026-11-12 (deploy after commit):** canonical + OG/Twitter + JSON-LD on `/consultation`; canonical on `/faq` and `/rti_proposal/`; `/` → `/consultation` **301** in Node; **non-www → www 301** in nginx (`feenyPowerLanding` vhost). RTI diagnostics retired (410). Homeowner pages already self-canonical.

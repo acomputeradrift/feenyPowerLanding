@@ -104,7 +104,7 @@ app.get('/sentinel_lite', (req, res, next) => {
 
 // ✅ Redirect root URL to /consultation/
 app.get('/', (req, res) => {
-    res.redirect('/consultation');
+    res.redirect(301, '/consultation');
 });
 
 // ✅ Serve Consultation Page

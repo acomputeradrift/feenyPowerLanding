@@ -229,6 +229,24 @@ pm2 restart "FPC Website"
 - HTML must use `/styles/...` and `/scripts/...` (leading slash).
 - Static mounts are defined in `fpc_server.js`; no nginx config change needed for normal asset paths.
 
+### Non-www → www (SEO)
+
+On the droplet, `/etc/nginx/sites-enabled/feenyPowerLanding` must 301 apex host to www **before** the `proxy_pass` block:
+
+```nginx
+if ($host = feenypowerandcontrol.com) {
+    return 301 https://www.feenypowerandcontrol.com$request_uri;
+}
+```
+
+After editing: `nginx -t && systemctl reload nginx`. Verify:
+
+```bash
+curl -sI https://feenypowerandcontrol.com/consultation | head -3
+```
+
+Expect `HTTP/1.1 301` and `Location: https://www.feenypowerandcontrol.com/consultation`.
+
 ### MongoDB connection errors in PM2 logs
 
 RTI log diagnostics was retired 2026-11-12 (`/rti_diagnostics/*` returns 410). Other features still need MongoDB; marketing pages (consultation, FAQ) still serve without it.
