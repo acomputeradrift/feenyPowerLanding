@@ -32,15 +32,15 @@ Unit tests (calculator, no server): `cd backend && npm test`
 | `/rti_proposal/` | RTI programming budget form → PDF + email |
 | `/rti_proposal/preview.pdf` | PDF preview — **localhost only** |
 | `/rti_proposal/audit/:reference` | Token-gated rate audit (404 unless env token set) |
-| `/sentinel_lite/` | Sentinel Lite — dealer-side `.apex` compare in the browser (Pyodide). Files never leave the dealer’s machine. |
+| `/sentinel_lite/` | Sentinel Lite — dealer utility: `.apex` compare in the browser (Pyodide). Files never leave the dealer’s machine. **Not indexed** (no sitemap entry; `robots.txt` Disallow; `X-Robots-Tag: noindex`). Bookmark/direct link only. |
 | `/{location}/{brand}` | Homeowner landing pages: `vancouver` and `kelowna` × `lutron`/`vantage`/`rti`/`clipsal-c-bus`, plus `los-gatos` × `lutron`/`rti`. **Only brands with `published: true` are public (Lutron as of 2026-11-07, RTI, Vantage and Clipsal C-Bus as of 2026-11-08 — every brand is now live);** the rest 404 unless `HOMEOWNER_SHOW_DRAFTS=true` (local `.env` only). Other combos 404. |
 | `/analytics` | Token-gated first-party analytics dashboard for the homeowner pages. No login screen: open once per device with `?token=<ANALYTICS_DASHBOARD_TOKEN>` to set a 90-day cookie (Jamie keeps the link in 1Password). Without the cookie it returns an empty 404, which looks like a **blank white page**. |
 | `/robots.txt`, `/sitemap.xml` | Generated from the homeowner content data (sitemap lists public pages + the published homeowner pages) |
 | `/idea-feedback/` | Hidden HMAC-signed confirm page for overnight idea thumbs (GET never writes) |
-| `/rti_diagnostics/upload_files/` | RTI log upload |
-| `/rti_diagnostics/process_files/` | Log analysis results |
 
-**API:** `POST /api/upload`, `/api/process`, `/api/retrieve` (diagnostics) · `POST /api/proposal/estimate`, `/api/proposal` (proposal) · `GET`/`POST /api/sentinel_lite/compare-count` (count-only Compare beacon; no files) · `POST /api/homeowner-inquiry` (homeowner form) · `POST /api/analytics/event` (cookieless beacon) and the dashboard's token-gated summary API
+**API:** `POST /api/proposal/estimate`, `/api/proposal` (proposal) · `GET`/`POST /api/sentinel_lite/compare-count` (count-only Compare beacon; no files) · `POST /api/homeowner-inquiry` (homeowner form) · `POST /api/analytics/event` (cookieless beacon) and the dashboard's token-gated summary API
+
+**Retired (2026-11-12):** RTI log diagnostics (`/rti_diagnostics/*`, `/api/upload`, `/api/process`, `/api/retrieve`) returns **410 Gone**. Source still in repo (`frontend/upload_files.html`, `backend/RTI_log_analysis/`, `routes/upload.js`, etc.) but is not mounted. `robots.txt` disallows `/rti_diagnostics/`.
 
 Entry point: `backend/fpc_server.js`. Every new HTML page needs an `app.get(...)` route there.
 
@@ -65,7 +65,7 @@ Static mounts: `/styles`, `/scripts`, `/images`. Proposal schema also at `/scrip
 
 - HTML uses **site-root paths**: `/styles/...`, `/scripts/...`, `/images/...` (see `consultation.html`).
 - **Do not edit** `frontend/styles/global.css` or `consultation.css` — shared by live pages. New pages get their own CSS.
-- `consultation.js` on landing + FAQ: Calendly popup + RTI logo → `/rti_diagnostics`.
+- `consultation.js` on landing + FAQ: Calendly popup only (partner logos are decorative).
 - **Per-zone rates never reach the browser.** `backend/proposal/calc/` is not served statically.
 
 ## Components
@@ -82,9 +82,9 @@ Static mounts: `/styles`, `/scripts`, `/images`. Proposal schema also at `/scrip
 
 Current product (`SCHEMA_VERSION` `2026.6`, `RATE_CARD_VERSION` `2026.3`): hours split into Overhead, Programming and Graphics. Global controllers are Phone, Tablet, Large Touchscreen and Small Touchscreen. Displays are always discrete. Custom audio/video is never cloned. Audio types are Streamer / Turntable / Custom (no Tuner). Video types are Media Player / Cable / Satellite / Box / Blu-ray Player / Game Console / Custom. Distributed video zones require at least one video source; audio sources may be 0. Motorized lifts/mounts appear under displays (0 allowed; first discrete, rest cloned). Every help line ends with a period. Rate card 2026.2 remains in `backend/proposal/calc/legacy/` for old submissions and the v1 preview.
 
-**Sentinel Lite** — Live at `/sentinel_lite/`. The dealer’s `.apex` files are compared in the browser with Pyodide; this server never receives a file. The only API is `GET`/`POST /api/sentinel_lite/compare-count` (a running total, no body). Static bundle is generated — ship from the sibling **Sentinel (Lite)** repo with `tools/ship.py`. Do not edit `frontend/sentinel_lite/` here. Mount and CSP live in `fpc_server.js`.
+**Sentinel Lite** — Live at `/sentinel_lite/` (dealer utility Jamie uses; not an SEO landing). The dealer’s `.apex` files are compared in the browser with Pyodide; this server never receives a file. The only API is `GET`/`POST /api/sentinel_lite/compare-count` (a running total, no body). Excluded from `sitemap.xml`; `robots.txt` and `X-Robots-Tag` keep crawlers out. Static bundle is generated — ship from the sibling **Sentinel (Lite)** repo with `tools/ship.py`. Do not edit `frontend/sentinel_lite/` here. Mount and CSP live in `fpc_server.js`.
 
-**RTI diagnostics** — Dealers upload RTI logs; analysis in `backend/RTI_log_analysis/`. Uploads in `backend/uploads/` (production path hardcoded in `routes/process.js` as `/root/feenyPowerLanding/backend/uploads`).
+**RTI diagnostics** — **Retired 2026-11-12** (Jamie). Do not re-enable without an explicit ask. Legacy code under `backend/RTI_log_analysis/`, `backend/routes/upload.js`, `process.js`, `retrieve.js`, and matching `frontend/` pages.
 
 ## Environment (`backend/.env`)
 
@@ -147,3 +147,16 @@ Full deploy: `deployment.md`. Sentinel Lite UI/engine releases: run `tools/ship.
 | `docs/seo_audit.md` | SEO audit of the same pages (2026-11-08). Homeowner pages get **no internal links** (Jamie's decision) |
 | `docs/landing_pages_todo.md` | **Start here** for landing-page work: what's done from both audits and what's left |
 | `docs/rti_proposal/README.md` | Spec index for proposal deep dives |
+
+## Google Search Console — indexing (2026-11-12)
+
+**Report:** Page indexing → *Duplicate without user-selected canonical* (3 URLs, crawled ~2026-11-08).
+
+| URL in report | Why it appears |
+|---|---|
+| `https://www.feenypowerandcontrol.com/consultation` | Dealer landing has **no** `<link rel="canonical">` (unlike homeowner pages from `render.js`). |
+| `https://feenypowerandcontrol.com/consultation` | **Apex + www both return 200** with the same HTML; no canonical on either, so Google treats them as duplicates. |
+
+The Nov 8 spike lines up with the homeowner launch and sitemap work: more recrawling surfaced long-standing gaps on dealer static HTML. **Not a penalty** — Google is saying it found duplicate or near-duplicate URLs and you did not pick the primary URL. RTI diagnostics was **retired 2026-11-12** (410 + `robots.txt`); request removal in GSC for the upload URL after deploy if it still shows as indexed.
+
+**Fixes (tracked, not shipped):** `docs/seo_audit.md` §5 and `docs/landing_pages_todo.md` (`/consultation` head tags + non-www → www 301 in nginx). `/faq` needs the same canonical pattern when those items are done. Homeowner pages already self-canonical to `https://www.feenypowerandcontrol.com/...`.

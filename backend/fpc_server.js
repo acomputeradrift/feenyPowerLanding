@@ -4,9 +4,6 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import uploadRoutes from './routes/upload.js';
-import processRoute from './routes/process.js';
-import retrieveRoute from './routes/retrieve.js';
 import proposalRoutes, { handleProposalAudit } from './routes/proposal.js';
 import ideaFeedbackRoutes from './routes/ideaFeedback.js';
 import sentinelLiteCompareCountRoutes from './routes/sentinelLiteCompareCount.js';
@@ -27,9 +24,6 @@ const app = express();
 app.use(express.json());
 
 // Routes
-app.use('/api/upload', uploadRoutes);
-app.use(processRoute);
-app.use(retrieveRoute);
 app.use('/api/proposal', proposalRoutes);
 // Count-only: +1 when a dealer hits Compare. No files, names, paths, or bodies.
 app.use('/api/sentinel_lite/compare-count', sentinelLiteCompareCountRoutes);
@@ -47,9 +41,6 @@ app.use('/scripts/proposal/shared',
 app.use('/scripts', express.static(path.join(__dirname, '../frontend/scripts')));
 app.use('/images', express.static(path.join(__dirname, '../frontend/images')));
 
-// ✅ If using locally installed xlsx, serve it too
-app.use('/scripts/xlsx', express.static(path.join(__dirname, 'node_modules/xlsx/dist')));
-
 // ✅ Sentinel Lite — static only, and that is the whole point.
 // The dealer's .apex files are compared by Pyodide inside their own browser, so
 // this server never receives one and offers no endpoint that could accept one.
@@ -58,6 +49,8 @@ const sentinelLiteRoot = path.join(__dirname, '../frontend/sentinel_lite');
 
 app.use('/sentinel_lite', (req, res, next) => {
     // Scoped to this path so the marketing pages keep their current headers.
+    // Dealer utility — not for search indexing (sitemap omits it; robots Disallow).
+    res.setHeader('X-Robots-Tag', 'noindex, nofollow');
     // 'wasm-unsafe-eval' is what lets the browser compile the Pyodide module;
     // connect-src 'self' allows the count-only Compare beacon on this origin.
     res.setHeader(
@@ -155,24 +148,18 @@ app.get('/idea-feedback', (req, res, next) => {
 });
 app.use('/idea-feedback', ideaFeedbackRoutes);
 
-// ✅ Redirect `/rti_diagnostics/` to `/rti_diagnostics/upload_files/`
-app.get('/rti_diagnostics/', (req, res) => {
-    res.redirect('/rti_diagnostics/upload_files/');
-
+// RTI log diagnostics retired 2026-11-12 — 410 so Google drops indexed URLs faster than 404.
+app.use('/rti_diagnostics', (req, res) => {
+    res.status(410).type('text/plain').send('RTI log diagnostics has been retired.');
 });
-
-// ✅ Serve RTI Diagnostics Upload Page
-app.get('/rti_diagnostics/upload_files/', (req, res) => {
-    // res.sendFile(path.join(__dirname, 'upload_files.html'));
-    res.sendFile(path.join(__dirname, '../frontend/upload_files.html'));
-
+app.use('/api/upload', (req, res) => {
+    res.status(410).type('text/plain').send('RTI log diagnostics has been retired.');
 });
-
-// ✅ Serve RTI Diagnostics Process Files Page
-app.get('/rti_diagnostics/process_files/', (req, res) => {
-    //res.sendFile(path.join(__dirname, 'process_files.html'));
-    res.sendFile(path.join(__dirname, '../frontend/process_files.html'));
-
+app.post('/api/process', (req, res) => {
+    res.status(410).type('text/plain').send('RTI log diagnostics has been retired.');
+});
+app.post('/api/retrieve', (req, res) => {
+    res.status(410).type('text/plain').send('RTI log diagnostics has been retired.');
 });
 
 app.get('/robots.txt', (req, res) => {

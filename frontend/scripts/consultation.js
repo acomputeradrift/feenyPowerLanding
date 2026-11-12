@@ -13,14 +13,4 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    const rtiLogo = document.querySelector('.partners img[alt="RTI Logo"]');
-    if (rtiLogo) {
-        rtiLogo.style.cursor = "pointer"; // Optional: show pointer on hover
-        rtiLogo.addEventListener("click", () => {
-            window.location.href = "https://www.feenypowerandcontrol.com/rti_diagnostics";
-        });
-    }
-});
-
 

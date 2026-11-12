@@ -231,7 +231,7 @@ pm2 restart "FPC Website"
 
 ### MongoDB connection errors in PM2 logs
 
-RTI diagnostics APIs need MongoDB. Marketing pages (consultation, FAQ) still serve without it.
+RTI log diagnostics was retired 2026-11-12 (`/rti_diagnostics/*` returns 410). Other features still need MongoDB; marketing pages (consultation, FAQ) still serve without it.
 
 - Check `backend/.env` on the server for `MONGO_URI`.
 - Restart after env changes: `pm2 restart "FPC Website" --update-env`

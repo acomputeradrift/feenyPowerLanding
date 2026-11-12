@@ -462,7 +462,7 @@ export function renderPage(location, brand, { includeDrafts = false } = {}) {
     return out;
 }
 
-const PUBLIC_PATHS = ['/consultation', '/faq', '/rti_proposal/', '/sentinel_lite/'];
+const PUBLIC_PATHS = ['/consultation', '/faq', '/rti_proposal/'];
 
 export function renderSitemap() {
     const urls = [...PUBLIC_PATHS, ...publishedPages.map((p) => pagePath(p.location, p.brand))];
@@ -475,6 +475,8 @@ export function renderRobots() {
         'User-agent: *',
         'Disallow: /analytics',
         'Disallow: /api/',
+        'Disallow: /rti_diagnostics/',
+        'Disallow: /sentinel_lite/',
         '',
         `Sitemap: ${SITE_URL}/sitemap.xml`,
         '',
