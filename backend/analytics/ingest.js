@@ -1,5 +1,5 @@
 import { classifyChannel, deviceClass, isBotUserAgent, refererHost } from './classify.js';
-import { isValidPage } from './pages.js';
+import { DEALER_PAGES_INFO, isDealerPage, isValidPage } from './pages.js';
 
 export const EVENT_NAMES = new Set(['pageview', 'engagement', 'cta_click', 'form_start', 'form_submit', 'faq_open']);
 export const MAX_EVENT_BYTES = 4 * 1024;
@@ -60,9 +60,13 @@ export function normalizeEvent(payload, { pagesInfo, userAgent = '', siteHost = 
 
   const location = cleanString(payload.loc ?? payload.location, 40);
   const brand = cleanString(payload.brand, 40);
-  if (!isValidPage(pagesInfo, location, brand)) return { error: 'unknown_page' };
+  const dealer = isDealerPage(location, brand);
+  if (!dealer && !isValidPage(pagesInfo, location, brand)) return { error: 'unknown_page' };
 
-  const doc = { ts: now, name, sessionId, path: `/${location}/${brand}`, location, brand };
+  const path = dealer
+    ? DEALER_PAGES_INFO.pages.find((p) => p.brand === brand).path
+    : `/${location}/${brand}`;
+  const doc = { ts: now, name, sessionId, path, location, brand };
 
   if (name === 'pageview') {
     const utmIn = payload.utm && typeof payload.utm === 'object' ? payload.utm : {};

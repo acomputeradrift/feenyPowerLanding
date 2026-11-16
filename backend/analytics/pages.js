@@ -88,4 +88,25 @@ export function pageLabel(pagesInfo, location, brand) {
   return `${loc ? loc.short || loc.label : location} / ${br ? br.short || br.label : brand}`;
 }
 
+// Dealer pages (funnel A). Tracked with data-location="dealer" and data-brand = slug.
+// Kept apart from the homeowner pages so homeowner numbers and the weekly email don't change.
+export const DEALER_LOCATION = 'dealer';
+export const DEALER_PAGES_INFO = {
+  pages: [
+    { location: 'dealer', brand: 'consultation', path: '/consultation' },
+    { location: 'dealer', brand: 'rti-proposal', path: '/rti_proposal/' },
+    { location: 'dealer', brand: 'faq', path: '/faq' }
+  ],
+  locations: [{ slug: 'dealer', label: 'Dealer pages', short: 'Dealer' }],
+  brands: [
+    { slug: 'consultation', label: 'Consultation page', short: 'Consultation' },
+    { slug: 'rti-proposal', label: 'Budget form', short: 'Budget form' },
+    { slug: 'faq', label: 'FAQ', short: 'FAQ' }
+  ]
+};
+
+export function isDealerPage(location, brand) {
+  return isValidPage(DEALER_PAGES_INFO, location, brand);
+}
+
 export const FALLBACK = { pages: FALLBACK_PAGES, locations: FALLBACK_LOCATIONS, brands: FALLBACK_BRANDS };

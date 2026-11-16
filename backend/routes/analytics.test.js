@@ -115,3 +115,48 @@ describe('analytics routes', () => {
     token = 'secret-token';
   });
 });
+
+describe('analytics summary for the hub', () => {
+  let server;
+  let baseUrl;
+  const hubToken = 'h'.repeat(40);
+  const calls = [];
+  before(async () => {
+    const app = express();
+    app.use('/api/analytics', createAnalyticsRouter({
+      getToken: () => 'owner-token',
+      getHubToken: () => hubToken,
+      loadPages: async () => FALLBACK,
+      buildSummary: async (args) => { calls.push(args); return { ok: true }; },
+      allowHit: () => true
+    }));
+    server = app.listen(0);
+    await new Promise((resolve) => server.once('listening', resolve));
+    baseUrl = `http://127.0.0.1:${server.address().port}`;
+  });
+  after(() => server.close());
+
+  it('lets the hub read the summary with its own key, and passes the audience', async () => {
+    const res = await fetch(`${baseUrl}/api/analytics/summary?audience=dealer&range=7`, { headers: { 'x-analytics-token': hubToken } });
+    assert.equal(res.status, 200);
+    assert.equal(calls.at(-1).audience, 'dealer');
+    await fetch(`${baseUrl}/api/analytics/summary?audience=bogus`, { headers: { 'x-analytics-token': hubToken } });
+    assert.equal(calls.at(-1).audience, 'homeowner');
+  });
+
+  it('refuses a wrong hub key, and the hub key alone never marks events as test', async () => {
+    const res = await fetch(`${baseUrl}/api/analytics/summary`, { headers: { 'x-analytics-token': 'h'.repeat(39) + 'x' } });
+    assert.equal(res.status, 404);
+  });
+
+  it('ignores a hub key shorter than 32 characters', async () => {
+    const app = express();
+    app.use('/api/analytics', createAnalyticsRouter({ getToken: () => '', getHubToken: () => 'short', buildSummary: async () => ({ ok: true }) }));
+    const s = app.listen(0);
+    await new Promise((resolve) => s.once('listening', resolve));
+    try {
+      const res = await fetch(`http://127.0.0.1:${s.address().port}/api/analytics/summary`, { headers: { 'x-analytics-token': 'short' } });
+      assert.equal(res.status, 404);
+    } finally { s.close(); }
+  });
+});

@@ -1,6 +1,6 @@
 import { AnalyticsEvent } from '../models/AnalyticsEvent.js';
 import { requireDb } from './db.js';
-import { fetchLeads } from './leads.js';
+import { fetchDealerLeads, fetchLeads } from './leads.js';
 import {
   DEFINITIONS,
   compareCore,
@@ -10,7 +10,7 @@ import {
   filterEvents,
   filterLeads
 } from './metrics.js';
-import { loadPages, pageLabel } from './pages.js';
+import { DEALER_LOCATION, DEALER_PAGES_INFO, loadPages, pageLabel } from './pages.js';
 import { analyticsTz, rangeBounds } from './time.js';
 
 export const RANGES = [7, 28, 90];
@@ -20,9 +20,13 @@ const EVENT_PROJECTION = {
   refHost: 1, channel: 1, utm: 1, device: 1, engagedSec: 1, scrollPct: 1
 };
 
-export async function fetchEvents(start, end) {
+export const AUDIENCES = ['homeowner', 'dealer'];
+
+/** Homeowner by default (the dashboard and weekly email); 'dealer' for the dealer pages. */
+export async function fetchEvents(start, end, audience = 'homeowner') {
   requireDb();
-  return AnalyticsEvent.find({ ts: { $gte: start, $lt: end }, test: { $ne: true } }, EVENT_PROJECTION).lean();
+  const location = audience === 'dealer' ? DEALER_LOCATION : { $ne: DEALER_LOCATION };
+  return AnalyticsEvent.find({ ts: { $gte: start, $lt: end }, test: { $ne: true }, location }, EVENT_PROJECTION).lean();
 }
 
 export function parseRange(value) {
@@ -38,11 +42,13 @@ function iso(d) {
  * Build everything the dashboard needs for one range + optional location/brand
  * filter. Pure computation lives in metrics.js; this only fetches and assembles.
  */
-export async function buildSummary({ range = 28, location = '', brand = '', now = new Date(), deps = {} } = {}) {
+export async function buildSummary({ range = 28, location = '', brand = '', audience = 'homeowner', now = new Date(), deps = {} } = {}) {
+  const fun = AUDIENCES.includes(audience) ? audience : 'homeowner';
   const tz = deps.tz || analyticsTz();
-  const pagesInfo = deps.pagesInfo || await loadPages();
-  const getEvents = deps.fetchEvents || fetchEvents;
-  const getLeads = deps.fetchLeads || fetchLeads;
+  const pagesInfo = deps.pagesInfo || (fun === 'dealer' ? DEALER_PAGES_INFO : await loadPages());
+  const fetchE = deps.fetchEvents || fetchEvents;
+  const getEvents = (s, e) => fetchE(s, e, fun);
+  const getLeads = deps.fetchLeads || (fun === 'dealer' ? fetchDealerLeads : fetchLeads);
 
   const days = parseRange(range);
   const loc = pagesInfo.locations.some((l) => l.slug === location) ? location : '';
@@ -84,6 +90,7 @@ export async function buildSummary({ range = 28, location = '', brand = '', now 
 
   return {
     generatedAt: iso(now),
+    audience: fun,
     tz,
     range: days,
     filter,

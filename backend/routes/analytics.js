@@ -196,10 +196,21 @@ export function createAnalyticsRouter(deps = {}) {
     await save(doc);
   }
 
+  // The private hub (hub.feenypowerandcontrol.com) reads the summary server-to-server
+  // with its own key, ANALYTICS_HUB_TOKEN, sent in the x-analytics-token header.
+  const getHubToken = deps.getHubToken || (() => process.env.ANALYTICS_HUB_TOKEN);
+  function isHub(req) {
+    const hubToken = getHubToken();
+    const header = req.get('x-analytics-token');
+    return typeof hubToken === 'string' && hubToken.length >= 32
+      && typeof header === 'string' && Boolean(header) && tokensEqual(header, hubToken);
+  }
+
   router.get('/summary', async (req, res) => {
     privateHeaders(res);
     const expected = getToken();
-    if (typeof expected !== 'string' || !expected || !isAuthorized(req, expected)) {
+    const owner = typeof expected === 'string' && Boolean(expected) && isAuthorized(req, expected);
+    if (!owner && !isHub(req)) {
       res.status(404).end();
       return;
     }
@@ -207,7 +218,8 @@ export function createAnalyticsRouter(deps = {}) {
       const summary = await summarize({
         range: req.query.range,
         location: typeof req.query.location === 'string' ? req.query.location : '',
-        brand: typeof req.query.brand === 'string' ? req.query.brand : ''
+        brand: typeof req.query.brand === 'string' ? req.query.brand : '',
+        audience: req.query.audience === 'dealer' ? 'dealer' : 'homeowner'
       });
       res.json(summary);
     } catch (error) {

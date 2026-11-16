@@ -10,6 +10,11 @@ import {
 
 const els = {};
 
+// Dealer-page analytics (fpcTrack comes from /scripts/fpc_analytics.js; may be missing).
+const track = (name, props) => { if (window.fpcTrack) window.fpcTrack(name, props); };
+let trackedStart = false;
+let trackedSubmit = false;
+
 async function submitProposal(payload) {
   const response = await fetch('/api/proposal', {
     method: 'POST',
@@ -266,6 +271,7 @@ function renderSuccess(state) {
 
 function render(state) {
   if (state.submitResult) {
+    if (!trackedSubmit) { trackedSubmit = true; track('form_submit'); }
     renderSuccess(state);
     return;
   }
@@ -326,6 +332,12 @@ function mount() {
   els.primary = document.getElementById('proposal-primary');
   els.success = document.getElementById('proposal-success');
   els.honeypot = document.getElementById('proposal-honeypot');
+
+  els.form.addEventListener('input', () => {
+    if (trackedStart) return;
+    trackedStart = true;
+    track('form_start');
+  });
 
   els.form.addEventListener('submit', (event) => {
     event.preventDefault();

@@ -1,5 +1,6 @@
 /*
- * First-party, cookieless page analytics for the homeowner landing pages.
+ * First-party, cookieless page analytics for the homeowner landing pages and
+ * the dealer pages (data-location="dealer", data-brand = page slug).
  * No cookies, no localStorage, no third parties. The session id lives in
  * sessionStorage (one tab visit). Do Not Track / Global Privacy Control → nothing is sent.
  *
@@ -144,6 +145,22 @@
       scrollTicking = false;
     });
   }, { passive: true });
+
+  // Dealer pages: count clicks on the ways a dealer can reach out.
+  if (pageLocation === 'dealer') {
+    document.addEventListener('click', function (event) {
+      var link = event.target && event.target.closest ? event.target.closest('a[href]') : null;
+      if (!link) return;
+      var href = link.getAttribute('href') || '';
+      var id = '';
+      if (/^mailto:/i.test(href)) id = 'email';
+      else if (/^tel:/i.test(href)) id = 'phone';
+      else if (/wa\.me|whatsapp\.com/i.test(href)) id = 'whatsapp';
+      else if (/calendly\.com/i.test(href)) id = 'calendly';
+      else if (/\/rti_proposal/i.test(href)) id = 'budget_form';
+      if (id) window.fpcTrack('cta_click', { id: id });
+    }, true);
+  }
 
   window.addEventListener('focus', updateTimer);
   window.addEventListener('blur', updateTimer);

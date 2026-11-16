@@ -302,3 +302,40 @@ describe('weekly report guard', () => {
     assert.match(result.data.headline, /No visits or leads/);
   });
 });
+
+describe('dealer pages', () => {
+  const base = { n: 'pageview', sid: 'abcdefgh12345678', loc: 'dealer' };
+  it('accepts the dealer pages with their real paths', () => {
+    const { doc } = normalizeEvent({ ...base, brand: 'rti-proposal' }, { pagesInfo, userAgent: UA });
+    assert.equal(doc.location, 'dealer');
+    assert.equal(doc.path, '/rti_proposal/');
+    assert.equal(normalizeEvent({ ...base, brand: 'consultation' }, { pagesInfo, userAgent: UA }).doc.path, '/consultation');
+  });
+  it('rejects unknown dealer pages', () => {
+    assert.equal(normalizeEvent({ ...base, brand: 'nope' }, { pagesInfo, userAgent: UA }).error, 'unknown_page');
+  });
+});
+
+describe('dealer summary', () => {
+  it('uses the dealer pages and only asks for dealer events', async () => {
+    const { buildSummary } = await import('./summary.js');
+    const asked = [];
+    const now = new Date('2026-11-16T20:00:00Z');
+    const ev = (name, brand, extra = {}) => ({ ts: new Date('2026-11-15T18:00:00Z'), name, sessionId: 's1', visitor: 'v1', location: 'dealer', brand, channel: 'Organic Search', device: 'desktop', ...extra });
+    const summary = await buildSummary({
+      audience: 'dealer', range: 7, now,
+      deps: {
+        tz: TZ,
+        fetchEvents: async (s, e, audience) => { asked.push(audience); return [ev('pageview', 'rti-proposal'), ev('form_start', 'rti-proposal'), ev('form_submit', 'rti-proposal')]; },
+        fetchLeads: async () => [{ name: 'A Dealer', pageLocation: 'dealer', pageBrand: 'rti-proposal', sessionId: null, createdAt: new Date('2026-11-15T18:05:00Z') }]
+      }
+    });
+    assert.deepEqual([...new Set(asked)], ['dealer']);
+    assert.equal(summary.audience, 'dealer');
+    assert.equal(summary.pages.length, 3);
+    const form = summary.pages.find((p) => p.brand === 'rti-proposal');
+    assert.equal(form.leads, 1);
+    assert.equal(form.label, 'Dealer / Budget form');
+    assert.equal(summary.kpis.leads.value, 1);
+  });
+});
