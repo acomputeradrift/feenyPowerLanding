@@ -1,6 +1,4 @@
-import { createHash } from 'node:crypto';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { createHash, createHmac, timingSafeEqual } from 'node:crypto';
 import express from 'express';
 
 import { AnalyticsEvent } from '../models/AnalyticsEvent.js';
@@ -11,24 +9,18 @@ import { buildSummary } from '../analytics/summary.js';
 import { clientIp, visitorFor } from '../analytics/visitor.js';
 import { tokensEqual } from '../proposal/audit.js';
 
-const DASHBOARD_HTML = path.join(path.dirname(fileURLToPath(import.meta.url)), '../../frontend/analytics.html');
+// The dashboard page now lives in the private hub (2026-11-16). The website keeps the data,
+// the owner-device marker, and redirects its old /analytics address there.
+export function hubAnalyticsUrl(env = process.env) {
+  return (env.HUB_ANALYTICS_URL || 'https://hub.feenypowerandcontrol.com/dashboard/analytics').replace(/\/+$/, '');
+}
+const MARK_MAX_AGE_MS = 10 * 60 * 1000;
+const PIXEL = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
 const COOKIE_NAME = 'fpc_analytics';
 const COOKIE_MAX_AGE_MS = 90 * 24 * 60 * 60 * 1000;
 const WINDOW_MS = 60_000;
 const MAX_PER_WINDOW = 120;
 const hits = new Map();
-
-const DASHBOARD_CSP = [
-  "default-src 'self'",
-  "script-src 'self'",
-  "style-src 'self' https://fonts.googleapis.com",
-  "font-src 'self' https://fonts.gstatic.com",
-  "img-src 'self' data:",
-  "connect-src 'self'",
-  "form-action 'self'",
-  "base-uri 'none'",
-  "frame-ancestors 'none'"
-].join('; ');
 
 function allowHit(ip) {
   const now = Date.now();
@@ -124,18 +116,63 @@ export function createAnalyticsDashboardHandler({ getToken = () => process.env.A
         maxAge: COOKIE_MAX_AGE_MS,
         path: '/'
       });
-      const params = new URLSearchParams(req.query);
-      params.delete('token');
-      const qs = params.toString();
-      res.redirect(302, `/analytics${qs ? `?${qs}` : ''}`);
+      res.redirect(302, toHub(req));
       return;
     }
     if (!isAuthorized(req, expected)) {
       res.status(404).end();
       return;
     }
-    res.set('Content-Security-Policy', DASHBOARD_CSP);
-    res.sendFile(DASHBOARD_HTML);
+    setOwnerCookie(req, res, expected); // renew the device marker on every visit
+    res.redirect(302, toHub(req));
+  };
+}
+
+function setOwnerCookie(req, res, expected) {
+  res.cookie(COOKIE_NAME, cookieValue(expected), {
+    httpOnly: true, sameSite: 'lax', secure: isSecure(req), maxAge: COOKIE_MAX_AGE_MS, path: '/'
+  });
+}
+
+function toHub(req) {
+  const range = ['7', '28', '90'].includes(req.query?.range) ? `?range=${req.query.range}` : '';
+  return `${hubAnalyticsUrl()}${range}`;
+}
+
+/** Signature the hub puts on a device-marker link: hex HMAC-SHA256(hub key, "mark:<exp>"). */
+export function signMark(exp, hubToken) {
+  return createHmac('sha256', hubToken).update(`mark:${exp}`).digest('hex');
+}
+
+/**
+ * GET /analytics/mark?exp=&sig= — loaded as an image by the hub's analytics page, so every
+ * device Jamie opens it on gets (and keeps renewing) the "leave my visits out" marker.
+ * Same site as the hub, so the cookie is first-party. Bad or stale links get a 404.
+ */
+export function createAnalyticsMarkHandler({
+  getToken = () => process.env.ANALYTICS_DASHBOARD_TOKEN,
+  getHubToken = () => process.env.ANALYTICS_HUB_TOKEN,
+  now = () => Date.now()
+} = {}) {
+  return function handleAnalyticsMark(req, res) {
+    privateHeaders(res);
+    const expected = getToken();
+    const hubToken = getHubToken();
+    const exp = Number(req.query?.exp);
+    const sig = typeof req.query?.sig === 'string' ? req.query.sig : '';
+    const t = now();
+    const ok = typeof expected === 'string' && expected
+      && typeof hubToken === 'string' && hubToken.length >= 32
+      && Number.isFinite(exp) && exp > t && exp <= t + MARK_MAX_AGE_MS
+      && /^[0-9a-f]{64}$/.test(sig)
+      && timingSafeEqual(Buffer.from(sig, 'hex'), Buffer.from(signMark(exp, hubToken), 'hex'));
+    if (!ok) {
+      res.status(404).end();
+      return;
+    }
+    setOwnerCookie(req, res, expected);
+    res.set('Content-Type', 'image/gif');
+    res.send(PIXEL);
   };
 }
 
@@ -237,5 +274,6 @@ export function createAnalyticsRouter(deps = {}) {
 }
 
 export const handleAnalyticsDashboard = createAnalyticsDashboardHandler();
+export const handleAnalyticsMark = createAnalyticsMarkHandler();
 const analyticsRoutes = createAnalyticsRouter();
 export default analyticsRoutes;

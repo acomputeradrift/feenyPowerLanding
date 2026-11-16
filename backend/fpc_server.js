@@ -8,7 +8,7 @@ import proposalRoutes, { handleProposalAudit } from './routes/proposal.js';
 import ideaFeedbackRoutes from './routes/ideaFeedback.js';
 import sentinelLiteCompareCountRoutes from './routes/sentinelLiteCompareCount.js';
 import homeownerInquiryRoutes from './routes/homeownerInquiry.js';
-import analyticsRoutes, { handleAnalyticsDashboard } from './routes/analytics.js';
+import analyticsRoutes, { handleAnalyticsDashboard, handleAnalyticsMark } from './routes/analytics.js';
 import { startWeeklyReportScheduler } from './analytics/scheduler.js';
 import { renderPage as renderHomeownerPage, renderSitemap, renderRobots } from './homeowner/render.js';
 import { handleProposalPdfPreview } from './proposal/pdf/preview.js';
@@ -31,6 +31,7 @@ app.use('/api/homeowner-inquiry', homeownerInquiryRoutes);
 // First-party cookieless analytics + token-gated dashboard (404 unless ANALYTICS_DASHBOARD_TOKEN is set).
 app.use('/api/analytics', analyticsRoutes);
 app.get('/analytics', handleAnalyticsDashboard);
+app.get('/analytics/mark', handleAnalyticsMark);
 
 
 

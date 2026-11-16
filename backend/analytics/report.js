@@ -10,9 +10,10 @@ import { analyticsTz, previousIsoWeek } from './time.js';
 
 const MIN_VISITORS_FOR_WORST = 5;
 
+// The dashboard lives in the private hub now (sign-in there).
 export function dashboardUrl(env = process.env) {
-  const base = (env.ANALYTICS_PUBLIC_URL || 'https://www.feenypowerandcontrol.com').replace(/\/+$/, '');
-  return `${base}/analytics?range=7`;
+  const base = (env.HUB_ANALYTICS_URL || 'https://hub.feenypowerandcontrol.com/dashboard/analytics').replace(/\/+$/, '');
+  return `${base}?range=7`;
 }
 
 export async function buildWeeklyReportData({ now = new Date(), deps = {} } = {}) {

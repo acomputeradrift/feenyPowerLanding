@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import express from 'express';
 import { after, before, describe, it } from 'node:test';
 
-import { createAnalyticsDashboardHandler, createAnalyticsRouter } from './analytics.js';
+import { createAnalyticsDashboardHandler, createAnalyticsMarkHandler, createAnalyticsRouter, signMark } from './analytics.js';
 import { FALLBACK } from '../analytics/pages.js';
 
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 14_0) AppleWebKit/605.1.15 Safari/605.1.15';
@@ -79,10 +79,10 @@ describe('analytics routes', () => {
     assert.equal((await fetch(`${baseUrl}/api/analytics/summary`)).status, 404);
   });
 
-  it('sets an HttpOnly cookie from ?token and redirects to the clean URL', async () => {
+  it('sets an HttpOnly cookie from ?token and redirects to the hub', async () => {
     const res = await fetch(`${baseUrl}/analytics?token=secret-token&range=7`, { redirect: 'manual' });
     assert.equal(res.status, 302);
-    assert.equal(res.headers.get('location'), '/analytics?range=7');
+    assert.equal(res.headers.get('location'), 'https://hub.feenypowerandcontrol.com/dashboard/analytics?range=7');
     const cookie = res.headers.get('set-cookie');
     assert.match(cookie, /HttpOnly/);
     assert.match(cookie, /SameSite=Lax/);
@@ -158,5 +158,47 @@ describe('analytics summary for the hub', () => {
       const res = await fetch(`http://127.0.0.1:${s.address().port}/api/analytics/summary`, { headers: { 'x-analytics-token': 'short' } });
       assert.equal(res.status, 404);
     } finally { s.close(); }
+  });
+});
+
+describe('owner-device marker', () => {
+  const hubToken = 'k'.repeat(40);
+  const T = 1_800_000_000_000;
+  let server; let base;
+  before(async () => {
+    const app = express();
+    app.get('/analytics', createAnalyticsDashboardHandler({ getToken: () => 'owner-token' }));
+    app.get('/analytics/mark', createAnalyticsMarkHandler({ getToken: () => 'owner-token', getHubToken: () => hubToken, now: () => T }));
+    server = app.listen(0);
+    await new Promise((resolve) => server.once('listening', resolve));
+    base = `http://127.0.0.1:${server.address().port}`;
+  });
+  after(() => server.close());
+
+  it('sets the marker from a fresh link signed by the hub', async () => {
+    const exp = T + 60_000;
+    const res = await fetch(`${base}/analytics/mark?exp=${exp}&sig=${signMark(exp, hubToken)}`);
+    assert.equal(res.status, 200);
+    assert.equal(res.headers.get('content-type'), 'image/gif');
+    assert.match(res.headers.get('set-cookie'), /fpc_analytics=.*HttpOnly.*SameSite=Lax/);
+  });
+
+  it('refuses expired, far-future, forged or missing signatures', async () => {
+    for (const exp of [T - 1, T + 11 * 60_000]) {
+      assert.equal((await fetch(`${base}/analytics/mark?exp=${exp}&sig=${signMark(exp, hubToken)}`)).status, 404);
+    }
+    const exp = T + 60_000;
+    assert.equal((await fetch(`${base}/analytics/mark?exp=${exp}&sig=${signMark(exp, 'x'.repeat(40))}`)).status, 404);
+    assert.equal((await fetch(`${base}/analytics/mark?exp=${exp}`)).status, 404);
+  });
+
+  it('renews the marker and sends a marked device on to the hub; strangers get a 404', async () => {
+    const login = await fetch(`${base}/analytics?token=owner-token`, { redirect: 'manual' });
+    const pair = login.headers.get('set-cookie').split(';')[0];
+    const again = await fetch(`${base}/analytics?range=28`, { redirect: 'manual', headers: { Cookie: pair } });
+    assert.equal(again.status, 302);
+    assert.equal(again.headers.get('location'), 'https://hub.feenypowerandcontrol.com/dashboard/analytics?range=28');
+    assert.match(again.headers.get('set-cookie'), /Max-Age=7776000/);
+    assert.equal((await fetch(`${base}/analytics`, { redirect: 'manual' })).status, 404);
   });
 });
