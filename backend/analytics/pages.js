@@ -99,7 +99,7 @@ export const DEALER_PAGES_INFO = {
   ],
   locations: [{ slug: 'dealer', label: 'Dealer pages', short: 'Dealer' }],
   brands: [
-    { slug: 'consultation', label: 'Consultation page', short: 'Consultation' },
+    { slug: 'consultation', label: 'Dealer landing page', short: 'Landing page' },
     { slug: 'rti-proposal', label: 'Budget form', short: 'Budget form' },
     { slug: 'faq', label: 'FAQ', short: 'FAQ' }
   ]

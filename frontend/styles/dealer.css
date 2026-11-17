@@ -1,0 +1,26 @@
+/* Dealer page (/consultation): only the pieces the homeowner layout doesn't have.
+   Everything else comes from homeowner.css, so the two pages look the same. */
+
+.dl .dl-returning a {
+    color: var(--ho-dark);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.dl .dl-returning a:hover,
+.dl .dl-returning a:focus-visible {
+    color: #000;
+    text-decoration-thickness: 2px;
+}
+
+.dl .dl-returning {
+    margin: 20px auto 0;
+    max-width: none;
+    text-align: center;
+    font-size: 15px;
+}
+
+.dl .dl-returning-next {
+    margin-top: 8px;
+}

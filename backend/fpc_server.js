@@ -8,6 +8,7 @@ import proposalRoutes, { handleProposalAudit } from './routes/proposal.js';
 import ideaFeedbackRoutes from './routes/ideaFeedback.js';
 import sentinelLiteCompareCountRoutes from './routes/sentinelLiteCompareCount.js';
 import homeownerInquiryRoutes from './routes/homeownerInquiry.js';
+import dealerInquiryRoutes from './routes/dealerInquiry.js';
 import analyticsRoutes, { handleAnalyticsDashboard, handleAnalyticsMark } from './routes/analytics.js';
 import { startWeeklyReportScheduler } from './analytics/scheduler.js';
 import { renderPage as renderHomeownerPage, renderSitemap, renderRobots } from './homeowner/render.js';
@@ -28,6 +29,7 @@ app.use('/api/proposal', proposalRoutes);
 // Count-only: +1 when a dealer hits Compare. No files, names, paths, or bodies.
 app.use('/api/sentinel_lite/compare-count', sentinelLiteCompareCountRoutes);
 app.use('/api/homeowner-inquiry', homeownerInquiryRoutes);
+app.use('/api/dealer-inquiry', dealerInquiryRoutes);
 // First-party cookieless analytics + token-gated dashboard (404 unless ANALYTICS_DASHBOARD_TOKEN is set).
 app.use('/api/analytics', analyticsRoutes);
 app.get('/analytics', handleAnalyticsDashboard);
@@ -110,8 +112,8 @@ app.get('/', (req, res) => {
 
 // ✅ Serve Consultation Page
 app.get('/consultation', (req, res) => {
-    // res.sendFile(path.join(__dirname, 'consultation.html'));
-    res.sendFile(path.join(__dirname, '../frontend/consultation.html'));
+    // Dealer landing page (2026-11-17). The previous page is kept at frontend/consultation.html.
+    res.sendFile(path.join(__dirname, '../frontend/dealer.html'));
 
 });
 
