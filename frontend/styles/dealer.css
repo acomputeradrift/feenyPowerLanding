@@ -24,3 +24,8 @@
 .dl .dl-returning-next {
     margin-top: 8px;
 }
+
+/* "Here's how I can help" sits between two plain sections, so it takes the band. */
+.dl .dl-help {
+    background: var(--ho-band);
+}
